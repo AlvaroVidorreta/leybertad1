@@ -209,10 +209,8 @@ function Ranking() {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range) });
   const items = useMemo(() => data ?? [], [data]);
-  const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<null | Record<string, any>>(null);
 
-  // map our UI ranges: historical replaces semester => 'all'
   const ranges: { key: TimeRange; label: string }[] = [
     { key: "day", label: "Día" },
     { key: "week", label: "Semana" },
@@ -220,19 +218,44 @@ function Ranking() {
     { key: "all", label: "Histórico" },
   ];
 
+  const [open, setOpen] = useState(false);
+  const ddRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      if (!ddRef.current) return;
+      if (e.target instanceof Node && !ddRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("click", onDoc);
+    return () => document.removeEventListener("click", onDoc);
+  }, []);
+
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <h3 className="text-lg font-semibold">Ranking</h3>
-        <div className="flex gap-2">
-          {ranges.map((r) => (
-            <button
-              key={r.key}
-              onClick={() => setRange(r.key)}
-              className={`px-3 py-1 rounded-full border text-xs ${range === r.key ? "bg-primary text-primary-foreground" : "bg-white"}`}>
-              {r.label}
-            </button>
-          ))}
+        <div className="ml-auto relative" ref={ddRef}>
+          <button
+            onClick={() => setOpen((s) => !s)}
+            className="px-3 py-1 rounded-full border text-xs bg-white flex items-center gap-2"
+            aria-expanded={open}
+          >
+            {ranges.find((r) => r.key === range)?.label ?? "Filtrar"}
+            <svg className="w-3 h-3 text-muted-foreground" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+
+          {open && (
+            <div className="absolute right-0 mt-2 w-40 rounded-md border bg-white shadow-lg z-50">
+              {ranges.map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => { setRange(r.key); setOpen(false); }}
+                  className={`w-full text-left px-3 py-2 text-sm ${range === r.key ? "bg-primary text-primary-foreground" : "hover:bg-gray-50"}`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -242,9 +265,8 @@ function Ranking() {
         {items.map((l, i) => (
           <li
             key={l.id}
-            onMouseEnter={() => setHovered(l.id)}
-            onMouseLeave={() => setHovered(null)}
-            className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/60 transition-colors cursor-pointer"
+            onClick={() => setSelected(l)}
+            className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
           >
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream-200 text-xs font-semibold">{i + 1}</span>
 
@@ -254,9 +276,6 @@ function Ranking() {
 
             <div className="ml-2 flex items-center">
               <div className="text-xs text-muted-foreground mr-2">{l.upvotes} votos</div>
-              {hovered === l.id && (
-                <button onClick={() => setSelected(l)} className="text-xs px-3 py-1 rounded-full border bg-white hover:bg-primary/5">Ver detalles</button>
-              )}
             </div>
           </li>
         ))}
@@ -274,7 +293,7 @@ function Ranking() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h4 className="text-lg font-semibold">{selected.titulo}</h4>
-                <p className="text-sm text-muted-foreground">{selected.upvotes} votos · {new Date(selected.createdAt).toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">{selected.upvotes} votos</p>
               </div>
               <button onClick={() => setSelected(null)} className="text-sm text-muted-foreground">Cerrar</button>
             </div>
