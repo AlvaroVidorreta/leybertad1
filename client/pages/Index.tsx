@@ -29,6 +29,7 @@ function HeroPublicar() {
   const [objetivo, setObjetivo] = useState("");
   const [detalles, setDetalles] = useState("");
   const [apodo, setApodo] = useState("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const crear = useMutation({
     mutationFn: crearLey,
@@ -37,12 +38,28 @@ function HeroPublicar() {
       setObjetivo("");
       setDetalles("");
       setApodo("");
+      setExpand(false);
       qc.invalidateQueries({ queryKey: ["recientes"] });
       qc.invalidateQueries({ queryKey: ["ranking"] });
     },
   });
 
   const canSubmit = titulo.trim().length > 0 && objetivo.trim().length > 3 && !crear.isPending;
+
+  // collapse to initial state when user leaves inputs and all are empty
+  useEffect(() => {
+    return () => {};
+  }, []);
+
+  function handlePossibleCollapse() {
+    // slight delay so focus switching between inputs doesn't collapse
+    setTimeout(() => {
+      const active = document.activeElement as HTMLElement | null;
+      if (containerRef.current && active && containerRef.current.contains(active)) return;
+      if (titulo.trim() || objetivo.trim() || detalles.trim() || apodo.trim()) return;
+      setExpand(false);
+    }, 120);
+  }
 
   return (
     <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-tr from-cream-50 to-cream-100 p-6 md:p-10">
