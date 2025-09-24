@@ -60,7 +60,7 @@ function HeroPublicar() {
             <button
               disabled={!canSubmit}
               onClick={() => crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined })}
-              className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-transform duration-150 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-lg"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-colors duration-150 ease-out hover:brightness-105 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               Publicar
             </button>
@@ -79,7 +79,6 @@ function HeroPublicar() {
                 placeholder="Apodo (opcional)"
                 className="rounded-md border bg-white/80 px-4 py-2"
               />
-              <div className="text-right hidden md:block text-xs text-muted-foreground mt-2">Pulsa “Publicar” para enviar</div>
             </div>
             <textarea
               value={detalles}
