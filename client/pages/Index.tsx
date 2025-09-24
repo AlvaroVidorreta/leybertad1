@@ -93,14 +93,14 @@ function HeroPublicar() {
             </button>
           </div>
           <div className={`transition-all duration-300 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-start">
               <input
                 value={objetivo}
                 onChange={(e) => setObjetivo(e.target.value)}
                 onFocus={() => setExpand(true)}
                 onBlur={handlePossibleCollapse}
                 placeholder="Objetivo breve (requerido)"
-                className="rounded-md border bg-white/80 px-4 py-2 md:col-span-2"
+                className="rounded-md border bg-white/80 px-4 py-2"
               />
               <input
                 value={apodo}
@@ -109,7 +109,7 @@ function HeroPublicar() {
                 onFocus={() => setExpand(true)}
                 onBlur={handlePossibleCollapse}
                 placeholder="Apodo (opcional)"
-                className="rounded-md border bg-white/80 px-4 py-2 md:col-span-1 md:justify-self-end max-w-[10rem]"
+                className="rounded-md border bg-white/80 px-4 py-2 md:justify-self-end md:w-40"
               />
             </div>
             <textarea
