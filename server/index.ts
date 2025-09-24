@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { commentLaw, createLaw, listRecent, ranking, saveLaw, upvoteLaw } from "./routes/laws";
 
 export function createServer() {
   const app = express();
@@ -18,6 +19,14 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Leybertad API
+  app.post("/api/laws", createLaw); // crear propuesta
+  app.get("/api/laws", listRecent); // más recientes
+  app.post("/api/laws/:id/upvote", upvoteLaw);
+  app.post("/api/laws/:id/save", saveLaw);
+  app.post("/api/laws/:id/comment", commentLaw);
+  app.get("/api/ranking", ranking);
 
   return app;
 }
