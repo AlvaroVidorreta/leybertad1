@@ -51,13 +51,6 @@ function CollapsibleHeader() {
             </nav>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
           </div>
-          <div className={cn("px-1", expanded ? "opacity-100" : "opacity-0")}> 
-            <div className="relative mx-auto max-w-xl">
-              <div className="h-8 rounded-full border bg-white/70 flex items-center justify-center text-xs text-muted-foreground">
-                La voluntad del pueblo en una sola plataforma
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
