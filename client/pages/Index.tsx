@@ -55,12 +55,12 @@ function HeroPublicar() {
               onChange={(e) => setTitulo(e.target.value)}
               onFocus={() => setExpand(true)}
               placeholder="Introduce Ley (título de tu propuesta)"
-              className="w-full rounded-full border bg-white/80 backdrop-blur px-5 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-24 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <button
               disabled={!canSubmit}
               onClick={() => crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined })}
-              className="absolute right-1 top-1 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50"
+              className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-transform duration-150 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-lg"
             >
               Publicar
             </button>
