@@ -113,6 +113,8 @@ function HeroPublicar() {
             <textarea
               value={detalles}
               onChange={(e) => setDetalles(e.target.value)}
+              onFocus={() => setExpand(true)}
+              onBlur={handlePossibleCollapse}
               placeholder="Perspectiva personal / detalles (opcional)"
               className="mt-3 w-full rounded-md border bg-white/80 px-4 py-2 min-h-[80px]"
             />
