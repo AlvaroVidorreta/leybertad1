@@ -68,7 +68,7 @@ function HeroPublicar() {
             >
               {/* shine overlay only when enabled */}
               {canSubmit && (
-                <span className="pointer-events-none absolute inset-y-0 left-[-40%] w-2/3 bg-gradient-to-r from-white/30 via-white/10 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
+                <span className="pointer-events-none absolute inset-y-0 left-[-80%] w-[180%] -skew-x-12 bg-gradient-to-r from-white/40 via-white/20 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
               )}
               <span className="relative z-10">Publicar</span>
             </button>
