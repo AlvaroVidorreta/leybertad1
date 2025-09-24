@@ -50,7 +50,7 @@ function HeroPublicar() {
         <h2 className="font-brand text-4xl md:text-5xl text-primary mb-4">Leybertad</h2>
         <QuoteRotator />
         <div className="mt-6">
-          <div className="group relative mx-auto max-w-2xl">
+          <div className="relative mx-auto max-w-2xl">
             <input
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
