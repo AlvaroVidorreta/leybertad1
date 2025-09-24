@@ -96,12 +96,16 @@ function HeroPublicar() {
               <input
                 value={objetivo}
                 onChange={(e) => setObjetivo(e.target.value)}
+                onFocus={() => setExpand(true)}
+                onBlur={handlePossibleCollapse}
                 placeholder="Objetivo breve (requerido)"
                 className="rounded-md border bg-white/80 px-4 py-2"
               />
               <input
                 value={apodo}
                 onChange={(e) => setApodo(e.target.value)}
+                onFocus={() => setExpand(true)}
+                onBlur={handlePossibleCollapse}
                 placeholder="Apodo (opcional)"
                 className="rounded-md border bg-white/80 px-4 py-2"
               />
