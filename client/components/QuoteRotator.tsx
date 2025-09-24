@@ -46,16 +46,33 @@ function durationFor(text: string) {
 
 export default function QuoteRotator() {
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
   const quote = useMemo(() => QUOTES[index % QUOTES.length], [index]);
+  const fade = 260; // ms for fade
 
   useEffect(() => {
-    const t = setTimeout(() => setIndex((i) => (i + 1) % QUOTES.length), durationFor(quote.text));
-    return () => clearTimeout(t);
+    let tHide: ReturnType<typeof setTimeout> | undefined;
+    let tNext: ReturnType<typeof setTimeout> | undefined;
+    const ms = durationFor(quote.text);
+    tHide = setTimeout(() => {
+      setVisible(false);
+      tNext = setTimeout(() => {
+        setIndex((i) => (i + 1) % QUOTES.length);
+        setVisible(true);
+      }, fade);
+    }, ms);
+
+    return () => {
+      if (tHide) clearTimeout(tHide);
+      if (tNext) clearTimeout(tNext);
+    };
   }, [index, quote.text]);
 
   return (
     <div aria-live="polite" className="text-center text-sm md:text-base text-muted-foreground select-none">
-      <p className="italic">“{quote.text}”{quote.author ? ` — ${quote.author}` : ""}</p>
+      <p className={`italic transition-opacity duration-${fade} ${visible ? "opacity-100" : "opacity-0"}`}>
+        “{quote.text}”{quote.author ? ` ~ ${quote.author}` : ""}
+      </p>
     </div>
   );
 }
