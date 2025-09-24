@@ -70,7 +70,8 @@ function HeroPublicar() {
           <div ref={containerRef} className="relative mx-auto max-w-2xl">
             <input
               value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
+              onChange={(e) => setTitulo(e.target.value.slice(0, 40))}
+              maxLength={40}
               onFocus={() => setExpand(true)}
               onBlur={handlePossibleCollapse}
               placeholder="Introduce Ley (título de tu propuesta)"
