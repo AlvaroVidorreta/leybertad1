@@ -72,6 +72,7 @@ function HeroPublicar() {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               onFocus={() => setExpand(true)}
+              onBlur={handlePossibleCollapse}
               placeholder="Introduce Ley (título de tu propuesta)"
               className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-24 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
