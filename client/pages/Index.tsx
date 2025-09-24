@@ -206,37 +206,111 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
 }
 
 function Ranking() {
-  const [range, setRange] = useState<TimeRange>("semester");
+  const [range, setRange] = useState<TimeRange>("month");
   const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range) });
   const items = useMemo(() => data ?? [], [data]);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [selected, setSelected] = useState<null | Record<string, any>>(null);
+
+  // map our UI ranges: historical replaces semester => 'all'
+  const ranges: { key: TimeRange; label: string }[] = [
+    { key: "day", label: "Día" },
+    { key: "week", label: "Semana" },
+    { key: "month", label: "Mes" },
+    { key: "all", label: "Histórico" },
+  ];
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Ranking</h3>
-        <div className="flex gap-1">
-          {(["day", "week", "month", "semester", "all"] as TimeRange[]).map((r) => (
-            <button key={r} onClick={() => setRange(r)} className={`px-3 py-1 rounded-full border text-xs ${range === r ? "bg-primary text-primary-foreground" : "bg-white"}`}>
-              {labelRange(r)}
+        <div className="flex gap-2">
+          {ranges.map((r) => (
+            <button
+              key={r.key}
+              onClick={() => setRange(r.key)}
+              className={`px-3 py-1 rounded-full border text-xs ${range === r.key ? "bg-primary text-primary-foreground" : "bg-white"}`}>
+              {r.label}
             </button>
           ))}
         </div>
       </div>
+
       {isLoading && <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>}
+
       <ol className="mt-4 space-y-3">
         {items.map((l, i) => (
-          <li key={l.id} className="flex items-start gap-3">
-            <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-cream-200 text-xs">{i + 1}</span>
-            <div>
-              <p className="font-medium text-sm">{l.titulo}</p>
-              <p className="text-xs text-muted-foreground">{l.upvotes} votos · {new Date(l.createdAt).toLocaleDateString()}</p>
+          <li
+            key={l.id}
+            onMouseEnter={() => setHovered(l.id)}
+            onMouseLeave={() => setHovered(null)}
+            className="flex items-start gap-3 rounded-lg p-3 hover:bg-white/60 transition-colors cursor-pointer"
+          >
+            <span className="mt-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream-200 text-xs font-semibold">{i + 1}</span>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-sm">{l.titulo}</p>
+                <div className="text-xs text-muted-foreground">{l.upvotes} votos</div>
+              </div>
+              <p className="text-xs text-muted-foreground">{new Date(l.createdAt).toLocaleDateString()}</p>
+            </div>
+
+            <div className="ml-2 flex items-center">
+              {hovered === l.id && (
+                <button onClick={() => setSelected(l)} className="text-xs px-3 py-1 rounded-full border bg-white hover:bg-primary/5">Ver detalles</button>
+              )}
             </div>
           </li>
         ))}
+
         {items.length === 0 && !isLoading && (
           <li className="text-sm text-muted-foreground">Aún no hay datos.</li>
         )}
       </ol>
+
+      {/* Modal / detail display */}
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSelected(null)} />
+          <div className="relative z-10 w-[min(720px,95%)] rounded-2xl bg-card p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h4 className="text-lg font-semibold">{selected.titulo}</h4>
+                <p className="text-sm text-muted-foreground">{selected.upvotes} votos · {new Date(selected.createdAt).toLocaleString()}</p>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-sm text-muted-foreground">Cerrar</button>
+            </div>
+
+            <hr className="my-4" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h5 className="text-sm font-medium text-muted-foreground">Objetivo</h5>
+                <p className="mt-1">{selected.objetivo}</p>
+
+                {selected.detalles && (
+                  <>
+                    <h5 className="text-sm font-medium text-muted-foreground mt-4">Detalles</h5>
+                    <p className="mt-1 text-sm">{selected.detalles}</p>
+                  </>
+                )}
+              </div>
+
+              <div>
+                <h5 className="text-sm font-medium text-muted-foreground">Metadatos</h5>
+                <ul className="mt-1 text-sm">
+                  <li>Autor: {selected.apodo ?? "—"}</li>
+                  <li>ID: {selected.id}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 text-right">
+              <button onClick={() => setSelected(null)} className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
