@@ -61,9 +61,16 @@ function HeroPublicar() {
             <button
               disabled={!canSubmit}
               onClick={() => crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined })}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-colors duration-150 ease-out hover:brightness-105 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={cn(
+                "absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden",
+                canSubmit ? "group" : ""
+              )}
             >
-              Publicar
+              {/* shine overlay only when enabled */}
+              {canSubmit && (
+                <span className="pointer-events-none absolute inset-y-0 left-[-40%] w-2/3 bg-gradient-to-r from-white/30 via-white/10 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
+              )}
+              <span className="relative z-10">Publicar</span>
             </button>
           </div>
           <div className={`transition-all duration-300 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
