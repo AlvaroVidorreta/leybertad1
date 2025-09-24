@@ -244,18 +244,16 @@ function Ranking() {
             key={l.id}
             onMouseEnter={() => setHovered(l.id)}
             onMouseLeave={() => setHovered(null)}
-            className="flex items-start gap-3 rounded-lg p-3 hover:bg-white/60 transition-colors cursor-pointer"
+            className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/60 transition-colors cursor-pointer"
           >
-            <span className="mt-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream-200 text-xs font-semibold">{i + 1}</span>
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-sm">{l.titulo}</p>
-                <div className="text-xs text-muted-foreground">{l.upvotes} votos</div>
-              </div>
-              <p className="text-xs text-muted-foreground">{new Date(l.createdAt).toLocaleDateString()}</p>
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream-200 text-xs font-semibold">{i + 1}</span>
+
+            <div className="flex-1 px-2">
+              <p className="font-medium text-sm text-center truncate">{l.titulo}</p>
             </div>
 
             <div className="ml-2 flex items-center">
+              <div className="text-xs text-muted-foreground mr-2">{l.upvotes} votos</div>
               {hovered === l.id && (
                 <button onClick={() => setSelected(l)} className="text-xs px-3 py-1 rounded-full border bg-white hover:bg-primary/5">Ver detalles</button>
               )}
