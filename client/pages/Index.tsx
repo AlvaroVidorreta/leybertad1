@@ -168,22 +168,37 @@ function FeedRecientes() {
 
 function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () => void; onSave: () => void; onComment: (text: string) => void }) {
   const [text, setText] = useState("");
+  const [showCommentInput, setShowCommentInput] = useState(false);
   const canSend = text.trim().length > 0 && text.trim().length <= 200;
+
   return (
     <div>
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h4 className="font-medium text-lg">{law.titulo}</h4>
           <p className="text-sm text-muted-foreground">Objetivo: {law.objetivo}</p>
-          {law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
-          <div className="mt-2 text-xs text-muted-foreground">{new Date(law.createdAt).toLocaleString()} {law.apodo ? `· ${law.apodo}` : ""}</div>
+          {showCommentInput && law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
         </div>
+
         <div className="flex-shrink-0 flex flex-col items-center gap-2">
-          <button onClick={onUpvote} className="rounded-full border px-3 py-1 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
-          <button onClick={onSave} className="rounded-full border px-3 py-1 text-sm bg-white hover:bg-cream-50">Guardar</button>
+          <button onClick={onUpvote} aria-label="Upvote" className="rounded-full border px-3 py-1 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
+
+          <div className="flex items-center gap-2 mt-2">
+            {/* comment icon (left) */}
+            <button onClick={() => setShowCommentInput((s) => !s)} aria-label="Comentar" className="rounded-full p-2 bg-white border hover:bg-gray-50">
+              <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+
+            {/* save icon (right) */}
+            <button onClick={onSave} aria-label="Guardar" className="rounded-full p-2 bg-white border hover:bg-gray-50">
+              <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          </div>
         </div>
       </div>
-      <div className="mt-3">
+
+      {/* comment input expands only when toggled */}
+      <div className={`transition-all duration-200 overflow-hidden ${showCommentInput ? "max-h-40 mt-3 opacity-100" : "max-h-0 opacity-0"}`}>
         <div className="flex items-center gap-2">
           <input
             value={text}
@@ -191,9 +206,10 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
             placeholder="Comenta (máx. 200 caracteres)"
             className="flex-1 rounded-md border px-3 py-2 text-sm"
           />
-          <button disabled={!canSend} onClick={() => { onComment(text); setText(""); }} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50">Enviar</button>
+          <button disabled={!canSend} onClick={() => { onComment(text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50">Enviar</button>
         </div>
-        {law.comentarios.length > 0 && (
+
+        {showCommentInput && law.comentarios.length > 0 && (
           <ul className="mt-2 space-y-1 max-h-28 overflow-auto pr-1">
             {law.comentarios.slice().reverse().map((c) => (
               <li key={c.id} className="text-xs text-muted-foreground">• {c.texto}</li>
