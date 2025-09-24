@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, votarLey } from "@/lib/api";
 import { Law, TimeRange } from "@shared/api";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function Index() {
   return (
