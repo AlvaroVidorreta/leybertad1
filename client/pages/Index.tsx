@@ -210,6 +210,7 @@ function Ranking() {
   const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range) });
   const items = useMemo(() => data ?? [], [data]);
   const [selected, setSelected] = useState<null | Record<string, any>>(null);
+  const [showComments, setShowComments] = useState(false);
 
   const ranges: { key: TimeRange; label: string }[] = [
     { key: "day", label: "Día" },
@@ -288,14 +289,20 @@ function Ranking() {
       {/* Modal / detail display */}
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setSelected(null)} />
+          <div className="absolute inset-0 bg-black/40" onClick={() => { setSelected(null); setShowComments(false); }} />
           <div className="relative z-10 w-[min(720px,95%)] rounded-2xl bg-card p-6 shadow-xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h4 className="text-lg font-semibold">{selected.titulo}</h4>
-                <p className="text-sm text-muted-foreground">{selected.upvotes} votos</p>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-sm text-muted-foreground">Cerrar</button>
+            {/* Close X top-right */}
+            <button
+              onClick={() => { setSelected(null); setShowComments(false); }}
+              aria-label="Cerrar"
+              className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-muted-foreground hover:bg-white"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+
+            <div className="mb-2">
+              <h4 className="text-lg font-semibold">{selected.titulo}</h4>
+              <p className="text-sm text-muted-foreground">{selected.upvotes} votos</p>
             </div>
 
             <hr className="my-4" />
@@ -314,17 +321,36 @@ function Ranking() {
               </div>
 
               <div>
-                <h5 className="text-sm font-medium text-muted-foreground">Metadatos</h5>
-                <ul className="mt-1 text-sm">
-                  <li>Autor: {selected.apodo ?? "—"}</li>
-                  <li>ID: {selected.id}</li>
-                </ul>
+                <div className="flex flex-col h-full justify-between">
+                  <div>
+                    <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
+                    <p className="mt-1">{selected.apodo ?? "-"}</p>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setShowComments((s) => !s)}
+                      className="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50"
+                    >
+                      {showComments ? "Ocultar comentarios" : "Ver comentarios"}
+                    </button>
+
+                    {showComments && (
+                      <div className="mt-3 max-h-40 overflow-auto rounded-md border bg-white p-2 text-sm">
+                        {Array.isArray(selected.comentarios) && selected.comentarios.length > 0 ? (
+                          selected.comentarios.map((c: any) => (
+                            <div key={c.id} className="py-1 border-b last:border-b-0">{c.texto}</div>
+                          ))
+                        ) : (
+                          <div className="text-muted-foreground">Sin comentarios</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 text-right">
-              <button onClick={() => setSelected(null)} className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Cerrar</button>
-            </div>
           </div>
         </div>
       )}
