@@ -79,8 +79,11 @@ export default function QuoteRotator() {
 
   return (
     <div aria-live="polite" className="text-center text-sm md:text-base text-muted-foreground select-none">
-      <p className={`italic transition-opacity duration-${fade} ${visible ? "opacity-100" : "opacity-0"}`}>
-        “{quote.text}”{quote.author ? ` ~ ${quote.author}` : ""}
+      <p className={`transition-opacity ${visible ? "opacity-100" : "opacity-0"}`} style={{ transitionDuration: `${fade}ms` }}>
+        <span className="italic">“{quote.text}”</span>
+        {quote.author && (
+          <span className="ml-2">~ {quote.author}</span>
+        )}
       </p>
     </div>
   );
