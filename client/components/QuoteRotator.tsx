@@ -82,7 +82,7 @@ export default function QuoteRotator() {
       <p className={`transition-opacity ${visible ? "opacity-100" : "opacity-0"}`} style={{ transitionDuration: `${fade}ms` }}>
         <span className="font-playfair italic">“{quote.text}”</span>
         {quote.author && (
-          <span className="font-playfair ml-2 not-italic text-sm text-muted-foreground">~ {quote.author}</span>
+          <span className="font-playfair ml-2 not-italic text-[15px] text-muted-foreground">~ {quote.author}</span>
         )}
       </p>
     </div>
