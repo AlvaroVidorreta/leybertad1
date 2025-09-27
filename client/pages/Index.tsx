@@ -293,9 +293,6 @@ function Ranking() {
               <p className="font-medium text-sm text-center truncate">{l.titulo}</p>
             </div>
 
-            <div className="ml-2 flex items-center">
-              <div className="text-xs text-muted-foreground mr-2">{l.upvotes} votos</div>
-            </div>
           </li>
         ))}
 
