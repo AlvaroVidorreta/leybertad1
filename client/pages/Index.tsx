@@ -287,10 +287,10 @@ function Ranking() {
             onClick={() => setSelected(l)}
             className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
           >
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream-200 text-xs font-semibold">{i + 1}</span>
+            <span className="inline-flex h-8 w-8 items-center justify-start rounded-full bg-cream-200 text-sm font-semibold pl-2 -ml-1">{i + 1}</span>
 
-            <div className="flex-1 px-2">
-              <p className="font-medium text-sm text-center truncate">{l.titulo}</p>
+            <div className="flex-1 px-1">
+              <p className="font-medium text-sm text-left truncate">{l.titulo}</p>
             </div>
 
           </li>
