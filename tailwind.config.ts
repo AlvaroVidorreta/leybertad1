@@ -14,6 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
+        sans: ["Nunito", "Inter", "ui-sans-serif", "system-ui"],
         brand: ["Cinzel", "serif"],
         playfair: ["Playfair Display", "serif"],
       },
