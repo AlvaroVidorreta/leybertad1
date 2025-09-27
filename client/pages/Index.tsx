@@ -285,7 +285,7 @@ function Ranking() {
           <li
             key={l.id}
             onClick={() => setSelected(l)}
-            className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
+            className="flex items-center gap-4 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
           >
             <span className="inline-flex h-8 w-8 items-center justify-start rounded-full bg-cream-200 text-sm font-semibold pl-2 -ml-1">{i + 1}</span>
 
