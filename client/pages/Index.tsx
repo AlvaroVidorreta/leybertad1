@@ -92,7 +92,7 @@ function HeroPublicar() {
               <span className="relative z-10">Publicar</span>
             </button>
           </div>
-          <div className={`transition-all duration-300 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
+          <div className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-start">
               <input
                 value={objetivo}
