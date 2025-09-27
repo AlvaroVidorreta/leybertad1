@@ -79,12 +79,15 @@ export default function QuoteRotator() {
 
   return (
     <div aria-live="polite" className="text-center text-sm md:text-base text-muted-foreground select-none">
-      <p className={`transition-opacity ${visible ? "opacity-100" : "opacity-0"}`} style={{ transitionDuration: `${fade}ms` }}>
-        <span className="font-playfair italic">“{quote.text}”</span>
-        {quote.author && (
-          <span className="font-playfair ml-2 not-italic text-[15px] text-muted-foreground">~ {quote.author}</span>
-        )}
-      </p>
+      {/* Reserve vertical space for up to 2 lines to prevent layout shifts when quotes change length */}
+      <div className="flex items-center justify-center w-full" style={{ minHeight: `calc(2 * 1.2em)` }}>
+        <p className={`transition-opacity ${visible ? "opacity-100" : "opacity-0"}`} style={{ transitionDuration: `${fade}ms`, lineHeight: '1.2' }}>
+          <span className="font-playfair italic">“{quote.text}”</span>
+          {quote.author && (
+            <span className="font-playfair ml-2 not-italic text-[15px] text-muted-foreground">~ {quote.author}</span>
+          )}
+        </p>
+      </div>
     </div>
   );
 }
