@@ -30,6 +30,7 @@ function HeroPublicar() {
   const [detalles, setDetalles] = useState("");
   const [apodo, setApodo] = useState("");
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
 
   const crear = useMutation({
     mutationFn: crearLey,
@@ -56,6 +57,7 @@ function HeroPublicar() {
     setTimeout(() => {
       const active = document.activeElement as HTMLElement | null;
       if (containerRef.current && active && containerRef.current.contains(active)) return;
+      if (detailsRef.current && active && detailsRef.current.contains(active)) return;
       if (titulo.trim() || objetivo.trim() || detalles.trim() || apodo.trim()) return;
       setExpand(false);
     }, 120);
@@ -92,7 +94,7 @@ function HeroPublicar() {
               <span className="relative z-10">Publicar</span>
             </button>
           </div>
-          <div className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
+          <div ref={detailsRef} className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-start">
               <input
                 value={objetivo}
