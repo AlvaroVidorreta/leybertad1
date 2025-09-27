@@ -1,12 +1,28 @@
 import { CommentInput, CreateLawResponse, Law, LawInput, LawsResponse, LawUpdatedResponse, RankingResponse, TimeRange } from "@shared/api";
 
+function getVisitorId() {
+  try {
+    let v = localStorage.getItem("visitorId");
+    if (!v) {
+      v = typeof crypto !== "undefined" && typeof (crypto as any).randomUUID === "function" ? (crypto as any).randomUUID() : Math.random().toString(36).slice(2);
+      localStorage.setItem("visitorId", v);
+    }
+    return v;
+  } catch (e) {
+    return "unknown";
+  }
+}
+
 export async function crearLey(input: LawInput): Promise<Law> {
   const res = await fetch("/api/laws", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-visitor-id": getVisitorId() },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error("Error al crear la ley");
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.error || "Error al crear la ley");
+  }
   const data = (await res.json()) as CreateLawResponse;
   return data.law;
 }
@@ -19,8 +35,11 @@ export async function obtenerRecientes(): Promise<Law[]> {
 }
 
 export async function votarLey(id: string): Promise<Law> {
-  const res = await fetch(`/api/laws/${id}/upvote`, { method: "POST" });
-  if (!res.ok) throw new Error("Error al votar");
+  const res = await fetch(`/api/laws/${id}/upvote`, { method: "POST", headers: { "x-visitor-id": getVisitorId() } });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.error || "Error al votar");
+  }
   const data = (await res.json()) as LawUpdatedResponse;
   return data.law;
 }
@@ -35,10 +54,13 @@ export async function guardarLey(id: string): Promise<Law> {
 export async function comentarLey(id: string, input: CommentInput): Promise<Law> {
   const res = await fetch(`/api/laws/${id}/comment`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-visitor-id": getVisitorId() },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error("Error al comentar");
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.error || "Error al comentar");
+  }
   const data = (await res.json()) as LawUpdatedResponse;
   return data.law;
 }
