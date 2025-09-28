@@ -142,7 +142,9 @@ export async function tryInitSupabase() {
   const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   try {
-    const { createClient } = await import("@supabase/supabase-js");
+    // @ts-ignore: optional dependency in some environments — suppress missing types during local typecheck
+    const mod = await import("@supabase/supabase-js").catch(() => null);
+    const { createClient } = (mod as any) || {};
     const supabase = createClient(url, key);
     return supabase;
   } catch (err) {
