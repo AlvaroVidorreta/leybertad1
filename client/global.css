@@ -120,4 +120,15 @@
   .animate-insert {
     animation: insertDown 360ms cubic-bezier(.22,.9,.34,1) both;
   }
+
+  /* slide-in animation used when navigating to the 'Últimas leyes' section */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-temp {
+    animation: slideUp 520ms cubic-bezier(.22,.9,.34,1) both;
+  }
+
 }

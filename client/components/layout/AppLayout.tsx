@@ -45,7 +45,27 @@ function CollapsibleHeader() {
           <div className="flex h-14 items-center justify-between">
             <BrandTitle />
             <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="#recientes" className="hover:text-foreground">Últimas leyes</a>
+              <a
+                href="#ultimas-leyes"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("ultimas-leyes");
+                  if (el) {
+                    // re-trigger animation
+                    el.classList.remove("slide-temp");
+                    // force reflow
+                    void (el as any).offsetHeight;
+                    el.classList.add("slide-temp");
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    setTimeout(() => el.classList.remove("slide-temp"), 700);
+                  }
+                  // update URL hash without scrolling again
+                  try { window.history.replaceState(null, "", "#ultimas-leyes"); } catch (err) {}
+                }}
+                className="hover:text-foreground"
+              >
+                Últimas leyes
+              </a>
               <a href="#guardados" className="hover:text-foreground">Tus guardados</a>
               <a href="#contacto" className="hover:text-foreground">Contacto</a>
             </nav>

@@ -22,6 +22,15 @@ export default function Index() {
           <Ranking />
         </aside>
       </div>
+
+      {/* Separator and placeholder for "Últimas leyes" section */}
+      <div className="mt-12 border-t border-border pt-10" aria-hidden="true" />
+
+      <section id="ultimas-leyes" className="rounded-2xl border bg-card p-6 md:p-8 mt-6 slide-target">
+        <h3 className="text-xl font-semibold mb-2">Últimas leyes</h3>
+        <p className="text-sm text-muted-foreground mb-4">Próximamente: biblioteca para buscar y explorar las leyes. Aquí se mostrará un buscador, filtros y modos de visualización.</p>
+        <div className="w-full min-h-[320px] rounded-md border border-dashed border-border bg-background/50" />
+      </section>
     </AppLayout>
   );
 }
