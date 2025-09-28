@@ -225,7 +225,7 @@ function HeroPublicar() {
                 onFocus={() => setExpand(true)}
                 onBlur={handlePossibleCollapse}
                 placeholder="Apodo (opcional)"
-                className="rounded-md border bg-white/80 px-4 py-2 md:justify-self-end md:w-40"
+                className="rounded-md border bg-white/80 px-4 py-2 md:justify-self-end md:w-40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
             <textarea
