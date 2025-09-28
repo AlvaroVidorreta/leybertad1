@@ -6,6 +6,10 @@ import { Law, TimeRange } from "@shared/api";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
+const ITEM_HEIGHT_RANKING = 56;
+const MAX_RANKING_ITEMS = 10;
+const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS;
+
 export default function Index() {
   return (
     <AppLayout>
@@ -157,13 +161,15 @@ function FeedRecientes() {
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
-      <ul className="space-y-4">
-        {data?.map((law) => (
-          <li key={law.id} className="rounded-xl border p-4 bg-background/70">
-            <LawCard law={law} onUpvote={() => votar.mutate(law.id)} onSave={() => guardar.mutate(law.id)} onComment={(t) => comentar.mutate({ id: law.id, texto: t })} />
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-auto pr-1" style={{ maxHeight: `${LIST_MAX_HEIGHT}px` }}>
+        <ul className="space-y-4">
+          {data?.map((law) => (
+            <li key={law.id} className="rounded-xl border p-4 bg-background/70">
+              <LawCard law={law} onUpvote={() => votar.mutate(law.id)} onSave={() => guardar.mutate(law.id)} onComment={(t) => comentar.mutate({ id: law.id, texto: t })} />
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -227,6 +233,7 @@ function Ranking() {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range) });
   const items = useMemo(() => data ?? [], [data]);
+  const displayedRanking = items.slice(0, MAX_RANKING_ITEMS);
   const [selected, setSelected] = useState<null | Record<string, any>>(null);
   const [showComments, setShowComments] = useState(false);
 
@@ -280,8 +287,8 @@ function Ranking() {
 
       {isLoading && <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>}
 
-      <ol className="mt-4 space-y-3">
-        {items.map((l, i) => (
+      <ol className="mt-4 space-y-3" style={{ maxHeight: `${LIST_MAX_HEIGHT}px`, overflow: "auto" }}>
+        {displayedRanking.map((l, i) => (
           <li
             key={l.id}
             onClick={() => setSelected(l)}
