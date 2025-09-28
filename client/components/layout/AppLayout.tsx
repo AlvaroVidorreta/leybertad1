@@ -106,7 +106,17 @@ function CollapsibleHeader() {
   );
 }
 
-function BrandTitle() {
+function BrandTitle({ compact }: { compact?: boolean }) {
+  if (compact) {
+    return (
+      <a href="/" aria-label="Leybertad" className="select-none">
+        <div className="flex items-center">
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">L</div>
+        </div>
+      </a>
+    );
+  }
+
   return (
     <a href="/" className="select-none">
       <div className="flex items-end gap-2">
