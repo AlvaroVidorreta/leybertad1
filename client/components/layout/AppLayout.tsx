@@ -110,7 +110,7 @@ function BrandTitle() {
   return (
     <a href="/" className="select-none">
       <div className="flex items-end gap-2">
-        <h1 className="font-brand text-2xl md:text-3xl tracking-wide text-primary">Leybertad</h1>
+        <h1 className="font-brand text-2xl md:text-3xl tracking-wide text-primary font-semibold">Leybertad</h1>
         <span className="text-xs mb-1 text-muted-foreground">®</span>
       </div>
     </a>
