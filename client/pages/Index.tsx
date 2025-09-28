@@ -38,13 +38,21 @@ function HeroPublicar() {
 
   const crear = useMutation({
     mutationFn: crearLey,
-    onSuccess: () => {
+    onSuccess: (newLaw: Law) => {
+      // reset inputs
       setTitulo("");
       setObjetivo("");
       setDetalles("");
       setApodo("");
       setExpand(false);
-      qc.invalidateQueries({ queryKey: ["recientes"] });
+
+      // Optimistically prepend the new law to the recientes cache so it appears first with an entry animation
+      qc.setQueryData<Law[] | undefined>(["recientes"], (old) => {
+        const normalized = old ? old.filter((l) => l.id !== newLaw.id) : [];
+        return [{ ...newLaw, _isNew: true } as unknown as Law, ...normalized];
+      });
+
+      // update ranking separately
       qc.invalidateQueries({ queryKey: ["ranking"] });
     },
   });
