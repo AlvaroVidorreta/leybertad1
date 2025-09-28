@@ -327,7 +327,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 200))}
             placeholder="Comenta (máx. 200 caracteres)"
-            className="flex-1 rounded-md border px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="flex-1 rounded-md border px-2 py-1 text-sm focus:outline-none focus:border-primary"
           />
           <button disabled={!canSend} onClick={() => { onComment(law.id, text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
         </div>
