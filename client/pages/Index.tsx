@@ -274,7 +274,7 @@ function FeedRecientes() {
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
-      <h3 className="text-lg font-semibold mb-4">M��s recientes</h3>
+      <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
@@ -327,7 +327,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 200))}
             placeholder="Comenta (máx. 200 caracteres)"
-            className="flex-1 rounded-md border px-2 py-1 text-sm"
+            className="flex-1 rounded-md border px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
           <button disabled={!canSend} onClick={() => { onComment(law.id, text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
         </div>
