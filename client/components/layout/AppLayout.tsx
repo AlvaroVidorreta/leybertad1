@@ -60,12 +60,13 @@ function CollapsibleHeader() {
         {/* Boxed, rounded header that floats inside the container. Use full width inside the container so edges align with content. */}
         <div
           ref={headerRef}
-          // defaultWidth: use collapsed-width (moderate width). When inside "Últimas leyes" shrink to 50%.
+          // Default: occupy the container width so edges align with the cards below.
+          // When inUltimasSection -> shrink to ~50% width centered.
           className={cn(
             "w-full transition-all duration-300 overflow-hidden rounded-2xl border bg-card flex items-center justify-between pointer-events-auto",
             inUltimasSection
-              ? "max-w-[480px] mx-auto py-2 px-3 scale-90 shadow-sm" // when in section: ~50% width, small shadow, slightly smaller scale
-              : "max-w-[960px] mx-auto py-3 px-5 scale-100 shadow-[0_6px_12px_rgba(0,0,0,0.04)]" // default: use collapsed-width as normal (no huge gaps), very subtle shadow
+              ? "w-1/2 mx-auto py-2 px-3 transform scale-95 shadow-[0_4px_8px_rgba(0,0,0,0.02)]"
+              : "w-full mx-auto py-3 px-5 transform scale-100 shadow-[0_4px_8px_rgba(0,0,0,0.02)]"
           )}
         >
           <div className="flex items-center gap-6">
