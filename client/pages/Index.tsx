@@ -31,6 +31,103 @@ export default function Index() {
   );
 }
 
+function UltimasLeyes() {
+  const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
+  const [q, setQ] = useState("");
+  const [mode, setMode] = useState<"all" | "approved" | "takeaways">("all");
+
+  const filtered = useMemo(() => {
+    const items = allLaws ?? [];
+    const term = q.trim().toLowerCase();
+    const dayMs = 24 * 60 * 60 * 1000;
+    if (!term && mode === "all") return items;
+
+    return items.filter((l) => {
+      // mode filters
+      if (mode === "approved") {
+        // heuristic: upvoted and recent (30 days)
+        const recent = Date.now() - Date.parse(l.createdAt) <= 30 * dayMs;
+        if (!(l.upvotes && l.upvotes > 0 && recent)) return false;
+      }
+
+      // search term filter on title, objetivo, detalles
+      if (!term) return true;
+      const hay = [l.titulo, l.objetivo, l.detalles].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(term);
+    });
+  }, [allLaws, q, mode]);
+
+  function makeTakeaway(l: any) {
+    if (l.detalles && l.detalles.length > 40) return l.detalles.slice(0, 160) + (l.detalles.length > 160 ? "..." : "");
+    const obj = l.objetivo || "";
+    if (!obj) return "(sin resumen)";
+    const firstSentence = obj.split(/[\.\!\?]\s/)[0];
+    return firstSentence.length > 160 ? firstSentence.slice(0, 157) + "..." : firstSentence;
+  }
+
+  return (
+    <section id="ultimas-leyes" className="rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold mb-1">Últimas leyes</h3>
+            <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes. Cambia el modo para ver las últimas aprobadas o resúmenes rápidos (takeaways).</p>
+          </div>
+
+          <div className="md:w-96 w-full">
+            <div className="relative">
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                aria-label="Buscar en últimas leyes"
+                placeholder="Buscar en Últimas leyes..."
+                className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+              <button onClick={() => { /* noop: search updates live */ }} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
+            </div>
+
+            <div className="mt-3 flex gap-2 justify-end">
+              <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Todas</button>
+              <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Últimas aprobadas</button>
+              <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 w-full rounded-md bg-background/50">
+          {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
+
+          {!isLoading && filtered.length === 0 && (
+            <div className="p-6 text-sm text-muted-foreground">No se encontraron leyes.</div>
+          )}
+
+          {!isLoading && filtered.length > 0 && (
+            <ul className="space-y-3">
+              {filtered.map((l) => (
+                <li key={l.id} className="rounded-lg border p-3 bg-card">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-base">{l.titulo}</h4>
+                      <p className="text-sm text-muted-foreground mt-1">Objetivo: {l.objetivo}</p>
+                      {mode === "takeaways" && <p className="mt-2 text-sm">{makeTakeaway(l)}</p>}
+                    </div>
+
+                    <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                      <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
+                      <div className="text-xs text-muted-foreground mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 function HeroPublicar() {
   const qc = useQueryClient();
   const [expand, setExpand] = useState(false);
