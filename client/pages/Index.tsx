@@ -26,34 +26,7 @@ export default function Index() {
       {/* Separator and placeholder for "Últimas leyes" section */}
       <div className="mt-12 border-t border-border pt-10" aria-hidden="true" />
 
-      <section id="ultimas-leyes" className="rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-1">Últimas leyes</h3>
-              <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes. Cambia el modo para ver las últimas aprobadas o resúmenes rápidos (takeaways).</p>
-            </div>
-
-            <div className="md:w-96 w-full">
-              <div className="relative">
-                <input
-                  aria-label="Buscar en últimas leyes"
-                  placeholder="Buscar en Últimas leyes..."
-                  className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                />
-                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
-              </div>
-
-              <div className="mt-3 flex gap-2 justify-end">
-                <button className="px-3 py-1 rounded-full border text-sm bg-white">Modo: Todas</button>
-                <button className="px-3 py-1 rounded-full border text-sm bg-white">Últimas aprobadas</button>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 w-full min-h-[320px] rounded-md border border-dashed border-border bg-background/50" />
-        </div>
-      </section>
+      <UltimasLeyes />
     </AppLayout>
   );
 }
