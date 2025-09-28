@@ -6,9 +6,9 @@ import { Law, TimeRange } from "@shared/api";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-const ITEM_HEIGHT_RANKING = 48;
+const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
-const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS;
+const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS; // exact pixel height to fit MAX_RANKING_ITEMS without scrollbar
 
 export default function Index() {
   return (
@@ -161,7 +161,7 @@ function FeedRecientes() {
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
-      <div className="overflow-auto pr-1" style={{ maxHeight: `${LIST_MAX_HEIGHT}px` }}>
+      <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
           {data?.map((law) => (
             <li key={law.id} className="rounded-xl border p-3 bg-background/70">
@@ -287,7 +287,7 @@ function Ranking() {
 
       {isLoading && <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>}
 
-      <ol className="mt-4 space-y-3" style={{ maxHeight: `${LIST_MAX_HEIGHT}px`, overflow: "auto" }}>
+      <ol className="mt-4 space-y-3" style={{ height: `${LIST_MAX_HEIGHT}px`, overflow: "hidden" }}>
         {displayedRanking.map((l, i) => (
           <li
             key={l.id}
