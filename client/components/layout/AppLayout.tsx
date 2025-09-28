@@ -54,19 +54,18 @@ function CollapsibleHeader() {
   return (
     <div
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-300 backdrop-blur",
-        collapsed ? "shadow-sm bg-white/70" : "bg-transparent",
+        "sticky top-0 z-40 w-full transition-all duration-300 backdrop-blur bg-transparent",
       )}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
     >
-      <div className="container py-3">
-        {/* Boxed, rounded header that subtly scales/pads when collapsed */}
+      <div className={cn("container transition-all duration-300", expanded ? "py-3" : "py-2") }>
+        {/* Boxed, rounded header that subtly scales/pads when collapsed. Inner box width set to align with main content (max-w-5xl). */}
         <div
           ref={headerRef}
           className={cn(
-            "mx-auto max-w-6xl transition-all duration-300 overflow-hidden rounded-2xl border bg-card flex items-center justify-between",
-            expanded ? "py-4 px-5 scale-100" : "py-2 px-3 scale-95"
+            "mx-auto max-w-5xl transition-all duration-300 overflow-hidden rounded-2xl border bg-card flex items-center justify-between",
+            expanded ? "py-4 px-5 scale-100 translate-y-0 shadow-none" : "py-2 px-3 scale-95 -translate-y-1 shadow-xl"
           )}
         >
           <div className="flex items-center gap-6">
