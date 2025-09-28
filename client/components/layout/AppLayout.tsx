@@ -15,9 +15,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
 function CollapsibleHeader() {
   const [collapsedByScroll, setCollapsedByScroll] = useState(false);
-  const [collapsedBySection, setCollapsedBySection] = useState(false);
+  // We use a single "inSection" boolean to detect when user has scrolled into the "Últimas leyes" section.
+  // Default UX: use the 'collapsed width' as the normal width. When entering the section, shrink the header
+  // to approximately 50% width. Collapse should NOT be triggered by general scroll-down behavior.
+  const [inUltimasSection, setInUltimasSection] = useState(false);
   const [hovering, setHovering] = useState(false);
-  const lastScroll = useRef(0);
   const headerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -26,30 +28,24 @@ function CollapsibleHeader() {
       if (!el || !headerRef.current) return;
       const top = el.getBoundingClientRect().top;
       const headerH = headerRef.current.getBoundingClientRect().height;
-      // collapse when the top of the UltimasLeyes section reaches the header height (i.e. we've scrolled into it)
-      setCollapsedBySection(top <= headerH + 12);
-    };
-
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y > lastScroll.current && y > 40) setCollapsedByScroll(true);
-      if (y < 10) setCollapsedByScroll(false);
-      lastScroll.current = y;
-      checkPositions();
+      // enter section when the top of the UltimasLeyes section is within header height + small offset
+      setInUltimasSection(top <= headerH + 12);
     };
 
     // initial check in case landing directly on the section
     checkPositions();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", checkPositions, { passive: true });
     window.addEventListener("resize", checkPositions);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", checkPositions);
       window.removeEventListener("resize", checkPositions);
     };
   }, []);
 
-  const collapsed = collapsedByScroll || collapsedBySection;
-  const expanded = hovering || !collapsed;
+  // collapsed state (narrowest) applies only when inside the UltimasLeyes section
+  const collapsed = inUltimasSection;
+  // show expanded visuals when hovering, otherwise follow collapsed logic
+  const expanded = hovering && !inUltimasSection;
 
   return (
     <div
