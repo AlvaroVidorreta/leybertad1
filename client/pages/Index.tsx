@@ -172,7 +172,7 @@ function FeedRecientes() {
       <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
           {data?.map((law) => (
-            <li key={law.id} className="rounded-xl border p-3 bg-background/70">
+            <li key={law.id} className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
               <LawCard law={law} onUpvote={() => votar.mutate(law.id)} onSave={() => guardar.mutate(law.id)} onComment={(t) => comentar.mutate({ id: law.id, texto: t })} />
             </li>
           ))}
