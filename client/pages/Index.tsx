@@ -3,7 +3,7 @@ import QuoteRotator from "@/components/QuoteRotator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, votarLey } from "@/lib/api";
 import { Law, TimeRange } from "@shared/api";
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
 
 const ITEM_HEIGHT_RANKING = 64;
@@ -267,6 +267,11 @@ function FeedRecientes() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
   });
 
+  // stable handlers to avoid creating new closures per item render
+  const handleUpvote = useCallback((id: string) => votar.mutate(id), [votar]);
+  const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
+  const handleComment = useCallback((id: string, texto: string) => comentar.mutate({ id, texto }), [comentar]);
+
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
@@ -275,7 +280,7 @@ function FeedRecientes() {
         <ul className="space-y-4">
           {data?.map((law) => (
             <li key={law.id} className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
-              <LawCard law={law} onUpvote={() => votar.mutate(law.id)} onSave={() => guardar.mutate(law.id)} onComment={(t) => comentar.mutate({ id: law.id, texto: t })} />
+              <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
             </li>
           ))}
         </ul>
@@ -284,7 +289,7 @@ function FeedRecientes() {
   );
 }
 
-function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () => void; onSave: () => void; onComment: (text: string) => void }) {
+const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: (id: string) => void; onSave: (id: string) => void; onComment: (id: string, text: string) => void }) {
   const [text, setText] = useState("");
   const [showCommentInput, setShowCommentInput] = useState(false);
   const canSend = text.trim().length > 0 && text.trim().length <= 200;
@@ -299,7 +304,7 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-2">
-          <button onClick={onUpvote} aria-label="Upvote" className="rounded-full border px-3 py-0.5 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
+          <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border px-3 py-0.5 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
 
           <div className="flex items-center gap-2 mt-2">
             {/* comment icon (left) */}
@@ -308,7 +313,7 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
             </button>
 
             {/* save icon (right) */}
-            <button onClick={onSave} aria-label="Guardar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
+            <button onClick={() => onSave(law.id)} aria-label="Guardar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>
@@ -324,7 +329,7 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
             placeholder="Comenta (máx. 200 caracteres)"
             className="flex-1 rounded-md border px-2 py-1 text-sm"
           />
-          <button disabled={!canSend} onClick={() => { onComment(text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
+          <button disabled={!canSend} onClick={() => { onComment(law.id, text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
         </div>
 
         {showCommentInput && law.comentarios.length > 0 && (
@@ -337,7 +342,7 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
       </div>
     </div>
   );
-}
+});
 
 function Ranking() {
   const [range, setRange] = useState<TimeRange>("month");
