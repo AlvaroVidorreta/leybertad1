@@ -6,8 +6,8 @@ import { Law, TimeRange } from "@shared/api";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-const ITEM_HEIGHT_RANKING = 56;
-const MAX_RANKING_ITEMS = 10;
+const ITEM_HEIGHT_RANKING = 48;
+const MAX_RANKING_ITEMS = 5;
 const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS;
 
 export default function Index() {
@@ -164,7 +164,7 @@ function FeedRecientes() {
       <div className="overflow-auto pr-1" style={{ maxHeight: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
           {data?.map((law) => (
-            <li key={law.id} className="rounded-xl border p-4 bg-background/70">
+            <li key={law.id} className="rounded-xl border p-3 bg-background/70">
               <LawCard law={law} onUpvote={() => votar.mutate(law.id)} onSave={() => guardar.mutate(law.id)} onComment={(t) => comentar.mutate({ id: law.id, texto: t })} />
             </li>
           ))}
@@ -181,24 +181,24 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <h4 className="font-medium text-lg">{law.titulo}</h4>
+          <h4 className="font-medium text-base">{law.titulo}</h4>
           <p className="text-sm text-muted-foreground">Objetivo: {law.objetivo}</p>
           {showCommentInput && law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-2">
-          <button onClick={onUpvote} aria-label="Upvote" className="rounded-full border px-3 py-1 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
+          <button onClick={onUpvote} aria-label="Upvote" className="rounded-full border px-3 py-0.5 text-sm bg-white hover:bg-cream-50">▲ {law.upvotes}</button>
 
           <div className="flex items-center gap-2 mt-2">
             {/* comment icon (left) */}
-            <button onClick={() => setShowCommentInput((s) => !s)} aria-label="Comentar" className="rounded-full p-2 bg-white border hover:bg-gray-50">
+            <button onClick={() => setShowCommentInput((s) => !s)} aria-label="Comentar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
 
             {/* save icon (right) */}
-            <button onClick={onSave} aria-label="Guardar" className="rounded-full p-2 bg-white border hover:bg-gray-50">
+            <button onClick={onSave} aria-label="Guardar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>
@@ -212,13 +212,13 @@ function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: () 
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 200))}
             placeholder="Comenta (máx. 200 caracteres)"
-            className="flex-1 rounded-md border px-3 py-2 text-sm"
+            className="flex-1 rounded-md border px-2 py-1 text-sm"
           />
-          <button disabled={!canSend} onClick={() => { onComment(text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50">Enviar</button>
+          <button disabled={!canSend} onClick={() => { onComment(text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
         </div>
 
         {showCommentInput && law.comentarios.length > 0 && (
-          <ul className="mt-2 space-y-1 max-h-28 overflow-auto pr-1">
+          <ul className="mt-2 space-y-1 max-h-20 overflow-auto pr-1">
             {law.comentarios.slice().reverse().map((c) => (
               <li key={c.id} className="text-xs text-muted-foreground">• {c.texto}</li>
             ))}
