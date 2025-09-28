@@ -5,7 +5,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <CollapsibleHeader />
-      <main className="container pt-16 pb-16">{children}</main>
+      <main className="container pt-8 md:pt-12 lg:pt-20 pb-16">{children}</main>
       <footer className="container py-10 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} Leybertad — plataforma social para expresar y mejorar leyes.
       </footer>
