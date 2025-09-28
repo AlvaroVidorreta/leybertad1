@@ -65,8 +65,8 @@ function CollapsibleHeader() {
           className={cn(
             "w-full transition-all duration-300 overflow-hidden rounded-2xl border bg-card flex items-center justify-between pointer-events-auto",
             inUltimasSection
-              ? "w-1/2 mx-auto py-2 px-3 transform scale-95 shadow-[0_4px_8px_rgba(0,0,0,0.02)]"
-              : "w-full mx-auto py-3 px-5 transform scale-100 shadow-[0_4px_8px_rgba(0,0,0,0.02)]"
+              ? "w-1/2 mx-auto py-2 px-3 transform scale-95 shadow-[0_4px_8px_rgba(0,0,0,0.02)] rounded-[40px]"
+              : "w-full mx-auto py-3 px-5 transform scale-100 shadow-[0_4px_8px_rgba(0,0,0,0.02)] rounded-2xl"
           )}
         >
           <div className="flex items-center gap-6">
