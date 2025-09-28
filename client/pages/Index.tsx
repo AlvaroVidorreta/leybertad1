@@ -216,7 +216,7 @@ function HeroPublicar() {
                 onFocus={() => setExpand(true)}
                 onBlur={handlePossibleCollapse}
                 placeholder="Objetivo breve (requerido)"
-                className="rounded-md border bg-white/80 px-4 py-2"
+                className="rounded-md border bg-white/80 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               <input
                 value={apodo}
@@ -234,7 +234,7 @@ function HeroPublicar() {
               onFocus={() => setExpand(true)}
               onBlur={handlePossibleCollapse}
               placeholder="Perspectiva personal / detalles (recomendado)"
-              className="mt-3 w-full rounded-md border bg-white/80 px-4 py-2 min-h-[80px]"
+              className="mt-3 w-full rounded-md border bg-white/80 px-4 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
@@ -274,7 +274,7 @@ function FeedRecientes() {
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
-      <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
+      <h3 className="text-lg font-semibold mb-4">M��s recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
