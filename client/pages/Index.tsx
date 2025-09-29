@@ -70,7 +70,7 @@ function UltimasLeyes() {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-1">Últimas leyes</h3>
+            <h3 className="text-lg md:text-2xl font-semibold mb-1">Últimas leyes</h3>
             <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes. Cambia el modo para ver las últimas aprobadas o resúmenes rápidos (takeaways).</p>
           </div>
 
@@ -87,7 +87,7 @@ function UltimasLeyes() {
             </div>
 
             <div className="mt-3 flex gap-2 justify-end">
-              <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Todas</button>
+              <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
               <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Últimas aprobadas</button>
               <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
             </div>
