@@ -88,7 +88,7 @@ function CollapsibleHeader() {
                 }}
                 className="hover:text-foreground"
               >
-                Últimas leyes
+                Biblioteca
               </a>
               <a href="#guardados" className="hover:text-foreground">Tus guardados</a>
               <a href="#contacto" className="hover:text-foreground">Contacto</a>
