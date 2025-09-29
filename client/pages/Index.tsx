@@ -84,7 +84,7 @@ function UltimasLeyes() {
                       value={qAll}
                       onChange={(e) => setQAll(e.target.value)}
                       aria-label="Buscar en últimas leyes"
-                      placeholder="Buscar en Últimas leyes..."
+                      placeholder="Buscar en Biblioteca..."
                       className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
                     <button onClick={() => {}} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
