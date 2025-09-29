@@ -92,7 +92,7 @@ function UltimasLeyes() {
 
                   <div className="mt-3 flex gap-2 justify-end">
                     <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
-                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Últimas aprobadas</button>
+                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Aprobadas (España)</button>
                     <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ function UltimasLeyes() {
 
                   <div className="mt-3 flex gap-2 justify-end">
                     <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Leybertad</button>
-                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Últimas aprobadas</button>
+                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Aprobadas (España)</button>
                     <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Takeaways</button>
                   </div>
                 </div>
