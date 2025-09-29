@@ -70,7 +70,7 @@ function UltimasLeyes() {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1">
-            <h3 className="text-xl md:text-3xl font-semibold mb-1">Últimas leyes</h3>
+            <h3 className="text-2xl md:text-3xl font-semibold mb-1">Últimas leyes</h3>
             <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes.</p>
           </div>
 
