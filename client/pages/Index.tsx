@@ -71,7 +71,7 @@ function UltimasLeyes() {
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1">
             <h3 className="text-lg md:text-2xl font-semibold mb-1">Últimas leyes</h3>
-            <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes. Cambia el modo para ver las últimas aprobadas o resúmenes rápidos (takeaways).</p>
+            <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes.</p>
           </div>
 
           <div className="md:w-96 w-full">
