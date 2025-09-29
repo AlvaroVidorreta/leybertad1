@@ -74,7 +74,7 @@ function UltimasLeyes() {
             <div className="flip-face front rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca</h3>
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-base">Leybertad</span></h3>
                   <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes de Leybertad.</p>
                 </div>
 
