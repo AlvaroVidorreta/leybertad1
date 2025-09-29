@@ -133,7 +133,7 @@ function UltimasLeyes() {
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-semibold mb-1">Últimas aprobadas</h3>
-                  <p className="text-sm text-muted-foreground/70">Versión oscura — busca entre las aprobadas recientemente.</p>
+                  <p className="text-sm text-gray-200">Busca y explora las últimas leyes aprobadas en España.</p>
                 </div>
 
                 <div className="md:w-96 w-full">
