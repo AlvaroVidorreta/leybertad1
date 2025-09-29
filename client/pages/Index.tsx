@@ -108,7 +108,7 @@ function UltimasLeyes() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <h4 className="font-medium text-base">{l.titulo}</h4>
-                      <p className="text-sm text-muted-foreground mt-1">Objetivo: {l.objetivo}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
                       {mode === "takeaways" && <p className="mt-2 text-sm">{makeTakeaway(l)}</p>}
                     </div>
 
@@ -299,7 +299,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <h4 className="font-medium text-base">{law.titulo}</h4>
-          <p className="text-sm text-muted-foreground">Objetivo: {law.objetivo}</p>
+          <p className="text-sm text-muted-foreground">{law.objetivo}</p>
           {showCommentInput && law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
         </div>
 
