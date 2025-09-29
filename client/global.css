@@ -131,4 +131,30 @@
     animation: slideUp 520ms cubic-bezier(.22,.9,.34,1) both;
   }
 
+  /* 3D flip panel styles for Últimas leyes */
+  .flip-3d {
+    perspective: 1100px;
+  }
+
+  .flip-3d-inner {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 700ms cubic-bezier(.2,.9,.25,1);
+  }
+
+  .flip-3d-inner.is-flipped {
+    transform: rotateY(180deg);
+  }
+
+  .flip-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .flip-face.back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+  }
+
 }

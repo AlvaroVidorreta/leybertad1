@@ -33,29 +33,29 @@ export default function Index() {
 
 function UltimasLeyes() {
   const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
-  const [q, setQ] = useState("");
+  const [qAll, setQAll] = useState("");
+  const [qApproved, setQApproved] = useState("");
   const [mode, setMode] = useState<"all" | "approved" | "takeaways">("all");
+
+  const isFlipped = mode === "approved";
 
   const filtered = useMemo(() => {
     const items = allLaws ?? [];
-    const term = q.trim().toLowerCase();
+    const term = (isFlipped ? qApproved : qAll).trim().toLowerCase();
     const dayMs = 24 * 60 * 60 * 1000;
     if (!term && mode === "all") return items;
 
     return items.filter((l) => {
-      // mode filters
       if (mode === "approved") {
-        // heuristic: upvoted and recent (30 days)
         const recent = Date.now() - Date.parse(l.createdAt) <= 30 * dayMs;
         if (!(l.upvotes && l.upvotes > 0 && recent)) return false;
       }
 
-      // search term filter on title, objetivo, detalles
       if (!term) return true;
       const hay = [l.titulo, l.objetivo, l.detalles].filter(Boolean).join(" ").toLowerCase();
       return hay.includes(term);
     });
-  }, [allLaws, q, mode]);
+  }, [allLaws, qAll, qApproved, mode, isFlipped]);
 
   function makeTakeaway(l: any) {
     if (l.detalles && l.detalles.length > 40) return l.detalles.slice(0, 160) + (l.detalles.length > 160 ? "..." : "");
@@ -66,61 +66,126 @@ function UltimasLeyes() {
   }
 
   return (
-    <section id="ultimas-leyes" className="rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
+    <section id="ultimas-leyes" className="relative">
       <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className="flex-1">
-            <h3 className="text-2xl md:text-3xl font-semibold mb-1">Últimas leyes</h3>
-            <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes.</p>
-          </div>
+        <div className="flip-3d">
+          <div className={`flip-3d-inner ${isFlipped ? "is-flipped" : ""}`}>
+            {/* FRONT FACE - default (light) */}
+            <div className="flip-face front rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Últimas leyes</h3>
+                  <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes.</p>
+                </div>
 
-          <div className="md:w-96 w-full">
-            <div className="relative">
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                aria-label="Buscar en últimas leyes"
-                placeholder="Buscar en Últimas leyes..."
-                className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-              <button onClick={() => { /* noop: search updates live */ }} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
-            </div>
-
-            <div className="mt-3 flex gap-2 justify-end">
-              <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
-              <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Últimas aprobadas</button>
-              <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 w-full rounded-md bg-background/50">
-          {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
-
-          {!isLoading && filtered.length === 0 && (
-            <div className="p-6 text-sm text-muted-foreground">No se encontraron leyes.</div>
-          )}
-
-          {!isLoading && filtered.length > 0 && (
-            <ul className="space-y-3">
-              {filtered.map((l) => (
-                <li key={l.id} className="rounded-lg border p-3 bg-card">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-base">{l.titulo}</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
-                      {mode === "takeaways" && <p className="mt-2 text-sm">{makeTakeaway(l)}</p>}
-                    </div>
-
-                    <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                      <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
-                      <div className="text-xs text-muted-foreground mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
-                    </div>
+                <div className="md:w-96 w-full">
+                  <div className="relative">
+                    <input
+                      value={qAll}
+                      onChange={(e) => setQAll(e.target.value)}
+                      aria-label="Buscar en últimas leyes"
+                      placeholder="Buscar en Últimas leyes..."
+                      className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                    <button onClick={() => {}} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
+
+                  <div className="mt-3 flex gap-2 justify-end">
+                    <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
+                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Últimas aprobadas</button>
+                    <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 w-full rounded-md bg-background/50">
+                {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
+
+                {!isLoading && filtered.length === 0 && (
+                  <div className="p-6 text-sm text-muted-foreground">No se encontraron leyes.</div>
+                )}
+
+                {!isLoading && filtered.length > 0 && (
+                  <ul className="space-y-3">
+                    {filtered.map((l) => (
+                      <li key={l.id} className="rounded-lg border p-3 bg-card">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-base">{l.titulo}</h4>
+                            <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
+                            {mode === "takeaways" && <p className="mt-2 text-sm">{makeTakeaway(l)}</p>}
+                          </div>
+
+                          <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                            <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
+                            <div className="text-xs text-muted-foreground mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {/* BACK FACE - dark themed for "Últimas aprobadas" */}
+            <div className="flip-face back rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Últimas aprobadas</h3>
+                  <p className="text-sm text-muted-foreground/70">Versión oscura — busca entre las aprobadas recientemente.</p>
+                </div>
+
+                <div className="md:w-96 w-full">
+                  <div className="relative">
+                    <input
+                      value={qApproved}
+                      onChange={(e) => setQApproved(e.target.value)}
+                      aria-label="Buscar en últimas aprobadas"
+                      placeholder="Buscar en Últimas aprobadas..."
+                      className="w-full rounded-full border bg-white/5 px-5 pr-28 py-3 text-base md:text-lg text-white placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    />
+                    <button onClick={() => {}} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
+                  </div>
+
+                  <div className="mt-3 flex gap-2 justify-end">
+                    <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Leybertad</button>
+                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Últimas aprobadas</button>
+                    <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Takeaways</button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 w-full rounded-md bg-white/3 p-1">
+                {isLoading && <div className="p-6 text-sm text-gray-300">Cargando…</div>}
+
+                {!isLoading && filtered.length === 0 && (
+                  <div className="p-6 text-sm text-gray-300">No se encontraron leyes.</div>
+                )}
+
+                {!isLoading && filtered.length > 0 && (
+                  <ul className="space-y-3">
+                    {filtered.map((l) => (
+                      <li key={l.id} className="rounded-lg border p-3 bg-[#0b1220] text-white">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-base">{l.titulo}</h4>
+                            <p className="text-sm text-gray-300 mt-1">{l.objetivo}</p>
+                            {mode === "takeaways" && <p className="mt-2 text-sm text-gray-300">{makeTakeaway(l)}</p>}
+                          </div>
+
+                          <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                            <div className="rounded-full border px-3 py-0.5 text-sm bg-white/5">▲ {l.upvotes}</div>
+                            <div className="text-xs text-gray-400 mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
