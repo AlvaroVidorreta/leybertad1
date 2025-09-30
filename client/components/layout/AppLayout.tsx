@@ -96,9 +96,9 @@ function CollapsibleHeader() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button aria-label="Buscar" className="hidden md:inline-flex p-2 rounded-full border bg-white/80">🔍</button>
+            <button aria-label="Iniciar sesión" className="hidden md:inline-flex p-2 rounded-full border bg-white/80">Iniciar sesión</button>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
-            <button className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Try Demo</button>
+            <button className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Cuenta</button>
           </div>
         </div>
       </div>
