@@ -1,9 +1,9 @@
 import AppLayout from "@/components/layout/AppLayout";
-import QuoteRotator from "@/components/QuoteRotator";
+import { lazy, Suspense, useMemo, useState, useRef, useEffect, useCallback, memo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, votarLey } from "@/lib/api";
 import { Law, TimeRange } from "@shared/api";
-import { useMemo, useState, useRef, useEffect, useCallback, memo } from "react";
+const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
 
 const ITEM_HEIGHT_RANKING = 64;
@@ -32,16 +32,29 @@ export default function Index() {
 }
 
 function UltimasLeyes() {
-  const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
+  const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes, staleTime: 10000, refetchOnWindowFocus: false });
   const [qAll, setQAll] = useState("");
   const [qApproved, setQApproved] = useState("");
   const [mode, setMode] = useState<"all" | "approved">("all");
+
+  // debounced search terms to reduce recompute while typing
+  const [debouncedQAll, setDebouncedQAll] = useState("");
+  const [debouncedQApproved, setDebouncedQApproved] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQAll(qAll.trim()), 250);
+    return () => clearTimeout(t);
+  }, [qAll]);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQApproved(qApproved.trim()), 250);
+    return () => clearTimeout(t);
+  }, [qApproved]);
 
   const isFlipped = mode === "approved";
 
   const filtered = useMemo(() => {
     const items = allLaws ?? [];
-    const term = (isFlipped ? qApproved : qAll).trim().toLowerCase();
+    const termRaw = isFlipped ? debouncedQApproved : debouncedQAll;
+    const term = (termRaw || "").toLowerCase();
     const dayMs = 24 * 60 * 60 * 1000;
     if (!term && mode === "all") return items;
 
@@ -55,7 +68,7 @@ function UltimasLeyes() {
       const hay = [l.titulo, l.objetivo, l.detalles].filter(Boolean).join(" ").toLowerCase();
       return hay.includes(term);
     });
-  }, [allLaws, qAll, qApproved, mode, isFlipped]);
+  }, [allLaws, debouncedQAll, debouncedQApproved, mode, isFlipped]);
 
 
   return (
@@ -235,7 +248,9 @@ function HeroPublicar() {
     <div className="relative overflow-hidden p-6 md:p-10">
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="font-brand text-4xl md:text-5xl text-primary mb-4">Leybertad</h2>
-        <QuoteRotator />
+        <Suspense fallback={<div aria-hidden className="h-6" />}>
+          <QuoteRotator />
+        </Suspense>
         <div className="mt-6">
           <div ref={containerRef} className="relative mx-auto max-w-2xl">
             <input
@@ -326,17 +341,21 @@ function FeedRecientes() {
   const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
   const handleComment = useCallback((id: string, texto: string) => comentar.mutate({ id, texto }), [comentar]);
 
+  const renderedList = useMemo(() => {
+    return data?.map((law) => (
+      <li key={law.id} className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
+        <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
+      </li>
+    ));
+  }, [data, handleUpvote, handleSave, handleComment]);
+
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <ul className="space-y-4">
-          {data?.map((law) => (
-            <li key={law.id} className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
-              <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
-            </li>
-          ))}
+          {renderedList}
         </ul>
       </div>
     </div>
@@ -400,9 +419,9 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
 
 function Ranking() {
   const [range, setRange] = useState<TimeRange>("month");
-  const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range) });
+  const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range), staleTime: 30000, refetchOnWindowFocus: false });
   const items = useMemo(() => data ?? [], [data]);
-  const displayedRanking = items.slice(0, MAX_RANKING_ITEMS);
+  const displayedRanking = useMemo(() => items.slice(0, MAX_RANKING_ITEMS), [items]);
   const [selected, setSelected] = useState<null | Record<string, any>>(null);
   const [showComments, setShowComments] = useState(false);
 
