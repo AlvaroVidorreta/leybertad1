@@ -160,7 +160,7 @@
   /* Micro-animations for header buttons */
   @keyframes microRise {
     from { transform: translateY(0) scale(1); }
-    to { transform: translateY(-3px) scale(1.02); }
+    to { transform: translateY(-1px) scale(1.01); }
   }
 
   @keyframes microShimmer {
@@ -169,26 +169,26 @@
   }
 
   .btn-micro-raise {
-    transition: transform 180ms cubic-bezier(.2,.9,.25,1), box-shadow 180ms;
+    transition: transform 160ms cubic-bezier(.2,.9,.25,1), box-shadow 160ms;
   }
 
   .btn-micro-raise:hover,
   .btn-micro-raise:focus {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.04);
   }
 
   .btn-micro-shimmer {
     position: relative;
     overflow: hidden;
-    transition: transform 180ms cubic-bezier(.2,.9,.25,1), box-shadow 180ms;
+    transition: transform 160ms cubic-bezier(.2,.9,.25,1), box-shadow 160ms;
   }
 
   .btn-micro-shimmer::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0) 100%);
     background-size: 200% 100%;
     transform: translateX(-100%);
     pointer-events: none;
@@ -196,13 +196,13 @@
 
   .btn-micro-shimmer:hover::before,
   .btn-micro-shimmer:focus::before {
-    animation: microShimmer 900ms linear forwards;
+    animation: microShimmer 700ms linear forwards;
   }
 
   .btn-micro-shimmer:hover,
   .btn-micro-shimmer:focus {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(2,6,23,0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.05);
   }
 
 }
