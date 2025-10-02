@@ -131,7 +131,7 @@ function UltimasLeyes() {
                         role="button"
                         aria-label={`Ver subtemas de ${c.title}`}
                       >
-                        <div className="z-10">
+                        <div className="z-10 transition-opacity duration-200 group-hover:opacity-0">
                           <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
                         </div>
 
@@ -191,7 +191,7 @@ function UltimasLeyes() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {categories.map((c) => (
                       <div key={c.title} className="relative rounded-md border bg-[#0b1220] overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group">
-                        <div className="z-10 text-white">
+                        <div className="z-10 text-white transition-opacity duration-200 group-hover:opacity-0">
                           <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
                         </div>
 
