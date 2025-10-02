@@ -488,26 +488,36 @@ function Ranking() {
 
       {isLoading && <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>}
 
-      <ol className="mt-4 space-y-3" style={{ height: `${LIST_MAX_HEIGHT}px`, overflow: "hidden" }}>
-        {displayedRanking.map((l, i) => (
-          <li
-            key={l.id}
-            onClick={() => setSelected(l)}
-            className="flex items-center gap-4 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
-          >
-            <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{i + 1}</span>
+      <div className="mt-4" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
+        <List
+          height={LIST_MAX_HEIGHT}
+          itemCount={displayedRanking.length}
+          itemSize={ITEM_HEIGHT_RANKING}
+          width="100%"
+        >
+          {({ index, style }: { index: number; style: React.CSSProperties }) => {
+            const l = displayedRanking[index];
+            return (
+              <div style={style} className="px-0">
+                <div
+                  onClick={() => setSelected(l)}
+                  className="flex items-center gap-4 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
+                >
+                  <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{index + 1}</span>
 
-            <div className="flex-1">
-              <p className="font-medium text-[0.95rem] text-left truncate">{l.titulo}</p>
-            </div>
-
-          </li>
-        ))}
+                  <div className="flex-1">
+                    <p className="font-medium text-[0.95rem] text-left truncate">{l.titulo}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          }}
+        </List>
 
         {items.length === 0 && !isLoading && (
-          <li className="text-sm text-muted-foreground">Aún no hay datos.</li>
+          <div className="text-sm text-muted-foreground">Aún no hay datos.</div>
         )}
-      </ol>
+      </div>
 
       {/* Modal / detail display */}
       {selected && (
