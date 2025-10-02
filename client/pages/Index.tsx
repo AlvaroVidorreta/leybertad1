@@ -35,7 +35,7 @@ function UltimasLeyes() {
   const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
   const [qAll, setQAll] = useState("");
   const [qApproved, setQApproved] = useState("");
-  const [mode, setMode] = useState<"all" | "approved" | "takeaways">("all");
+  const [mode, setMode] = useState<"all" | "approved">("all");
 
   const isFlipped = mode === "approved";
 
@@ -57,13 +57,6 @@ function UltimasLeyes() {
     });
   }, [allLaws, qAll, qApproved, mode, isFlipped]);
 
-  function makeTakeaway(l: any) {
-    if (l.detalles && l.detalles.length > 40) return l.detalles.slice(0, 160) + (l.detalles.length > 160 ? "..." : "");
-    const obj = l.objetivo || "";
-    if (!obj) return "(sin resumen)";
-    const firstSentence = obj.split(/[\.\!\?]\s/)[0];
-    return firstSentence.length > 160 ? firstSentence.slice(0, 157) + "..." : firstSentence;
-  }
 
   return (
     <section id="ultimas-leyes" className="relative">
@@ -93,7 +86,6 @@ function UltimasLeyes() {
                   <div className="mt-3 flex gap-2 justify-end">
                     <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
                     <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Aprobadas (España)</button>
-                    <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Takeaways</button>
                   </div>
                 </div>
               </div>
@@ -113,7 +105,6 @@ function UltimasLeyes() {
                           <div className="flex-1">
                             <h4 className="font-medium text-base">{l.titulo}</h4>
                             <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
-                            {mode === "takeaways" && <p className="mt-2 text-sm">{makeTakeaway(l)}</p>}
                           </div>
 
                           <div className="flex-shrink-0 flex flex-col items-center gap-2">
@@ -151,7 +142,6 @@ function UltimasLeyes() {
                   <div className="mt-3 flex gap-2 justify-end">
                     <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Leybertad</button>
                     <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Aprobadas (España)</button>
-                    <button onClick={() => setMode("takeaways")} className={`px-3 py-1 rounded-full border text-sm ${mode === "takeaways" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Takeaways</button>
                   </div>
                 </div>
               </div>
@@ -171,7 +161,6 @@ function UltimasLeyes() {
                           <div className="flex-1">
                             <h4 className="font-medium text-base">{l.titulo}</h4>
                             <p className="text-sm text-gray-300 mt-1">{l.objetivo}</p>
-                            {mode === "takeaways" && <p className="mt-2 text-sm text-gray-300">{makeTakeaway(l)}</p>}
                           </div>
 
                           <div className="flex-shrink-0 flex flex-col items-center gap-2">
