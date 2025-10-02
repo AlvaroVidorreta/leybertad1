@@ -157,4 +157,52 @@
     transform: rotateY(180deg);
   }
 
+  /* Micro-animations for header buttons */
+  @keyframes microRise {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-3px) scale(1.02); }
+  }
+
+  @keyframes microShimmer {
+    0% { background-position: -120% 0; }
+    100% { background-position: 120% 0; }
+  }
+
+  .btn-micro-raise {
+    transition: transform 180ms cubic-bezier(.2,.9,.25,1), box-shadow 180ms;
+  }
+
+  .btn-micro-raise:hover,
+  .btn-micro-raise:focus {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  }
+
+  .btn-micro-shimmer {
+    position: relative;
+    overflow: hidden;
+    transition: transform 180ms cubic-bezier(.2,.9,.25,1), box-shadow 180ms;
+  }
+
+  .btn-micro-shimmer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  .btn-micro-shimmer:hover::before,
+  .btn-micro-shimmer:focus::before {
+    animation: microShimmer 900ms linear forwards;
+  }
+
+  .btn-micro-shimmer:hover,
+  .btn-micro-shimmer:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(2,6,23,0.08);
+  }
+
 }
