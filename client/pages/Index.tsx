@@ -136,11 +136,11 @@ function UltimasLeyes() {
                         </div>
 
                         {/* Hover overlay showing subtopics as horizontal bars */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
                             <div className="flex flex-col items-stretch gap-2">
                               {c.subs.map((s) => (
-                                <div key={s} className="bg-white/10 text-sm text-muted-foreground rounded-full px-3 py-1 backdrop-blur">{s}</div>
+                                <div key={s} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01]">{s}</div>
                               ))}
                             </div>
                           </div>
@@ -195,11 +195,11 @@ function UltimasLeyes() {
                           <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
                         </div>
 
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
                             <div className="flex flex-col items-stretch gap-2">
                               {c.subs.map((s) => (
-                                <div key={s} className="bg-white/6 text-sm text-white rounded-full px-3 py-1">{s}</div>
+                                <div key={s} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01]">{s}</div>
                               ))}
                             </div>
                           </div>
