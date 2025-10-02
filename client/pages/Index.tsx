@@ -73,7 +73,7 @@ function UltimasLeyes() {
 
   return (
     <section id="ultimas-leyes" className="relative">
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <div className="flip-3d">
           <div className={`flip-3d-inner ${isFlipped ? "is-flipped" : ""}`}>
             {/* FRONT FACE - default (light) */}
