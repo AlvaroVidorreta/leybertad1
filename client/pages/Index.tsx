@@ -343,22 +343,33 @@ function FeedRecientes() {
   const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
   const handleComment = useCallback((id: string, texto: string) => comentar.mutate({ id, texto }), [comentar]);
 
-  const renderedList = useMemo(() => {
-    return data?.map((law) => (
-      <li key={law.id} className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
-        <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
-      </li>
-    ));
-  }, [data, handleUpvote, handleSave, handleComment]);
+  const ITEM_SIZE_RECENT = 112; // estimated height per law card
+
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const law = data ? data[index] : null;
+    if (!law) return null;
+    return (
+      <div style={style} className="px-0">
+        <li className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
+          <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
+        </li>
+      </div>
+    );
+  };
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
-      <div className="overflow-auto pr-1" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
-        <ul className="space-y-4">
-          {renderedList}
-        </ul>
+      <div className="pr-1">
+        <List
+          height={Math.min(LIST_MAX_HEIGHT, (data ? data.length : 0) * ITEM_SIZE_RECENT)}
+          itemCount={data ? data.length : 0}
+          itemSize={ITEM_SIZE_RECENT}
+          width="100%"
+        >
+          {Row}
+        </List>
       </div>
     </div>
   );
