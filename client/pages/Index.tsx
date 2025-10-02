@@ -312,6 +312,8 @@ function HeroPublicar() {
   );
 }
 
+import { FixedSizeList as List } from 'react-window';
+
 function FeedRecientes() {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
