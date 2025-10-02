@@ -15,6 +15,17 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            const parts = id.split('node_modules/')[1].split('/');
+            // put package into its own chunk (for scoped packages, include scope)
+            return parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0];
+          }
+        },
+      },
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
