@@ -70,6 +70,21 @@ function UltimasLeyes() {
     });
   }, [allLaws, debouncedQAll, debouncedQApproved, mode, isFlipped]);
 
+  // 12 main categories (minipaneles) and their subtopics
+  const categories = [
+    { title: "Economía", subs: ["Presupuestos", "Impuestos", "Salarios Públicos", "Subvenciones"] },
+    { title: "Política Exterior", subs: ["Relaciones", "Acuerdos", "Diplomacia", "Tratados"] },
+    { title: "Forma de Gobierno", subs: ["Constitución", "Reformas", "Instituciones", "Competencias"] },
+    { title: "Impuestos", subs: ["Directos", "Indirectos", "Incentivos", "Fraude"] },
+    { title: "Sanidad", subs: ["Financiación", "Acceso", "Recursos", "Salud Pública"] },
+    { title: "Educación", subs: ["Currículo", "Financiación", "Acceso", "Formación"] },
+    { title: "Medio Ambiente", subs: ["Energía", "Protección", "Residuos", "Clima"] },
+    { title: "Justicia", subs: ["Reformas", "Acceso", "Procesal", "Penal"] },
+    { title: "Transporte", subs: ["Infraestructura", "Movilidad", "Subvenciones", "Regulación"] },
+    { title: "Innovación", subs: ["I+D", "Startups", "Patentes", "Digitalización"] },
+    { title: "Trabajo", subs: ["Contratos", "Salarios", "Sindicación", "Seguridad"] },
+    { title: "Agricultura", subs: ["Subvenciones", "Regulación", "Comercio", "Sostenibilidad"] },
+  ];
 
   return (
     <section id="ultimas-leyes" className="relative">
@@ -103,31 +118,40 @@ function UltimasLeyes() {
                 </div>
               </div>
 
-              <div className="mt-6 w-full rounded-md bg-background/50">
+              <div className="mt-6 w-full rounded-md bg-background/50 p-4">
                 {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
+
+                {/* Category grid: 3 rows x 4 cols */}
+                {!isLoading && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {categories.map((c, i) => (
+                      <div
+                        key={c.title}
+                        className="relative rounded-md border bg-card overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group"
+                        role="button"
+                        aria-label={`Ver subtemas de ${c.title}`}
+                      >
+                        <div className="z-10">
+                          <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
+                        </div>
+
+                        {/* Hover overlay showing subtopics as horizontal bars */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
+                            <div className="flex flex-col items-stretch gap-2">
+                              {c.subs.map((s) => (
+                                <div key={s} className="bg-white/10 text-sm text-muted-foreground rounded-full px-3 py-1 backdrop-blur">{s}</div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {!isLoading && filtered.length === 0 && (
                   <div className="p-6 text-sm text-muted-foreground">No se encontraron leyes.</div>
-                )}
-
-                {!isLoading && filtered.length > 0 && (
-                  <ul className="space-y-3">
-                    {filtered.map((l) => (
-                      <li key={l.id} className="rounded-lg border p-3 bg-card">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-base">{l.titulo}</h4>
-                            <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
-                          </div>
-
-                          <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                            <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
-                            <div className="text-xs text-muted-foreground mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
                 )}
               </div>
             </div>
@@ -159,31 +183,34 @@ function UltimasLeyes() {
                 </div>
               </div>
 
-              <div className="mt-6 w-full rounded-md bg-white/3 p-1">
+              <div className="mt-6 w-full rounded-md bg-white/3 p-4">
                 {isLoading && <div className="p-6 text-sm text-gray-300">Cargando…</div>}
+
+                {/* Dark variant of the category grid */}
+                {!isLoading && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {categories.map((c) => (
+                      <div key={c.title} className="relative rounded-md border bg-[#0b1220] overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group">
+                        <div className="z-10 text-white">
+                          <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
+                        </div>
+
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
+                            <div className="flex flex-col items-stretch gap-2">
+                              {c.subs.map((s) => (
+                                <div key={s} className="bg-white/6 text-sm text-white rounded-full px-3 py-1">{s}</div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {!isLoading && filtered.length === 0 && (
                   <div className="p-6 text-sm text-gray-300">No se encontraron leyes.</div>
-                )}
-
-                {!isLoading && filtered.length > 0 && (
-                  <ul className="space-y-3">
-                    {filtered.map((l) => (
-                      <li key={l.id} className="rounded-lg border p-3 bg-[#0b1220] text-white">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-base">{l.titulo}</h4>
-                            <p className="text-sm text-gray-300 mt-1">{l.objetivo}</p>
-                          </div>
-
-                          <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                            <div className="rounded-full border px-3 py-0.5 text-sm bg-white/5">▲ {l.upvotes}</div>
-                            <div className="text-xs text-gray-400 mt-2">{new Date(l.createdAt).toLocaleDateString()}</div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
                 )}
               </div>
             </div>
