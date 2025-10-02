@@ -23,22 +23,32 @@ function CollapsibleHeader() {
   const headerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const elGetter = () => document.getElementById("ultimas-leyes");
+    let ticking = false;
     const checkPositions = () => {
-      const el = document.getElementById("ultimas-leyes");
+      const el = elGetter();
       if (!el || !headerRef.current) return;
       const top = el.getBoundingClientRect().top;
       const headerH = headerRef.current.getBoundingClientRect().height;
-      // enter section when the top of the UltimasLeyes section is within header height + small offset
       setInUltimasSection(top <= headerH + 12);
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        checkPositions();
+        ticking = false;
+      });
     };
 
     // initial check in case landing directly on the section
     checkPositions();
-    window.addEventListener("scroll", checkPositions, { passive: true });
-    window.addEventListener("resize", checkPositions);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener("scroll", checkPositions);
-      window.removeEventListener("resize", checkPositions);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 
