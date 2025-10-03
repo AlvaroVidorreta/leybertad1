@@ -5,6 +5,7 @@ import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, vo
 import { Law, TimeRange } from "@shared/api";
 const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
@@ -50,6 +51,7 @@ function UltimasLeyes() {
   }, [qApproved]);
 
   const isFlipped = mode === "approved";
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     const items = allLaws ?? [];
