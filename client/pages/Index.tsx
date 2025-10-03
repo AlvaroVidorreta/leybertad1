@@ -5,7 +5,7 @@ import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, vo
 import { Law, TimeRange } from "@shared/api";
 const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import BibliotecaSub from "./BibliotecaSub";
 
 const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
