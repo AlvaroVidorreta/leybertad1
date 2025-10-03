@@ -1,12 +1,16 @@
 import React, { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { obtenerRecientes } from "@/lib/api";
 
-export default function BibliotecaSub() {
-  const { category, sub } = useParams();
+export default function BibliotecaSub({ categoryProp, subProp, onClose }: { categoryProp?: string; subProp?: string; onClose?: () => void }) {
+  const params = useParams();
   const navigate = useNavigate();
   const { data: laws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes, staleTime: 10000, refetchOnWindowFocus: false });
+
+  const category = categoryProp ?? params.category;
+  const sub = subProp ?? params.sub;
 
   const subLabel = decodeURIComponent(sub || "");
   const categoryLabel = decodeURIComponent(category || "");
@@ -29,7 +33,7 @@ export default function BibliotecaSub() {
     <div className="rounded-2xl border p-6 md:p-8 mt-6 bg-card">
       <div className="flex items-center gap-4 mb-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => (onClose ? onClose() : navigate(-1))}
           className="px-3 py-1 rounded-full border bg-white/80 text-sm"
         >
           Volver
