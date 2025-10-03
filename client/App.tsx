@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const BibliotecaSub = lazy(() => import("./pages/BibliotecaSub"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ const App = () => (
         <Suspense fallback={<div aria-hidden /> }>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/biblioteca/:category/:sub" element={<BibliotecaSub />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

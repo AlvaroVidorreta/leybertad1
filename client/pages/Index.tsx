@@ -140,7 +140,7 @@ function UltimasLeyes() {
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
                             <div className="flex flex-col items-stretch gap-2">
                               {c.subs.map((s) => (
-                                <div key={s} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01]">{s}</div>
+                                <div key={s} onClick={(e) => { e.stopPropagation(); navigate(`/biblioteca/${encodeURIComponent(c.title)}/${encodeURIComponent(s)}`); }} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer">{s}</div>
                               ))}
                             </div>
                           </div>
@@ -199,7 +199,7 @@ function UltimasLeyes() {
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
                             <div className="flex flex-col items-stretch gap-2">
                               {c.subs.map((s) => (
-                                <div key={s} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01]">{s}</div>
+                                <div key={s} onClick={(e) => { e.stopPropagation(); navigate(`/biblioteca/${encodeURIComponent(c.title)}/${encodeURIComponent(s)}`); }} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer">{s}</div>
                               ))}
                             </div>
                           </div>
