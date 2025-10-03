@@ -51,7 +51,7 @@ function UltimasLeyes() {
   }, [qApproved]);
 
   const isFlipped = mode === "approved";
-  const navigate = useNavigate();
+  const [activeSub, setActiveSub] = useState<{ category: string; sub: string } | null>(null);
 
   const filtered = useMemo(() => {
     const items = allLaws ?? [];
