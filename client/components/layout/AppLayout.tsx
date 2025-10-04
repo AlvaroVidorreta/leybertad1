@@ -128,9 +128,31 @@ function CollapsibleHeader() {
             <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
 
-            <div className="relative" ref={accountRef} onMouseEnter={() => setAccountOpen(true)} onMouseLeave={() => setAccountOpen(false)}>
+            <div
+              className="relative"
+              ref={accountRef}
+              onMouseEnter={() => {
+                if (closeTimerRef.current) {
+                  window.clearTimeout(closeTimerRef.current);
+                  closeTimerRef.current = null;
+                }
+                setAccountOpen(true);
+              }}
+              onMouseLeave={() => {
+                closeTimerRef.current = window.setTimeout(() => setAccountOpen(false), 500);
+              }}
+            >
               <button
-                onClick={() => setAccountOpen((s) => !s)}
+                onClick={() => {
+                  setAccountOpen((s) => {
+                    const next = !s;
+                    if (next && closeTimerRef.current) {
+                      window.clearTimeout(closeTimerRef.current);
+                      closeTimerRef.current = null;
+                    }
+                    return next;
+                  });
+                }}
                 aria-haspopup="true"
                 aria-expanded={accountOpen}
                 className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm btn-micro-shimmer"
