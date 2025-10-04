@@ -139,7 +139,7 @@ function CollapsibleHeader() {
                 setAccountOpen(true);
               }}
               onMouseLeave={() => {
-                closeTimerRef.current = window.setTimeout(() => setAccountOpen(false), 500);
+                closeTimerRef.current = window.setTimeout(() => setAccountOpen(false), 250);
               }}
             >
               <button
