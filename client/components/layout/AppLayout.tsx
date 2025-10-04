@@ -121,7 +121,7 @@ function CollapsibleHeader() {
             <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
 
-            <div className="relative" ref={accountRef}>
+            <div className="relative" ref={accountRef} onMouseEnter={() => setAccountOpen(true)} onMouseLeave={() => setAccountOpen(false)}>
               <button
                 onClick={() => setAccountOpen((s) => !s)}
                 aria-haspopup="true"
@@ -134,7 +134,7 @@ function CollapsibleHeader() {
               {accountOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-2 w-44 rounded-md border bg-card p-2 shadow-lg z-50 transform transition-all duration-200 ease-out"
+                  className="absolute right-0 mt-2 w-44 rounded-md border bg-card p-2 shadow-lg z-50 transform transition-all duration-200 ease-out origin-top-right"
                 >
                   <a href="#guardados" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Tus guardados</a>
                   <a href="#perfil" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Perfil</a>
