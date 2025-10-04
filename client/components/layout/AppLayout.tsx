@@ -22,6 +22,19 @@ function CollapsibleHeader() {
   const [hovering, setHovering] = useState(false);
   const headerRef = useRef<HTMLDivElement | null>(null);
 
+  // account dropdown state
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!accountRef.current) return;
+      if (e.target instanceof Node && !accountRef.current.contains(e.target)) setAccountOpen(false);
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, []);
+
   useEffect(() => {
     const elGetter = () => document.getElementById("ultimas-leyes");
     let ticking = false;
@@ -107,7 +120,28 @@ function CollapsibleHeader() {
           <div className="flex items-center gap-3">
             <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
-            <button className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm btn-micro-shimmer">Cuenta</button>
+
+            <div className="relative" ref={accountRef}>
+              <button
+                onClick={() => setAccountOpen((s) => !s)}
+                aria-haspopup="true"
+                aria-expanded={accountOpen}
+                className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm btn-micro-shimmer"
+              >
+                Cuenta
+              </button>
+
+              {accountOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-44 rounded-md border bg-card p-2 shadow-lg z-50 transform transition-all duration-200 ease-out"
+                >
+                  <a href="#guardados" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Tus guardados</a>
+                  <a href="#perfil" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Perfil</a>
+                  <button onClick={() => setAccountOpen(false)} className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-md">Cerrar sesión</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
