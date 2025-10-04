@@ -25,6 +25,7 @@ function CollapsibleHeader() {
   // account dropdown state
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -32,7 +33,13 @@ function CollapsibleHeader() {
       if (e.target instanceof Node && !accountRef.current.contains(e.target)) setAccountOpen(false);
     }
     document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
