@@ -164,6 +164,17 @@ function CollapsibleHeader() {
                 <div
                   role="menu"
                   className="absolute right-0 mt-2 w-44 rounded-md border bg-card p-2 shadow-lg z-50 transform transition-all duration-200 ease-out origin-top-right"
+                  onMouseEnter={() => {
+                    if (closeTimerRef.current) {
+                      window.clearTimeout(closeTimerRef.current);
+                      closeTimerRef.current = null;
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    // when leaving the menu itself, close almost instantly
+                    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+                    closeTimerRef.current = window.setTimeout(() => setAccountOpen(false), 50);
+                  }}
                 >
                   <a href="#guardados" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Tus guardados</a>
                   <a href="#perfil" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Perfil</a>
