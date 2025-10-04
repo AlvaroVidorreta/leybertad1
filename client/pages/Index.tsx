@@ -380,14 +380,14 @@ function FeedRecientes() {
   const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
   const handleComment = useCallback((id: string, texto: string) => comentar.mutate({ id, texto }), [comentar]);
 
-  const ITEM_SIZE_RECENT = 112; // estimated height per law card
+  const ITEM_SIZE_RECENT = 124; // estimated height per law card (increased to add visual spacing between items)
 
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const law = data ? data[index] : null;
     if (!law) return null;
     return (
-      <div style={style} className="px-0">
-        <li className={`rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
+      <div style={style} className="px-0 py-2">
+        <li className={`list-none rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
           <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
         </li>
       </div>
