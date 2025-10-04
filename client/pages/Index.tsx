@@ -396,7 +396,7 @@ function FeedRecientes() {
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
-      <h3 className="text-lg font-semibold mb-4">Más recientes</h3>
+      <h3 className="text-xl font-bold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="pr-1">
         <List
@@ -496,7 +496,7 @@ function Ranking() {
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <div className="flex items-center">
-        <h3 className="text-lg font-semibold">Ranking</h3>
+        <h3 className="text-xl font-bold">Ranking</h3>
         <div className="ml-auto relative" ref={ddRef}>
           <button
             onClick={() => setOpen((s) => !s)}
