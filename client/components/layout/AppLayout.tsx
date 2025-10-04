@@ -101,6 +101,9 @@ function CollapsibleHeader() {
         >
           <div className="flex items-center gap-6">
             <BrandTitle compact={inUltimasSection} />
+          </div>
+
+          <div className="flex items-center gap-3">
             <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground font-semibold">
               <a
                 href="#ultimas-leyes"
@@ -122,9 +125,7 @@ function CollapsibleHeader() {
               </a>
               <a href="#contacto" className="hover:text-foreground">Contacto</a>
             </nav>
-          </div>
 
-          <div className="flex items-center gap-3">
             <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
 
