@@ -136,16 +136,16 @@ function UltimasLeyes() {
                           role="button"
                           aria-label={`Ver subtemas de ${c.title}`}
                         >
-                          <div className="z-10 transition-opacity duration-200 group-hover:opacity-0">
+                          <div className="z-10 transition-opacity duration-300 ease-in-out group-hover:opacity-0">
                             <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
                           </div>
 
                           {/* Hover overlay showing subtopics as horizontal bars */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 ease-in-out flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
                               <div className="flex flex-col items-stretch gap-2">
                                 {c.subs.map((s) => (
-                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer">{s}</div>
+                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
                                 ))}
                               </div>
                             </div>
@@ -200,15 +200,15 @@ function UltimasLeyes() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {categories.map((c) => (
                         <div key={c.title} className="relative rounded-md border bg-[#0b1220] overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group">
-                          <div className="z-10 text-white transition-opacity duration-200 group-hover:opacity-0">
+                          <div className="z-10 text-white transition-opacity duration-300 ease-in-out group-hover:opacity-0">
                             <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
                           </div>
 
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full px-4">
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 ease-in-out flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
                               <div className="flex flex-col items-stretch gap-2">
                                 {c.subs.map((s) => (
-                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-all duration-150 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer">{s}</div>
+                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
                                 ))}
                               </div>
                             </div>
