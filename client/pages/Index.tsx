@@ -603,12 +603,12 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
 
                         {/* comment input */}
                         <div className="mt-3 flex items-center gap-2">
-                          <input ref={commentRef} placeholder="Escribe un comentario..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
+                          <input ref={commentRef} placeholder="Escribe un comentario..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
                           <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground" onClick={() => {
                             if (!commentRef.current) return;
                             const v = commentRef.current.value.trim();
                             if (!v) return;
-                            onComment(selectedLaw.id, v);
+                            onComment(selectedLaw!.id, v);
                             commentRef.current.value = '';
                           }}>Enviar</button>
                         </div>
