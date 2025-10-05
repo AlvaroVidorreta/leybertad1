@@ -434,7 +434,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
           {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
         </div>
 
-        <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-3">
+        <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-4">
           <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4rem]">▲ {law.upvotes}</button>
 
           <div className="flex items-center gap-2 mt-1">
@@ -603,7 +603,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
 
                         {/* comment input */}
                         <div className="mt-3 flex items-center gap-2">
-                          <input ref={commentRef} placeholder="Escribe una perspectiva..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
+                          <input ref={commentRef} placeholder="Escribe tu perspectiva..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
                           <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground" onClick={() => {
                             if (!commentRef.current) return;
                             const v = commentRef.current.value.trim();
