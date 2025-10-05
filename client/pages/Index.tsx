@@ -425,12 +425,24 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
 }
 
 const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: Law; onUpvote: (id: string) => void; onSave: (id: string) => void; onOpen: (law: Law, openComments?: boolean) => void }) {
+  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
+  const [isSingleLine, setIsSingleLine] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = subtitleRef.current;
+    if (!el) return;
+    const style = window.getComputedStyle(el);
+    const lineHeight = parseFloat(style.lineHeight || "0");
+    const isSingle = el.scrollHeight <= lineHeight + 1;
+    setIsSingleLine(isSingle);
+  }, [law.objetivo]);
+
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0 pr-14 cursor-pointer" onClick={() => onOpen(law)}>
           <h4 className="font-medium text-base break-words">{law.titulo}</h4>
-          <p className="text-[0.8125rem] text-muted-foreground break-words leading-tight mt-0.5">{law.objetivo}</p>
+          <p ref={subtitleRef} className={`text-[0.8125rem] text-muted-foreground break-words leading-tight ${isSingleLine ? "mt-1 transform translate-y-1" : "mt-0.5"}`}>{law.objetivo}</p>
           {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
         </div>
 
