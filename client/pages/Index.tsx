@@ -399,7 +399,7 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
     if (!law) return null;
     return (
       <div style={style} className="px-0 py-0.5">
-        <li className={`list-none rounded-xl border pl-6 pr-3 py-2.5 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
+        <li className={`list-none rounded-xl border pl-6 pr-3 py-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
           <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onOpen={onOpenLaw} />
         </li>
       </div>
@@ -430,7 +430,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0 pr-14 cursor-pointer" onClick={() => onOpen(law)}>
           <h4 className="font-medium text-base break-words">{law.titulo}</h4>
-          <p className="text-xs text-muted-foreground break-words leading-tight mt-1">{law.objetivo}</p>
+          <p className="text-[0.8125rem] text-muted-foreground break-words leading-tight mt-0.5">{law.objetivo}</p>
           {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
         </div>
 
