@@ -435,7 +435,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-2">
-          <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4.5rem]">▲ {law.upvotes}</button>
+          <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4rem]">▲ {law.upvotes}</button>
 
           <div className="flex items-center gap-2 mt-2">
             {/* comment icon (left) */}
