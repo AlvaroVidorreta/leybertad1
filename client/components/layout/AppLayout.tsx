@@ -104,7 +104,7 @@ function CollapsibleHeader() {
           </div>
 
           <div className="flex items-center gap-3">
-            <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground font-semibold transform -translate-x-2 mr-6">
+            <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground font-semibold transform -translate-x-2 mr-3">
               <a
                 href="#ultimas-leyes"
                 onClick={(e) => {
