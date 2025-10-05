@@ -428,7 +428,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0 pr-20 cursor-pointer" onClick={() => onOpen(law)}>
+        <div className="flex-1 min-w-0 pr-14 cursor-pointer" onClick={() => onOpen(law)}>
           <h4 className="font-medium text-base break-words">{law.titulo}</h4>
           <p className="text-sm text-muted-foreground break-words">{law.objetivo}</p>
           {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
