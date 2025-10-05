@@ -6,7 +6,7 @@
       "objetivo": "Declarar inviolable la propiedad privada contra expropiaciones o regulaciones ambientales forzadas, priorizando derechos individuales.",
       "createdAt": "2025-09-28T00:20:58.444Z",
       "upvotes": 0,
-      "saves": 0,
+      "saves": 1,
       "comentarios": []
     },
     {
@@ -32,7 +32,7 @@
       "titulo": "Abolición del Impuesto sobre la Renta",
       "objetivo": "Eliminar por completo los impuestos sobre la renta personal, devolviendo el control total del dinero ganado a los individuos.",
       "createdAt": "2025-09-28T00:19:57.994Z",
-      "upvotes": 0,
+      "upvotes": 1,
       "saves": 0,
       "comentarios": []
     },
@@ -55,5 +55,9 @@
       "2025-09-28T00:20:58.444Z"
     ]
   },
-  "votesByVisitor": {}
+  "votesByVisitor": {
+    "20dac55b-c6ac-494e-8b6d-6a64fc7af7af": [
+      "6bbdd98a-1461-4aea-9dff-5148dab9c711"
+    ]
+  }
 }
