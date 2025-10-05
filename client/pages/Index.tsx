@@ -580,7 +580,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                 <div className="flex flex-col h-full justify-between">
                   <div>
                     <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
-                    <p className="mt-1">{selectedLaw.apodo ?? "-"}</p>
+                    <p className="mt-1">{selectedLaw!.apodo ?? "-"}</p>
                   </div>
 
                   <div className="mt-4">
