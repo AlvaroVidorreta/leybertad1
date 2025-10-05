@@ -557,7 +557,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
             </button>
 
             <div className="mb-2">
-              <h4 className="text-lg font-semibold">{selectedLaw.titulo}</h4>
+              <h4 className="text-lg font-semibold">{selectedLaw!.titulo}</h4>
               <p className="text-sm text-muted-foreground">{selectedLaw.upvotes} votos</p>
             </div>
 
