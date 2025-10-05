@@ -568,7 +568,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                 <h5 className="text-sm font-medium text-muted-foreground">Objetivo</h5>
                 <p className="mt-1">{selectedLaw!.objetivo}</p>
 
-                {selectedLaw.detalles && (
+                {selectedLaw!.detalles && (
                   <>
                     <h5 className="text-sm font-medium text-muted-foreground mt-4">Detalles</h5>
                     <p className="mt-1 text-sm">{selectedLaw.detalles}</p>
