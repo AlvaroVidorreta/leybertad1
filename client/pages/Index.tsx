@@ -444,7 +444,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
             </button>
 
             {/* save icon (right) */}
-            <button onClick={() => onSave(law.id)} aria-label="Guardar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
+            <button onClick={() => onSave(law.id)} aria-label="Guardar" className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>
