@@ -12,15 +12,33 @@ const MAX_RANKING_ITEMS = 5;
 const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS; // exact pixel height to fit MAX_RANKING_ITEMS without scrollbar
 
 export default function Index() {
+  const qc = useQueryClient();
+  const [selectedLaw, setSelectedLaw] = useState<Law | null>(null);
+  const [showComments, setShowComments] = useState(false);
+
+  const comentar = useMutation({
+    mutationFn: ({ id, texto }: { id: string; texto: string }) => comentarLey(id, { texto }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
+  });
+
+  const handleOpenLaw = (law: Law, openComments = false) => {
+    setSelectedLaw(law);
+    setShowComments(openComments);
+  };
+  const handleCloseLaw = () => {
+    setSelectedLaw(null);
+    setShowComments(false);
+  };
+
   return (
     <AppLayout>
       <HeroPublicar />
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <section id="recientes" className="lg:col-span-2">
-          <FeedRecientes />
+          <FeedRecientes onOpenLaw={handleOpenLaw} />
         </section>
         <aside className="lg:col-span-1">
-          <Ranking />
+          <Ranking onOpenLaw={handleOpenLaw} selectedLaw={selectedLaw} showComments={showComments} setSelectedLaw={setSelectedLaw} setShowComments={setShowComments} onComment={(id, texto) => comentar.mutate({ id, texto })} />
         </aside>
       </div>
 
@@ -351,7 +369,7 @@ function HeroPublicar() {
 
 import { FixedSizeList as List } from 'react-window';
 
-function FeedRecientes() {
+function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boolean) => void }) {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
 
@@ -370,15 +388,9 @@ function FeedRecientes() {
     },
   });
 
-  const comentar = useMutation({
-    mutationFn: ({ id, texto }: { id: string; texto: string }) => comentarLey(id, { texto }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
-  });
-
   // stable handlers to avoid creating new closures per item render
   const handleUpvote = useCallback((id: string) => votar.mutate(id), [votar]);
   const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
-  const handleComment = useCallback((id: string, texto: string) => comentar.mutate({ id, texto }), [comentar]);
 
   const ITEM_SIZE_RECENT = 108; // estimated height per law card (reduced spacing)
 
@@ -388,7 +400,7 @@ function FeedRecientes() {
     return (
       <div style={style} className="px-0 py-0.5">
         <li className={`list-none rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
-          <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onComment={handleComment} />
+          <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onOpen={onOpenLaw} />
         </li>
       </div>
     );
@@ -412,18 +424,14 @@ function FeedRecientes() {
   );
 }
 
-const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { law: Law; onUpvote: (id: string) => void; onSave: (id: string) => void; onComment: (id: string, text: string) => void }) {
-  const [text, setText] = useState("");
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const canSend = text.trim().length > 0 && text.trim().length <= 200;
-
+const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: Law; onUpvote: (id: string) => void; onSave: (id: string) => void; onOpen: (law: Law, openComments?: boolean) => void }) {
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
+        <div className="flex-1 cursor-pointer" onClick={() => onOpen(law)}>
           <h4 className="font-medium text-base">{law.titulo}</h4>
           <p className="text-sm text-muted-foreground">{law.objetivo}</p>
-          {showCommentInput && law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
+          {law.detalles && <p className="mt-1 text-sm">{law.detalles}</p>}
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-2">
@@ -431,7 +439,7 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
 
           <div className="flex items-center gap-2 mt-2">
             {/* comment icon (left) */}
-            <button onClick={() => setShowCommentInput((s) => !s)} aria-label="Comentar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
+            <button onClick={() => onOpen(law, true)} aria-label="Comentar" className="rounded-full p-1 bg-white border hover:bg-gray-50">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
 
@@ -442,38 +450,15 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onComment }: { la
           </div>
         </div>
       </div>
-
-      {/* comment input expands only when toggled */}
-      <div className={`transition-all duration-200 overflow-hidden ${showCommentInput ? "max-h-40 mt-3 opacity-100" : "max-h-0 opacity-0"}`}>
-        <div className="flex items-center gap-2">
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value.slice(0, 200))}
-            placeholder="Comenta (máx. 200 caracteres)"
-            className="flex-1 rounded-md border px-2 py-1 text-sm focus:outline-none focus:border-primary"
-          />
-          <button disabled={!canSend} onClick={() => { onComment(law.id, text); setText(""); setShowCommentInput(false); }} className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm disabled:opacity-50">Enviar</button>
-        </div>
-
-        {showCommentInput && law.comentarios.length > 0 && (
-          <ul className="mt-2 space-y-1 max-h-20 overflow-auto pr-1">
-            {law.comentarios.slice().reverse().map((c) => (
-              <li key={c.id} className="text-xs text-muted-foreground">• {c.texto}</li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 });
 
-function Ranking() {
+function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShowComments, onComment }: { onOpenLaw: (law: Law, openComments?: boolean) => void; selectedLaw: Law | null; showComments: boolean; setSelectedLaw: (l: Law | null) => void; setShowComments: (s: boolean) => void; onComment: (id: string, texto: string) => void; }) {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range), staleTime: 30000, refetchOnWindowFocus: false });
   const items = useMemo(() => data ?? [], [data]);
   const displayedRanking = useMemo(() => items.slice(0, MAX_RANKING_ITEMS), [items]);
-  const [selected, setSelected] = useState<null | Record<string, any>>(null);
-  const [showComments, setShowComments] = useState(false);
 
   const ranges: { key: TimeRange; label: string }[] = [
     { key: "day", label: "Día" },
@@ -537,7 +522,7 @@ function Ranking() {
             return (
               <div style={style} className="px-0">
                 <div
-                  onClick={() => setSelected(l)}
+                  onClick={() => onOpenLaw(l)}
                   className="flex items-center gap-4 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
                 >
                   <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{index + 1}</span>
@@ -557,13 +542,13 @@ function Ranking() {
       </div>
 
       {/* Modal / detail display */}
-      {selected && (
+      {selectedLaw && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => { setSelected(null); setShowComments(false); }} />
+          <div className="absolute inset-0 bg-black/40" onClick={() => { setSelectedLaw(null); setShowComments(false); }} />
           <div className="relative z-10 w-[min(720px,95%)] rounded-2xl bg-card p-6 shadow-xl">
             {/* Close X top-right */}
             <button
-              onClick={() => { setSelected(null); setShowComments(false); }}
+              onClick={() => { setSelectedLaw(null); setShowComments(false); }}
               aria-label="Cerrar"
               className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-muted-foreground hover:bg-white"
             >
@@ -571,8 +556,8 @@ function Ranking() {
             </button>
 
             <div className="mb-2">
-              <h4 className="text-lg font-semibold">{selected.titulo}</h4>
-              <p className="text-sm text-muted-foreground">{selected.upvotes} votos</p>
+              <h4 className="text-lg font-semibold">{selectedLaw.titulo}</h4>
+              <p className="text-sm text-muted-foreground">{selectedLaw.upvotes} votos</p>
             </div>
 
             <hr className="my-4" />
@@ -580,12 +565,12 @@ function Ranking() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h5 className="text-sm font-medium text-muted-foreground">Objetivo</h5>
-                <p className="mt-1">{selected.objetivo}</p>
+                <p className="mt-1">{selectedLaw.objetivo}</p>
 
-                {selected.detalles && (
+                {selectedLaw.detalles && (
                   <>
                     <h5 className="text-sm font-medium text-muted-foreground mt-4">Detalles</h5>
-                    <p className="mt-1 text-sm">{selected.detalles}</p>
+                    <p className="mt-1 text-sm">{selectedLaw.detalles}</p>
                   </>
                 )}
               </div>
@@ -594,7 +579,7 @@ function Ranking() {
                 <div className="flex flex-col h-full justify-between">
                   <div>
                     <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
-                    <p className="mt-1">{selected.apodo ?? "-"}</p>
+                    <p className="mt-1">{selectedLaw.apodo ?? "-"}</p>
                   </div>
 
                   <div className="mt-4">
@@ -607,13 +592,23 @@ function Ranking() {
 
                     {showComments && (
                       <div className="mt-3 max-h-40 overflow-auto rounded-md border bg-white p-2 text-sm">
-                        {Array.isArray(selected.comentarios) && selected.comentarios.length > 0 ? (
-                          selected.comentarios.map((c: any) => (
+                        {Array.isArray(selectedLaw.comentarios) && selectedLaw.comentarios.length > 0 ? (
+                          selectedLaw.comentarios.map((c: any) => (
                             <div key={c.id} className="py-1 border-b last:border-b-0">{c.texto}</div>
                           ))
                         ) : (
                           <div className="text-muted-foreground">Sin comentarios</div>
                         )}
+
+                        {/* comment input */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <input placeholder="Escribe un comentario..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
+                          <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground" onClick={() => {
+                            const container = document.querySelector('[data-selected-comment-input]') as HTMLInputElement | null;
+                            if (!container) return;
+                          }}>Enviar</button>
+                        </div>
+
                       </div>
                     )}
                   </div>
