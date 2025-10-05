@@ -593,7 +593,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
 
                     {showComments && (
                       <div className="mt-3 max-h-40 overflow-auto rounded-md border bg-white p-2 text-sm">
-                        {Array.isArray(selectedLaw.comentarios) && selectedLaw.comentarios.length > 0 ? (
+                        {Array.isArray(selectedLaw!.comentarios) && selectedLaw!.comentarios.length > 0 ? (
                           selectedLaw.comentarios.map((c: any) => (
                             <div key={c.id} className="py-1 border-b last:border-b-0">{c.texto}</div>
                           ))
