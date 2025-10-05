@@ -1,5 +1,5 @@
 import AppLayout from "@/components/layout/AppLayout";
-import { lazy, Suspense, useMemo, useState, useRef, useEffect, useCallback, memo } from "react";
+import { lazy, Suspense, useMemo, useState, useRef, useEffect, useLayoutEffect, useCallback, memo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, votarLey } from "@/lib/api";
 import { Law, TimeRange } from "@shared/api";
