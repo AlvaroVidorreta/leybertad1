@@ -126,7 +126,9 @@ function CollapsibleHeader() {
               <a href="#contacto" className="hover:text-foreground">Contacto</a>
             </nav>
 
-            <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
+            {!collapsed && (
+              <button aria-label="Iniciar sesión" className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise">Iniciar sesión</button>
+            )}
             <button aria-label="Menú" className="md:hidden p-2 rounded-md border text-sm">≡</button>
 
             <div
