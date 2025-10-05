@@ -399,7 +399,7 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
     if (!law) return null;
     return (
       <div style={style} className="px-0 py-0.5">
-        <li className={`list-none rounded-xl border p-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
+        <li className={`list-none rounded-xl border pl-6 pr-3 py-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
           <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onOpen={onOpenLaw} />
         </li>
       </div>
