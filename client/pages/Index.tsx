@@ -434,12 +434,12 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
           {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
         </div>
 
-        <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-2">
+        <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-3">
           <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4rem]">▲ {law.upvotes}</button>
 
           <div className="flex items-center gap-2 mt-1">
             {/* comment icon (left) */}
-            <button onClick={() => onOpen(law, true)} aria-label="Comentar" className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8">
+            <button onClick={() => onOpen(law, true)} aria-label="Perspectivas" className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8">
               <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
 
@@ -588,7 +588,7 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                       onClick={() => setShowComments((s) => !s)}
                       className="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50"
                     >
-                      {showComments ? "Ocultar comentarios" : "Ver comentarios"}
+                      {showComments ? "Ocultar perspectivas" : "Ver perspectivas"}
                     </button>
 
                     {showComments && (
@@ -598,12 +598,12 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                             <div key={c.id} className="py-1 border-b last:border-b-0">{c.texto}</div>
                           ))
                         ) : (
-                          <div className="text-muted-foreground">Sin comentarios</div>
+                          <div className="text-muted-foreground">Sin perspectivas</div>
                         )}
 
                         {/* comment input */}
                         <div className="mt-3 flex items-center gap-2">
-                          <input ref={commentRef} placeholder="Escribe un comentario..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
+                          <input ref={commentRef} placeholder="Escribe una perspectiva..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
                           <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground" onClick={() => {
                             if (!commentRef.current) return;
                             const v = commentRef.current.value.trim();
