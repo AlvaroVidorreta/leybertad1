@@ -407,7 +407,7 @@ function HeroPublicar() {
 
             {chosenCategory && (
               <div className="mt-4">
-                <div className="text-sm text-muted-foreground">Subtemas de <strong className="text-foreground">{chosenCategory}</strong></div>
+                <div className="text-sm text-muted-foreground">Etiquetas en <strong className="text-foreground">{chosenCategory}</strong></div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {(CATEGORIES.find(c => c.title === chosenCategory)?.subs || []).map((s) => (
                     <button
