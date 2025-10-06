@@ -416,13 +416,19 @@ function HeroPublicar() {
                       className={`text-sm px-3 py-1 rounded-full border ${chosenSub === s ? 'bg-primary text-primary-foreground' : 'bg-white/80'}`}
                     >{s}</button>
                   ))}
+                  {/* 'Otro' option */}
+                  <button
+                    key="otro"
+                    onClick={() => setChosenSub('Otro')}
+                    className={`text-sm px-3 py-1 rounded-full border ${chosenSub === 'Otro' ? 'bg-primary text-primary-foreground' : 'bg-white/80'}`}
+                  >Otro</button>
                 </div>
               </div>
             )}
 
             <div className="mt-6 flex gap-3 justify-end">
-              <button onClick={() => { setShowCategoryModal(false); crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined } as any); }} className="px-3 py-2 rounded-md border bg-white">Publicar sin categoría</button>
-              <button onClick={confirmPublish} disabled={!!crear.isPending} className="px-4 py-2 rounded-full bg-primary text-primary-foreground disabled:opacity-50">Publicar</button>
+              <button onClick={() => { setShowCategoryModal(false); crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined } as any); }} className="px-3 py-2 rounded-md border bg-white btn-micro-raise">Publicar sin categoría</button>
+              <button onClick={confirmPublish} disabled={!!crear.isPending} className="px-4 py-2 rounded-full bg-primary text-primary-foreground disabled:opacity-50 btn-micro-shimmer">Publicar</button>
             </div>
           </div>
         </div>
