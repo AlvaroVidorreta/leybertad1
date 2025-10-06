@@ -376,7 +376,7 @@ function HeroPublicar() {
               onChange={(e) => setDetalles(e.target.value)}
               onFocus={() => setExpand(true)}
               onBlur={handlePossibleCollapse}
-              placeholder="Perspectiva personal / detalles (recomendado)"
+              placeholder="Perspectiva personal / Detalles / Impacto estimado (recomendado)"
               className="mt-3 w-full rounded-md border bg-white/80 px-4 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
