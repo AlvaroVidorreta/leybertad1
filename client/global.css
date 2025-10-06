@@ -121,7 +121,7 @@
     animation: insertDown 360ms cubic-bezier(.22,.9,.34,1) both;
   }
 
-  /* slide-in animation used when navigating to the 'Últimas leyes' section */
+  /* slide-in animation used when navigating to the '��ltimas leyes' section */
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -215,13 +215,14 @@
   .category-selected {
     position: relative;
     z-index: 6;
-    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.14);
+    /* solid black outline like in the original design, use slight spread to keep distance from element */
+    box-shadow: 0 0 0 3px rgba(0,0,0,1);
   }
 
   /* Modern thin scrollbar for the category grid */
   .category-grid::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
 
   /* track: transparent so there's no white rectangle "behind" the bar */
@@ -229,22 +230,22 @@
     background: transparent;
   }
 
-  /* thumb: subtle rounded white/grey depending on theme */
+  /* thumb: clean white thumb */
   .category-grid::-webkit-scrollbar-thumb {
-    background: hsl(var(--border) / 0.7);
+    background: rgba(255,255,255,0.95);
     border-radius: 999px;
-    border: 2px solid transparent;
+    border: 2px solid rgba(255,255,255,0.6);
     background-clip: padding-box;
   }
 
-  /* Hover state: make thumb slightly darker */
+  /* Hover state: make thumb slightly brighter */
   .category-grid::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--border) / 0.9);
+    background: rgba(255,255,255,1);
   }
 
   /* Firefox: use scrollbar-color */
   .category-grid {
-    scrollbar-color: hsl(var(--border) / 0.7) transparent;
+    scrollbar-color: rgba(255,255,255,0.95) transparent;
     scrollbar-width: thin;
   }
 
