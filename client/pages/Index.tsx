@@ -286,6 +286,11 @@ function HeroPublicar() {
 
   const canSubmit = titulo.trim().length > 0 && objetivo.trim().length > 3 && !crear.isPending;
 
+  // recommended extra step modal state
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [chosenCategory, setChosenCategory] = useState<string | null>(null);
+  const [chosenSub, setChosenSub] = useState<string | null>(null);
+
   // collapse to initial state when user leaves inputs and all are empty
   useEffect(() => {
     return () => {};
@@ -300,6 +305,17 @@ function HeroPublicar() {
       if (titulo.trim() || objetivo.trim() || detalles.trim() || apodo.trim()) return;
       setExpand(false);
     }, 120);
+  }
+
+  function openPublishModal() {
+    setChosenCategory(null);
+    setChosenSub(null);
+    setShowCategoryModal(true);
+  }
+
+  function confirmPublish() {
+    setShowCategoryModal(false);
+    crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined, category: chosenCategory || undefined, subcategory: chosenSub || undefined } as any);
   }
 
   return (
