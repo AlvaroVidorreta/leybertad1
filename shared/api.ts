@@ -13,6 +13,9 @@ export interface LawInput {
   objetivo: string; // Objetivo breve (requerido)
   detalles?: string; // Perspectiva personal (opcional)
   apodo?: string; // Nick opcional
+  // Optional classification fields to help categorize the submitted law
+  category?: string;
+  subcategory?: string;
 }
 
 export interface CommentInput {
