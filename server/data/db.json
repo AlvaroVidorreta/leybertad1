@@ -1,6 +1,15 @@
 {
   "laws": [
     {
+      "id": "230fc9cf-25fd-4bcd-9303-df75175ad89a",
+      "titulo": "Anti-Okupación",
+      "objetivo": "El allanamiento de morada es una violación directa de la ley y el proceso judicial debe ser inmediato.",
+      "createdAt": "2025-10-06T22:23:48.377Z",
+      "upvotes": 0,
+      "saves": 0,
+      "comentarios": []
+    },
+    {
       "id": "9d68d63a-1366-400c-b499-2ae485af0898",
       "titulo": "Propiedad Privada Absoluta",
       "objetivo": "Declarar inviolable la propiedad privada contra expropiaciones o regulaciones ambientales forzadas, priorizando derechos individuales.",
@@ -53,6 +62,9 @@
       "2025-09-28T00:20:22.521Z",
       "2025-09-28T00:20:37.430Z",
       "2025-09-28T00:20:58.444Z"
+    ],
+    "61e4c8d6-3f97-488d-8dd4-2ab7949dbc54": [
+      "2025-10-06T22:23:48.377Z"
     ]
   },
   "votesByVisitor": {
