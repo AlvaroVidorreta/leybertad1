@@ -11,7 +11,7 @@
 @layer base {
   /**
    * Tailwind CSS theme in HSL variables (used by tailwind.config.ts)
-  */
+   */
   :root {
     /* Creamy light theme */
     --background: 45 43% 96%; /* crema */
@@ -203,6 +203,49 @@
   .btn-micro-shimmer:focus {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(2,6,23,0.05);
+  }
+
+  /* Custom styles for category modal: improved selection ring and modern scrollbar */
+  .category-grid {
+    /* ensure we can show shadows outside items */
+    overflow: auto;
+  }
+
+  /* Selected category: use box-shadow with semi-transparent primary color so the outline won't be clipped like a ring */
+  .category-selected {
+    position: relative;
+    z-index: 6;
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.14);
+  }
+
+  /* Modern thin scrollbar for the category grid */
+  .category-grid::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* track: transparent so there's no white rectangle "behind" the bar */
+  .category-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* thumb: subtle rounded white/grey depending on theme */
+  .category-grid::-webkit-scrollbar-thumb {
+    background: hsl(var(--border) / 0.7);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Hover state: make thumb slightly darker */
+  .category-grid::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--border) / 0.9);
+  }
+
+  /* Firefox: use scrollbar-color */
+  .category-grid {
+    scrollbar-color: hsl(var(--border) / 0.7) transparent;
+    scrollbar-width: thin;
   }
 
 }
