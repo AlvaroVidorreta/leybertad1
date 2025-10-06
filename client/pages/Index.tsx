@@ -338,7 +338,7 @@ function HeroPublicar() {
             />
             <button
               disabled={!canSubmit}
-              onClick={() => crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined })}
+              onClick={openPublishModal}
               className={cn(
                 "absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden",
                 canSubmit ? "group" : ""
