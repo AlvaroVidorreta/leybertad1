@@ -392,12 +392,12 @@ function HeroPublicar() {
             <h4 className="text-lg font-semibold">Elige una categoría (recomendado)</h4>
             <p className="text-sm text-muted-foreground mt-1">Selecciona la categoría que mejor describa tu propuesta. Esto ayuda a que tu Ley sea encontrada y clasificada.</p>
 
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto pr-2">
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 pr-2 category-grid">
               {CATEGORIES.map((c) => (
                 <button
                   key={c.title}
                   onClick={() => { setChosenCategory(c.title); setChosenSub(null); }}
-                  className={`text-left w-full rounded-lg border px-3 py-2 bg-white/80 hover:bg-white ${chosenCategory === c.title ? 'ring-2 ring-primary' : ''}`}
+                  className={`text-left w-full rounded-lg border px-3 py-2 bg-white/80 hover:bg-white ${chosenCategory === c.title ? 'category-selected' : ''}`}
                 >
                   <div className="font-medium text-sm truncate">{c.title}</div>
                   <div className="text-xs text-muted-foreground mt-1">{c.subs.slice(0,2).join(' · ')}</div>
