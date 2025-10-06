@@ -392,7 +392,7 @@ function HeroPublicar() {
             <h4 className="text-lg font-semibold">Elige una categoría (recomendado)</h4>
             <p className="text-sm text-muted-foreground mt-1">Selecciona la categoría que mejor describa tu propuesta. Esto ayuda a que tu Ley sea encontrada y clasificada.</p>
 
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 pr-2 category-grid">
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 p-2 category-grid">
               {CATEGORIES.map((c) => (
                 <button
                   key={c.title}
