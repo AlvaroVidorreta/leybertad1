@@ -382,6 +382,52 @@ function HeroPublicar() {
           </div>
         </div>
       </div>
+
+      {/* Category selection modal (recommended extra step) */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowCategoryModal(false)} />
+
+          <div className="relative z-10 w-full max-w-lg rounded-2xl bg-card/80 backdrop-blur-md border p-6 shadow-xl">
+            <h4 className="text-lg font-semibold">Elige una categoría (recomendado)</h4>
+            <p className="text-sm text-muted-foreground mt-1">Selecciona la categoría que mejor describa tu propuesta. Esto ayuda a que tu Ley sea encontrada y clasificada.</p>
+
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto pr-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.title}
+                  onClick={() => { setChosenCategory(c.title); setChosenSub(null); }}
+                  className={`text-left w-full rounded-lg border px-3 py-2 bg-white/80 hover:bg-white ${chosenCategory === c.title ? 'ring-2 ring-primary' : ''}`}
+                >
+                  <div className="font-medium text-sm truncate">{c.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{c.subs.slice(0,2).join(' · ')}</div>
+                </button>
+              ))}
+            </div>
+
+            {chosenCategory && (
+              <div className="mt-4">
+                <div className="text-sm text-muted-foreground">Subtemas de <strong className="text-foreground">{chosenCategory}</strong></div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(CATEGORIES.find(c => c.title === chosenCategory)?.subs || []).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setChosenSub(s)}
+                      className={`text-sm px-3 py-1 rounded-full border ${chosenSub === s ? 'bg-primary text-primary-foreground' : 'bg-white/80'}`}
+                    >{s}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 flex gap-3 justify-end">
+              <button onClick={() => { setShowCategoryModal(false); crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined } as any); }} className="px-3 py-2 rounded-md border bg-white">Publicar sin categoría</button>
+              <button onClick={confirmPublish} disabled={!!crear.isPending} className="px-4 py-2 rounded-full bg-primary text-primary-foreground disabled:opacity-50">Publicar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
