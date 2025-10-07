@@ -24,7 +24,7 @@ export default function Perfil() {
     created: Law[];
     voted: Law[];
   } | null>(null);
-  const [tab, setTab] = useState<"creaciones" | "actividad" | "guardadas">("creaciones");
+  const [tab, setTab] = useState<"creaciones" | "actividad" | "guardados">("creaciones");
   const [allLaws, setAllLaws] = useState<Law[]>([]);
 
   useEffect(() => {
@@ -100,11 +100,11 @@ export default function Perfil() {
         </div>
       </section>
 
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => setTab("creaciones")} className={`px-3 py-2 rounded-md ${tab === "creaciones" ? "bg-card" : "bg-transparent"} font-brand`}>Creaciones</button>
-        <button onClick={() => setTab("actividad")} className={`px-3 py-2 rounded-md ${tab === "actividad" ? "bg-card" : "bg-transparent"} font-brand`}>Actividad</button>
-        <button onClick={() => setTab("guardadas")} className={`px-3 py-2 rounded-md ${tab === "guardadas" ? "bg-card" : "bg-transparent"} font-brand`}>Guardadas</button>
-      </div>
+      <nav className="flex items-center gap-3 mb-6" role="tablist" aria-label="Perfil tabs">
+        <button onClick={() => setTab("creaciones")} role="tab" aria-selected={tab==="creaciones"} className={`px-4 py-2 rounded-md font-brand text-sm transition ${tab === "creaciones" ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-muted-foreground"}`}>Creaciones</button>
+        <button onClick={() => setTab("actividad")} role="tab" aria-selected={tab==="actividad"} className={`px-4 py-2 rounded-md font-brand text-sm transition ${tab === "actividad" ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-muted-foreground"}`}>Actividad</button>
+        <button onClick={() => setTab("guardados")} role="tab" aria-selected={tab==="guardados"} className={`px-4 py-2 rounded-md font-brand text-sm transition ${tab === "guardados" ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-muted-foreground"}`}>Guardados</button>
+      </nav>
 
       {tab === "creaciones" && (
         <section className="mb-8">
@@ -158,9 +158,9 @@ export default function Perfil() {
         </section>
       )}
 
-      {tab === "guardadas" && (
+      {tab === "guardados" && (
         <section className="mb-8">
-          <h3 className="font-brand text-lg mb-4">Leyes Guardadas</h3>
+          <h3 className="font-brand text-lg mb-4">Leyes Guardados</h3>
           <div className="space-y-3">
             {savedLaws.length === 0 && <div className="text-sm text-muted-foreground">No tienes leyes guardadas.</div>}
             {savedLaws.map((law) => (
