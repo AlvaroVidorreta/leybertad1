@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { obtenerRecientes } from "@/lib/api";
-import { Link } from "react-router-dom";
-import { BookOpen, CheckCircle, Edit2, MessageCircle, Bookmark, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { BookOpen, CheckCircle, Edit2, MessageCircle, Bookmark, ArrowRight, ArrowLeft } from "lucide-react";
 
 type Law = {
   id: string;
@@ -26,6 +26,7 @@ export default function Perfil() {
   } | null>(null);
   const [tab, setTab] = useState<"creaciones" | "actividad" | "guardados">("creaciones");
   const [allLaws, setAllLaws] = useState<Law[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -60,6 +61,16 @@ export default function Perfil() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <div className="mb-4">
+        <div className="relative inline-block group">
+          <button onClick={() => navigate(-1)} aria-label="Volver" className="flex items-center h-10 w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-transform duration-150 transform hover:-translate-y-0.5 focus:outline-none justify-center">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 opacity-0 pointer-events-none group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150 text-sm text-primary font-medium">
+            Volver
+          </div>
+        </div>
+      </div>
       <section className="flex items-center gap-6 py-6 border-b mb-6">
         <Avatar className="h-20 w-20">
           <AvatarImage src={undefined} alt={profile?.displayName || "Usuario"} />
