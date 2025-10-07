@@ -72,7 +72,7 @@ export default function AnalizadorPropuestas() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <h6 className="font-medium text-[0.95rem] text-white truncate">{r.law.title}</h6>
-                            <p className="mt-1 italic text-sm text-gray-300 line-clamp-3">{r.law.summary}</p>
+                            <p className="mt-1 italic text-sm text-gray-300">{r.law.summary}</p>
                           </div>
                           <a
                             href={r.law.url}
