@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 import { cn } from "@/lib/utils";
 
