@@ -69,8 +69,15 @@ export default function Perfil() {
         </Avatar>
 
         <div className="flex-1">
-          <h2 className="font-brand text-2xl text-primary">{profile ? profile.displayName : "Usuario"}</h2>
-          <div className="text-sm text-muted-foreground">{profile ? profile.username : "@usuario"}</div>
+          {(() => {
+            const registered = profile && !profile.displayName?.startsWith("Usuario ");
+            return (
+              <>
+                <h2 className="font-brand text-2xl text-primary">{registered ? profile!.displayName : "Usuario no registrado"}</h2>
+                <div className="text-sm text-muted-foreground">{registered ? profile!.username : "Usuario no registrado"}</div>
+              </>
+            );
+          })()}
           <div className="mt-3 flex gap-4 text-sm text-muted-foreground">
             <div>Propuestas creadas: <span className="text-foreground font-semibold">{profile ? profile.created.length : 0}</span></div>
             <div>Votos emitidos: <span className="text-foreground font-semibold">{profile ? profile.voted.length : 0}</span></div>
