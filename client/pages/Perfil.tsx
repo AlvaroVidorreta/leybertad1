@@ -63,7 +63,7 @@ export default function Perfil() {
     <div className="max-w-4xl mx-auto relative">
       <div className="absolute top-6 left-4 md:-left-24 z-10">
         <div className="group relative inline-block">
-          <button onClick={() => navigate(-1)} aria-label="Volver" className="group inline-flex items-center h-10 w-10 md:w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-all duration-200 transform focus:outline-none overflow-hidden">
+          <button onClick={() => navigate(-1)} aria-label="Volver" className="group inline-flex items-center h-10 w-10 md:w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-all duration-200 transform focus:outline-none overflow-hidden group-hover:w-28 md:group-hover:w-36">
             <span className="arrow shrink-0 flex items-center justify-center w-10 transition-transform duration-200 group-hover:-translate-x-2">
               <ArrowLeft className="h-4 w-4" />
             </span>
