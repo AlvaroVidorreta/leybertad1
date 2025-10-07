@@ -6,6 +6,7 @@ import { Law, TimeRange } from "@shared/api";
 const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
 import BibliotecaSub from "./BibliotecaSub";
+import AnalizadorPropuestas from "@/components/AnalizadorPropuestas";
 
 const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
@@ -208,6 +209,10 @@ function UltimasLeyes() {
                     <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Aprobadas (España)</button>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-6">
+                <AnalizadorPropuestas />
               </div>
 
               <div className="mt-6 w-full rounded-md bg-white/3 p-4">
