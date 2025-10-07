@@ -61,7 +61,7 @@ export default function Perfil() {
 
   return (
     <div className="max-w-4xl mx-auto relative">
-      <div className="absolute top-4 left-4 z-10">
+      <div className="absolute top-6 left-4 md:-left-12 z-10">
         <div className="group relative inline-block">
           <button onClick={() => navigate(-1)} aria-label="Volver" className="flex items-center h-10 w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-transform duration-150 transform hover:-translate-y-0.5 focus:outline-none justify-center">
             <ArrowLeft className="h-4 w-4" />
