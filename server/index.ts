@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { commentLaw, createLaw, listRecent, ranking, saveLaw, upvoteLaw } from "./routes/laws";
+import { profileHandler } from "./routes/profile";
 
 export function createServer() {
   const app = express();
@@ -27,6 +28,9 @@ export function createServer() {
   app.post("/api/laws/:id/save", saveLaw);
   app.post("/api/laws/:id/comment", commentLaw);
   app.get("/api/ranking", ranking);
+
+  // Profile endpoint for current visitor
+  app.get("/api/profile", profileHandler);
 
   return app;
 }

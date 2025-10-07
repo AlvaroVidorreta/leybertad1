@@ -10,6 +10,7 @@ import { lazy, Suspense } from "react";
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const BibliotecaSub = lazy(() => import("./pages/BibliotecaSub"));
+const Perfil = lazy(() => import("./pages/Perfil"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +32,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/biblioteca/:category/:sub" element={<BibliotecaSub />} />
+            <Route path="/perfil" element={<Perfil />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

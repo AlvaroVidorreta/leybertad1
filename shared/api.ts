@@ -51,3 +51,10 @@ export interface LawUpdatedResponse {
 export interface RankingResponse {
   items: Law[]; // ordered by upvotes desc
 }
+
+export interface ProfileResponse {
+  displayName: string;
+  username: string;
+  created: Law[];
+  voted: Law[];
+}

@@ -180,7 +180,7 @@ function CollapsibleHeader() {
                   }}
                 >
                   <a href="#guardados" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Tus guardados</a>
-                  <a href="#perfil" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Perfil</a>
+                  <a href="/perfil" onClick={() => setAccountOpen(false)} className="block px-3 py-2 text-sm hover:bg-white/5 rounded-md">Perfil</a>
                   <button onClick={() => setAccountOpen(false)} className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-md">Cerrar sesión</button>
                 </div>
               )}
