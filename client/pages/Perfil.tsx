@@ -167,7 +167,7 @@ export default function Perfil() {
 
       {tab === "guardados" && (
         <section className="mb-8">
-          <h3 className="font-brand text-lg mb-4">Leyes Guardados</h3>
+          <h3 className="font-brand text-lg mb-4">Leyes Guardadas</h3>
           <div className="space-y-3">
             {savedLaws.length === 0 && <div className="text-sm text-muted-foreground">No tienes leyes guardadas.</div>}
             {savedLaws.map((law) => (
