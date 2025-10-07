@@ -61,13 +61,13 @@ export default function Perfil() {
 
   return (
     <div className="max-w-4xl mx-auto relative">
-      <div className="absolute top-6 left-4 md:-left-32 z-10">
+      <div className="absolute top-6 left-4 md:-left-36 z-10">
         <div className="group relative inline-block">
-          <button onClick={() => navigate(-1)} aria-label="Volver" className="group inline-flex items-center h-10 w-10 md:w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-all duration-200 transform focus:outline-none overflow-hidden group-hover:w-20 md:group-hover:w-28">
-            <span className="arrow shrink-0 flex items-center justify-center w-10 transition-transform duration-200 group-hover:-translate-x-3">
+          <button onClick={() => navigate(-1)} aria-label="Volver" className="group inline-flex items-center h-10 w-10 rounded-full bg-card border text-primary/80 hover:shadow-sm transition-all duration-200 transform focus:outline-none overflow-hidden group-hover:w-40 group-hover:px-4">
+            <span className="arrow flex-shrink-0 flex items-center justify-center w-10 transition-transform duration-300 group-hover:-translate-x-14">
               <ArrowLeft className="h-4 w-4" />
             </span>
-            <span className="text hidden md:inline-block px-2 opacity-0 transform translate-x-1 transition-all duration-200 text-sm font-medium text-primary group-hover:opacity-100 group-hover:translate-x-0">Volver</span>
+            <span className="text flex-1 text-center opacity-0 transition-all duration-300 text-sm font-medium text-primary group-hover:opacity-100">Volver</span>
           </button>
         </div>
       </div>
