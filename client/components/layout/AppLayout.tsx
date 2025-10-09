@@ -197,7 +197,7 @@ function BrandTitle({ compact }: { compact?: boolean }) {
     return (
       <a href="/" aria-label="Leybertad" className="select-none">
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">L</div>
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-brand font-semibold">L</div>
         </div>
       </a>
     );
