@@ -7,6 +7,7 @@ const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
 import BibliotecaSub from "./BibliotecaSub";
 import AnalizadorPropuestas from "@/components/AnalizadorPropuestas";
+import HorizontalCarousel from "@/components/HorizontalCarousel";
 
 const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
@@ -159,39 +160,12 @@ function UltimasLeyes() {
               <div className="mt-6 w-full">
                 {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
 
-                {/* Category grid: 3 rows x 4 cols */}
+                {/* Category carousel: single-row 12 tiles with continuous scroll */}
                 {!isLoading && (
                   activeSub ? (
                     <BibliotecaSub categoryProp={activeSub.category} subProp={activeSub.sub} onClose={() => setActiveSub(null)} />
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {categories.map((c, i) => {
-                        const tileBg = warmPalettes[i % warmPalettes.length];
-                        return (
-                          <div
-                            key={c.title}
-                            role="button"
-                            aria-label={`Ver subtemas de ${c.title}`}
-                            className={`relative rounded-md border overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group ${tileBg}`}
-                          >
-                            <div className="z-10 transition-opacity duration-300 ease-in-out group-hover:opacity-0">
-                              <span className="text-sm md:text-base font-semibold tracking-widest text-foreground">{c.title}</span>
-                            </div>
-
-                            {/* Hover overlay showing subtopics as horizontal bars */}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 ease-in-out flex items-center justify-center">
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
-                                <div className="flex flex-col items-stretch gap-2">
-                                  {c.subs.map((s) => (
-                                    <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-cream-100 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <HorizontalCarousel categories={categories} warmPalettes={warmPalettes} onSelectSub={(category, sub) => setActiveSub({ category, sub })} />
                   )
                 )}
 
