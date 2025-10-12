@@ -130,7 +130,7 @@ function UltimasLeyes() {
         <div className="flip-3d">
           <div className={`flip-3d-inner ${isFlipped ? "is-flipped" : ""}`}>
             {/* FRONT FACE - default (light) */}
-            <div className="flip-face front rounded-2xl border p-6 md:p-8 mt-6 bg-white">
+            <div className="flip-face front rounded-2xl border p-6 md:p-6 mt-4 bg-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-lg md:text-xl">Leybertad</span></h3>
@@ -202,7 +202,7 @@ function UltimasLeyes() {
             </div>
 
             {/* BACK FACE - dark themed for "Últimas aprobadas" */}
-            <div className="flip-face back rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
+            <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-lg md:text-xl">España</span></h3>
@@ -232,40 +232,7 @@ function UltimasLeyes() {
                 <AnalizadorPropuestas />
               </div>
 
-              <div className="mt-6 w-full rounded-md bg-white/3 p-4">
-                {isLoading && <div className="p-6 text-sm text-gray-300">Cargando…</div>}
-
-                {/* Dark variant of the category grid */}
-                {!isLoading && (
-                  activeSub ? (
-                    <BibliotecaSub categoryProp={activeSub.category} subProp={activeSub.sub} onClose={() => setActiveSub(null)} />
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {categories.map((c) => (
-                        <div key={c.title} className="relative rounded-md border bg-[#0b1220] overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group">
-                          <div className="z-10 text-white transition-opacity duration-300 ease-in-out group-hover:opacity-0">
-                            <span className="text-sm md:text-base font-semibold tracking-widest">{c.title}</span>
-                          </div>
-
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 ease-in-out flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
-                              <div className="flex flex-col items-stretch gap-2">
-                                {c.subs.map((s) => (
-                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-white/20 text-white text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                )}
-
-                {!isLoading && filtered.length === 0 && (
-                  <div className="p-6 text-sm text-gray-300">No se encontraron leyes.</div>
-                )}
-              </div>
+              <div className="mt-4" />
             </div>
           </div>
         </div>
