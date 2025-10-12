@@ -110,18 +110,18 @@ function UltimasLeyes() {
   // 12 main categories (minipaneles) and their subtopics
   const categories = CATEGORIES;
   const warmPalettes = [
-    "bg-amber-50",
-    "bg-amber-100",
-    "bg-orange-50",
-    "bg-orange-100",
-    "bg-amber-200",
-    "bg-amber-50",
-    "bg-amber-100",
-    "bg-amber-200",
-    "bg-amber-50",
-    "bg-amber-100",
-    "bg-orange-50",
-    "bg-amber-200",
+    "bg-cream-50",
+    "bg-cream-100",
+    "bg-cream-200",
+    "bg-cream-300",
+    "bg-cream-100",
+    "bg-cream-200",
+    "bg-cream-50",
+    "bg-cream-300",
+    "bg-cream-100",
+    "bg-cream-200",
+    "bg-cream-50",
+    "bg-cream-400",
   ];
 
   return (
@@ -183,7 +183,7 @@ function UltimasLeyes() {
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
                                 <div className="flex flex-col items-stretch gap-2">
                                   {c.subs.map((s) => (
-                                    <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-white/80 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
+                                    <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-cream-100 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
                                   ))}
                                 </div>
                               </div>
