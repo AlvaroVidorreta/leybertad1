@@ -76,9 +76,10 @@ export default function HorizontalCarousel({
   }
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <div className="overflow-hidden rounded-md border">
-        <div ref={containerRef} className="w-full">
+    // make the carousel full-bleed relative to the parent panel (parent has p-6)
+    <div className="relative -mx-6" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div className="overflow-hidden">
+        <div ref={containerRef} className="w-full px-6">
           <div ref={trackRef} className="flex" style={{ transform: "translateX(0px)" }}>
             {categories.concat(categories).map((c, idx) => {
               const i = idx % categories.length;
@@ -127,7 +128,7 @@ export default function HorizontalCarousel({
           if (!container) return;
           scrollByPx(-container.clientWidth / 4);
         }}
-        className={`absolute left-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
+        className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -141,7 +142,7 @@ export default function HorizontalCarousel({
           if (!container) return;
           scrollByPx(container.clientWidth / 4);
         }}
-        className={`absolute right-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
