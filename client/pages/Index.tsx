@@ -116,7 +116,7 @@ function UltimasLeyes() {
         <div className="flip-3d">
           <div className={`flip-3d-inner ${isFlipped ? "is-flipped" : ""}`}>
             {/* FRONT FACE - default (light) */}
-            <div className="flip-face front rounded-2xl border p-6 md:p-8 mt-6 bg-gradient-to-tr from-cream-50 to-cream-100">
+            <div className="flip-face front rounded-2xl border p-6 md:p-8 mt-6 bg-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-lg md:text-xl">Leybertad</span></h3>
@@ -142,7 +142,7 @@ function UltimasLeyes() {
                 </div>
               </div>
 
-              <div className="mt-6 w-full rounded-md bg-background/50 p-4">
+              <div className="mt-6 w-full rounded-md bg-gray-50 p-4">
                 {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
 
                 {/* Category grid: 3 rows x 4 cols */}
@@ -154,7 +154,7 @@ function UltimasLeyes() {
                       {categories.map((c, i) => (
                         <div
                           key={c.title}
-                          className="relative rounded-md border bg-card overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group"
+                          className="relative rounded-md border bg-white shadow-sm overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group"
                           role="button"
                           aria-label={`Ver subtemas de ${c.title}`}
                         >
@@ -167,7 +167,7 @@ function UltimasLeyes() {
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out w-full px-4">
                               <div className="flex flex-col items-stretch gap-2">
                                 {c.subs.map((s) => (
-                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-cream-50 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
+                                  <div key={s} onClick={(e) => { e.stopPropagation(); setActiveSub({ category: c.title, sub: s }); }} className="bg-gray-100 text-foreground text-sm rounded-full px-3 py-1 shadow-sm transform transition-transform duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.004] cursor-pointer">{s}</div>
                                 ))}
                               </div>
                             </div>
