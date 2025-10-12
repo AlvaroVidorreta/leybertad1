@@ -17,6 +17,7 @@ export default function HorizontalCarousel({
   const lastTimeRef = useRef<number | null>(null);
   const posRef = useRef(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // px per second: medium-slow
   const SPEED = 36;
@@ -52,9 +53,11 @@ export default function HorizontalCarousel({
 
   function handleMouseEnter() {
     setIsPaused(true);
+    setIsHovered(true);
   }
   function handleMouseLeave() {
     setIsPaused(false);
+    setIsHovered(false);
   }
 
   function scrollByPx(px: number) {
@@ -73,7 +76,7 @@ export default function HorizontalCarousel({
   }
 
   return (
-    <div className="relative group" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="overflow-hidden rounded-md border">
         <div ref={containerRef} className="w-full">
           <div ref={trackRef} className="flex" style={{ transform: "translateX(0px)" }}>
@@ -124,7 +127,7 @@ export default function HorizontalCarousel({
           if (!container) return;
           scrollByPx(-container.clientWidth / 4);
         }}
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+        className={`absolute left-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -138,7 +141,7 @@ export default function HorizontalCarousel({
           if (!container) return;
           scrollByPx(container.clientWidth / 4);
         }}
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+        className={`absolute right-3 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
