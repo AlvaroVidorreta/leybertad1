@@ -22,9 +22,9 @@ export default function AnalizadorPropuestas() {
   const hasResults = results && results.length > 0;
 
   return (
-    <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-5 md:p-6 text-white">
-      <div className="mb-3">
-        <h4 className="font-playfair text-2xl md:text-3xl leading-tight">Analizador de Propuestas</h4>
+    <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white">
+      <div className="mb-2">
+        <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
         <p className="text-sm text-gray-300 mt-1">Introduce el título o la idea principal de tu propuesta para encontrar leyes vigentes relacionadas.</p>
       </div>
 
@@ -33,14 +33,14 @@ export default function AnalizadorPropuestas() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Ej: 'Modificar el IVA de los productos culturales al 4%'..."
-          className="w-full min-h-[92px] rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          className="w-full min-h-[80px] rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
         />
-        <div className="mt-3 flex items-center justify-end">
+        <div className="mt-2 flex items-center justify-end">
           <button
             onClick={onAnalyze}
             disabled={!text.trim() || isLoading}
             className={cn(
-              "inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm disabled:opacity-50",
+              "inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs disabled:opacity-50",
             )}
           >
             {isLoading && (
@@ -52,7 +52,7 @@ export default function AnalizadorPropuestas() {
       </div>
 
       {results !== null && (
-        <div className="mt-5">
+        <div className="mt-4">
           {!hasResults && (
             <div className="text-center text-sm text-gray-300 py-6">
               No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
