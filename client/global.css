@@ -219,25 +219,37 @@
     box-shadow: 0 0 0 2px rgba(0,0,0,1);
   }
 
-  /* Global modern thin scrollbar for all scrollable elements */
-  *::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
+  /* Global modern thin scrollbar for all scrollable elements (strong specificity to override other styles) */
+  html *::-webkit-scrollbar,
+  body *::-webkit-scrollbar,
+  .recent-scroll *::-webkit-scrollbar,
+  .rounded-2xl *::-webkit-scrollbar {
+    width: 2px !important;
+    height: 2px !important;
   }
 
-  *::-webkit-scrollbar-track {
-    background: transparent;
+  html *::-webkit-scrollbar-track,
+  body *::-webkit-scrollbar-track,
+  .recent-scroll *::-webkit-scrollbar-track,
+  .rounded-2xl *::-webkit-scrollbar-track {
+    background: transparent !important;
   }
 
-  *::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
-    border-radius: 999px;
-    border: 0.5px solid hsla(var(--primary-foreground), 0.12);
-    background-clip: padding-box;
+  html *::-webkit-scrollbar-thumb,
+  body *::-webkit-scrollbar-thumb,
+  .recent-scroll *::-webkit-scrollbar-thumb,
+  .rounded-2xl *::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary)) !important;
+    border-radius: 999px !important;
+    border: 0.3px solid hsla(var(--primary-foreground), 0.12) !important;
+    background-clip: padding-box !important;
   }
 
-  *::-webkit-scrollbar-thumb:hover {
-    filter: brightness(0.95);
+  html *::-webkit-scrollbar-thumb:hover,
+  body *::-webkit-scrollbar-thumb:hover,
+  .recent-scroll *::-webkit-scrollbar-thumb:hover,
+  .rounded-2xl *::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.95) !important;
   }
 
   /* Ensure category-grid still has overflow behavior and uses same scrollbar settings for Firefox */
