@@ -221,8 +221,8 @@
 
   /* Global modern thin scrollbar for all scrollable elements */
   *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 7px;
+    height: 7px;
   }
 
   *::-webkit-scrollbar-track {
@@ -232,7 +232,7 @@
   *::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
     border-radius: 999px;
-    border: 2px solid hsla(var(--primary-foreground), 0.12);
+    border: 1px solid hsla(var(--primary-foreground), 0.12);
     background-clip: padding-box;
   }
 
@@ -246,12 +246,18 @@
     scrollbar-width: thin;
   }
 
+  /* Recent section specific: move scrollbar a bit to the right */
+  .recent-scroll {
+    padding-right: 14px;
+  }
+
   /* Firefox: apply global scrollbar styles to common scrollable selectors */
   html,
   body,
   .category-grid,
   .scrollable,
-  .custom-scrollbar {
+  .custom-scrollbar,
+  .recent-scroll {
     scrollbar-color: hsl(var(--primary)) transparent;
     scrollbar-width: thin;
   }

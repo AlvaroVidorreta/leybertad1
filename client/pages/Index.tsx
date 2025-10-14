@@ -444,7 +444,7 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <h3 className="text-xl font-bold mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
-      <div className="pr-1">
+      <div className="pr-1 recent-scroll">
         <List
           height={Math.min(LIST_MAX_HEIGHT, (data ? data.length : 0) * ITEM_SIZE_RECENT)}
           itemCount={data ? data.length : 0}
