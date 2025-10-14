@@ -1,7 +1,24 @@
 import AppLayout from "@/components/layout/AppLayout";
-import { lazy, Suspense, useMemo, useState, useRef, useEffect, useLayoutEffect, useCallback, memo } from "react";
+import {
+  lazy,
+  Suspense,
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  memo,
+} from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { comentarLey, crearLey, guardarLey, obtenerRanking, obtenerRecientes, votarLey } from "@/lib/api";
+import {
+  comentarLey,
+  crearLey,
+  guardarLey,
+  obtenerRanking,
+  obtenerRecientes,
+  votarLey,
+} from "@/lib/api";
 import { Law, TimeRange } from "@shared/api";
 const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
@@ -15,18 +32,51 @@ const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS; // exact pixel 
 
 // Shared categories used across Biblioteca and publishing modal
 const CATEGORIES = [
-  { title: "Economía", subs: ["Presupuestos", "Impuestos", "Salarios Públicos", "Subvenciones"] },
-  { title: "Política Exterior", subs: ["Relaciones", "Acuerdos", "Diplomacia", "Tratados"] },
-  { title: "Forma de Gobierno", subs: ["Constitución", "Reformas", "Instituciones", "Competencias"] },
-  { title: "Impuestos", subs: ["Directos", "Indirectos", "Incentivos", "Fraude"] },
-  { title: "Sanidad", subs: ["Financiación", "Acceso", "Recursos", "Salud Pública"] },
-  { title: "Educación", subs: ["Currículo", "Financiación", "Acceso", "Formación"] },
-  { title: "Medio Ambiente", subs: ["Energía", "Protección", "Residuos", "Clima"] },
+  {
+    title: "Economía",
+    subs: ["Presupuestos", "Impuestos", "Salarios Públicos", "Subvenciones"],
+  },
+  {
+    title: "Política Exterior",
+    subs: ["Relaciones", "Acuerdos", "Diplomacia", "Tratados"],
+  },
+  {
+    title: "Forma de Gobierno",
+    subs: ["Constitución", "Reformas", "Instituciones", "Competencias"],
+  },
+  {
+    title: "Impuestos",
+    subs: ["Directos", "Indirectos", "Incentivos", "Fraude"],
+  },
+  {
+    title: "Sanidad",
+    subs: ["Financiación", "Acceso", "Recursos", "Salud Pública"],
+  },
+  {
+    title: "Educación",
+    subs: ["Currículo", "Financiación", "Acceso", "Formación"],
+  },
+  {
+    title: "Medio Ambiente",
+    subs: ["Energía", "Protección", "Residuos", "Clima"],
+  },
   { title: "Justicia", subs: ["Reformas", "Acceso", "Procesal", "Penal"] },
-  { title: "Transporte", subs: ["Infraestructura", "Movilidad", "Subvenciones", "Regulación"] },
-  { title: "Innovación", subs: ["I+D", "Startups", "Patentes", "Digitalización"] },
-  { title: "Trabajo", subs: ["Contratos", "Salarios", "Sindicación", "Seguridad"] },
-  { title: "Agricultura", subs: ["Subvenciones", "Regulación", "Comercio", "Sostenibilidad"] },
+  {
+    title: "Transporte",
+    subs: ["Infraestructura", "Movilidad", "Subvenciones", "Regulación"],
+  },
+  {
+    title: "Innovación",
+    subs: ["I+D", "Startups", "Patentes", "Digitalización"],
+  },
+  {
+    title: "Trabajo",
+    subs: ["Contratos", "Salarios", "Sindicación", "Seguridad"],
+  },
+  {
+    title: "Agricultura",
+    subs: ["Subvenciones", "Regulación", "Comercio", "Sostenibilidad"],
+  },
 ];
 
 export default function Index() {
@@ -35,7 +85,8 @@ export default function Index() {
   const [showComments, setShowComments] = useState(false);
 
   const comentar = useMutation({
-    mutationFn: ({ id, texto }: { id: string; texto: string }) => comentarLey(id, { texto }),
+    mutationFn: ({ id, texto }: { id: string; texto: string }) =>
+      comentarLey(id, { texto }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
   });
 
@@ -56,7 +107,14 @@ export default function Index() {
           <FeedRecientes onOpenLaw={handleOpenLaw} />
         </section>
         <aside className="lg:col-span-1">
-          <Ranking onOpenLaw={handleOpenLaw} selectedLaw={selectedLaw} showComments={showComments} setSelectedLaw={setSelectedLaw} setShowComments={setShowComments} onComment={(id, texto) => comentar.mutate({ id, texto })} />
+          <Ranking
+            onOpenLaw={handleOpenLaw}
+            selectedLaw={selectedLaw}
+            showComments={showComments}
+            setSelectedLaw={setSelectedLaw}
+            setShowComments={setShowComments}
+            onComment={(id, texto) => comentar.mutate({ id, texto })}
+          />
         </aside>
       </div>
 
@@ -69,7 +127,12 @@ export default function Index() {
 }
 
 function UltimasLeyes() {
-  const { data: allLaws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes, staleTime: 10000, refetchOnWindowFocus: false });
+  const { data: allLaws, isLoading } = useQuery({
+    queryKey: ["recientes"],
+    queryFn: obtenerRecientes,
+    staleTime: 10000,
+    refetchOnWindowFocus: false,
+  });
   const [qAll, setQAll] = useState("");
   const [qApproved, setQApproved] = useState("");
   const [mode, setMode] = useState<"all" | "approved">("all");
@@ -87,7 +150,10 @@ function UltimasLeyes() {
   }, [qApproved]);
 
   const isFlipped = mode === "approved";
-  const [activeSub, setActiveSub] = useState<{ category: string; sub: string } | null>(null);
+  const [activeSub, setActiveSub] = useState<{
+    category: string;
+    sub: string;
+  } | null>(null);
 
   const filtered = useMemo(() => {
     const items = allLaws ?? [];
@@ -103,7 +169,10 @@ function UltimasLeyes() {
       }
 
       if (!term) return true;
-      const hay = [l.titulo, l.objetivo, l.detalles].filter(Boolean).join(" ").toLowerCase();
+      const hay = [l.titulo, l.objetivo, l.detalles]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       return hay.includes(term);
     });
   }, [allLaws, debouncedQAll, debouncedQApproved, mode, isFlipped]);
@@ -134,8 +203,15 @@ function UltimasLeyes() {
             <div className="flip-face front rounded-2xl border p-6 md:p-6 mt-4 bg-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-lg md:text-xl">Leybertad</span></h3>
-                  <p className="text-sm text-muted-foreground">Busca y explora la biblioteca de leyes de Leybertad.</p>
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">
+                    Biblioteca{" "}
+                    <span className="italic font-normal text-lg md:text-xl">
+                      Leybertad
+                    </span>
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Busca y explora la biblioteca de leyes de Leybertad.
+                  </p>
                 </div>
 
                 <div className="md:w-96 w-full">
@@ -147,30 +223,60 @@ function UltimasLeyes() {
                       placeholder="Buscar en Biblioteca..."
                       className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-28 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
-                    <button onClick={() => {}} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
+                    <button
+                      onClick={() => {}}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm"
+                    >
+                      Buscar
+                    </button>
                   </div>
 
                   <div className="mt-3 flex gap-2 justify-end">
-                    <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Leybertad</button>
-                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}>Aprobadas (España)</button>
+                    <button
+                      onClick={() => setMode("all")}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-white"}`}
+                    >
+                      Leybertad
+                    </button>
+                    <button
+                      onClick={() => setMode("approved")}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-white"}`}
+                    >
+                      Aprobadas (España)
+                    </button>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 w-full">
-                {isLoading && <div className="p-6 text-sm text-muted-foreground">Cargando…</div>}
-
-                {/* Category carousel: single-row 12 tiles with continuous scroll */}
-                {!isLoading && (
-                  activeSub ? (
-                    <BibliotecaSub categoryProp={activeSub.category} subProp={activeSub.sub} onClose={() => setActiveSub(null)} />
-                  ) : (
-                    <HorizontalCarousel categories={categories} warmPalettes={warmPalettes} onSelectSub={(category, sub) => setActiveSub({ category, sub })} />
-                  )
+                {isLoading && (
+                  <div className="p-6 text-sm text-muted-foreground">
+                    Cargando…
+                  </div>
                 )}
 
+                {/* Category carousel: single-row 12 tiles with continuous scroll */}
+                {!isLoading &&
+                  (activeSub ? (
+                    <BibliotecaSub
+                      categoryProp={activeSub.category}
+                      subProp={activeSub.sub}
+                      onClose={() => setActiveSub(null)}
+                    />
+                  ) : (
+                    <HorizontalCarousel
+                      categories={categories}
+                      warmPalettes={warmPalettes}
+                      onSelectSub={(category, sub) =>
+                        setActiveSub({ category, sub })
+                      }
+                    />
+                  ))}
+
                 {!isLoading && filtered.length === 0 && (
-                  <div className="p-6 text-sm text-muted-foreground">No se encontraron leyes.</div>
+                  <div className="p-6 text-sm text-muted-foreground">
+                    No se encontraron leyes.
+                  </div>
                 )}
               </div>
             </div>
@@ -179,8 +285,15 @@ function UltimasLeyes() {
             <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">Biblioteca <span className="italic font-normal text-lg md:text-xl">España</span></h3>
-                  <p className="text-sm text-gray-200">Busca y explora las últimas leyes aprobadas en España.</p>
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">
+                    Biblioteca{" "}
+                    <span className="italic font-normal text-lg md:text-xl">
+                      España
+                    </span>
+                  </h3>
+                  <p className="text-sm text-gray-200">
+                    Busca y explora las últimas leyes aprobadas en España.
+                  </p>
                 </div>
 
                 <div className="md:w-96 w-full">
@@ -192,12 +305,27 @@ function UltimasLeyes() {
                       placeholder="Buscar en Últimas aprobadas..."
                       className="w-full rounded-full border bg-white/5 px-5 pr-28 py-3 text-base md:text-lg text-white placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     />
-                    <button onClick={() => {}} className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm">Buscar</button>
+                    <button
+                      onClick={() => {}}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm"
+                    >
+                      Buscar
+                    </button>
                   </div>
 
                   <div className="mt-3 flex gap-2 justify-end">
-                    <button onClick={() => setMode("all")} className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Leybertad</button>
-                    <button onClick={() => setMode("approved")} className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}>Aprobadas (España)</button>
+                    <button
+                      onClick={() => setMode("all")}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}
+                    >
+                      Leybertad
+                    </button>
+                    <button
+                      onClick={() => setMode("approved")}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}
+                    >
+                      Aprobadas (España)
+                    </button>
                   </div>
                 </div>
               </div>
@@ -214,7 +342,6 @@ function UltimasLeyes() {
     </section>
   );
 }
-
 
 function HeroPublicar() {
   const qc = useQueryClient();
@@ -247,7 +374,8 @@ function HeroPublicar() {
     },
   });
 
-  const canSubmit = titulo.trim().length > 0 && objetivo.trim().length > 3 && !crear.isPending;
+  const canSubmit =
+    titulo.trim().length > 0 && objetivo.trim().length > 3 && !crear.isPending;
 
   // recommended extra step modal state
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -263,9 +391,16 @@ function HeroPublicar() {
     // slight delay so focus switching between inputs doesn't collapse
     setTimeout(() => {
       const active = document.activeElement as HTMLElement | null;
-      if (containerRef.current && active && containerRef.current.contains(active)) return;
-      if (detailsRef.current && active && detailsRef.current.contains(active)) return;
-      if (titulo.trim() || objetivo.trim() || detalles.trim() || apodo.trim()) return;
+      if (
+        containerRef.current &&
+        active &&
+        containerRef.current.contains(active)
+      )
+        return;
+      if (detailsRef.current && active && detailsRef.current.contains(active))
+        return;
+      if (titulo.trim() || objetivo.trim() || detalles.trim() || apodo.trim())
+        return;
       setExpand(false);
     }, 120);
   }
@@ -278,13 +413,22 @@ function HeroPublicar() {
 
   function confirmPublish() {
     setShowCategoryModal(false);
-    crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined, category: chosenCategory || undefined, subcategory: chosenSub || undefined } as any);
+    crear.mutate({
+      titulo,
+      objetivo,
+      detalles: detalles || undefined,
+      apodo: apodo || undefined,
+      category: chosenCategory || undefined,
+      subcategory: chosenSub || undefined,
+    } as any);
   }
 
   return (
     <div className="relative overflow-hidden p-6 md:p-10">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="font-brand text-4xl md:text-5xl text-primary mb-4">Leybertad</h2>
+        <h2 className="font-brand text-4xl md:text-5xl text-primary mb-4">
+          Leybertad
+        </h2>
         <Suspense fallback={<div aria-hidden className="h-6" />}>
           <QuoteRotator />
         </Suspense>
@@ -304,7 +448,7 @@ function HeroPublicar() {
               onClick={openPublishModal}
               className={cn(
                 "absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm md:text-base disabled:opacity-50 disabled:pointer-events-none transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden",
-                canSubmit ? "group" : ""
+                canSubmit ? "group" : "",
               )}
             >
               {/* shine overlay only when enabled */}
@@ -314,7 +458,10 @@ function HeroPublicar() {
               <span className="relative z-10">Publicar</span>
             </button>
           </div>
-          <div ref={detailsRef} className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}>
+          <div
+            ref={detailsRef}
+            className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}
+          >
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-start">
               <input
                 value={objetivo}
@@ -349,63 +496,110 @@ function HeroPublicar() {
       {/* Category selection modal (recommended extra step) */}
       {showCategoryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowCategoryModal(false)} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowCategoryModal(false)}
+          />
 
           <div className="relative z-10 w-full max-w-lg rounded-2xl bg-card/80 backdrop-blur-md border p-6 shadow-xl">
-            <h4 className="text-lg font-semibold">Elige una categoría (recomendado)</h4>
-            <p className="text-sm text-muted-foreground mt-1">Selecciona la categoría que mejor describa tu propuesta.</p>
+            <h4 className="text-lg font-semibold">
+              Elige una categoría (recomendado)
+            </h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              Selecciona la categoría que mejor describa tu propuesta.
+            </p>
 
             <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 p-2 category-grid">
               {CATEGORIES.map((c) => (
                 <button
                   key={c.title}
-                  onClick={() => { setChosenCategory(c.title); setChosenSub(null); }}
-                  className={`text-left w-full rounded-lg border px-3 py-2 bg-white/80 hover:bg-white ${chosenCategory === c.title ? 'category-selected' : ''}`}
+                  onClick={() => {
+                    setChosenCategory(c.title);
+                    setChosenSub(null);
+                  }}
+                  className={`text-left w-full rounded-lg border px-3 py-2 bg-white/80 hover:bg-white ${chosenCategory === c.title ? "category-selected" : ""}`}
                 >
                   <div className="font-medium text-sm truncate">{c.title}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{c.subs.slice(0,2).join(' · ')}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {c.subs.slice(0, 2).join(" · ")}
+                  </div>
                 </button>
               ))}
             </div>
 
             {chosenCategory && (
               <div className="mt-4">
-                <div className="text-sm text-muted-foreground">Etiquetas en <strong className="text-foreground">{chosenCategory}</strong></div>
+                <div className="text-sm text-muted-foreground">
+                  Etiquetas en{" "}
+                  <strong className="text-foreground">{chosenCategory}</strong>
+                </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(CATEGORIES.find(c => c.title === chosenCategory)?.subs || []).map((s) => (
+                  {(
+                    CATEGORIES.find((c) => c.title === chosenCategory)?.subs ||
+                    []
+                  ).map((s) => (
                     <button
                       key={s}
                       onClick={() => setChosenSub(s)}
-                      className={`text-sm px-3 py-1 rounded-full border ${chosenSub === s ? 'bg-primary text-primary-foreground' : 'bg-white/80'}`}
-                    >{s}</button>
+                      className={`text-sm px-3 py-1 rounded-full border ${chosenSub === s ? "bg-primary text-primary-foreground" : "bg-white/80"}`}
+                    >
+                      {s}
+                    </button>
                   ))}
                   {/* 'Otro' option */}
                   <button
                     key="otro"
-                    onClick={() => setChosenSub('Otro')}
-                    className={`text-sm px-3 py-1 rounded-full border ${chosenSub === 'Otro' ? 'bg-primary text-primary-foreground' : 'bg-white/80'}`}
-                  >Otro</button>
+                    onClick={() => setChosenSub("Otro")}
+                    className={`text-sm px-3 py-1 rounded-full border ${chosenSub === "Otro" ? "bg-primary text-primary-foreground" : "bg-white/80"}`}
+                  >
+                    Otro
+                  </button>
                 </div>
               </div>
             )}
 
             <div className="mt-6 flex gap-3 justify-end">
-              <button onClick={() => { setShowCategoryModal(false); crear.mutate({ titulo, objetivo, detalles: detalles || undefined, apodo: apodo || undefined } as any); }} className="px-3 py-2 rounded-md border bg-white btn-micro-raise">Publicar sin categoría</button>
-              <button onClick={confirmPublish} disabled={!!crear.isPending} className="px-4 py-2 rounded-full bg-primary text-primary-foreground disabled:opacity-50 btn-micro-shimmer">Publicar</button>
+              <button
+                onClick={() => {
+                  setShowCategoryModal(false);
+                  crear.mutate({
+                    titulo,
+                    objetivo,
+                    detalles: detalles || undefined,
+                    apodo: apodo || undefined,
+                  } as any);
+                }}
+                className="px-3 py-2 rounded-md border bg-white btn-micro-raise"
+              >
+                Publicar sin categoría
+              </button>
+              <button
+                onClick={confirmPublish}
+                disabled={!!crear.isPending}
+                className="px-4 py-2 rounded-full bg-primary text-primary-foreground disabled:opacity-50 btn-micro-shimmer"
+              >
+                Publicar
+              </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List } from "react-window";
 
-function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boolean) => void }) {
+function FeedRecientes({
+  onOpenLaw,
+}: {
+  onOpenLaw: (law: Law, openComments?: boolean) => void;
+}) {
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes });
+  const { data, isLoading } = useQuery({
+    queryKey: ["recientes"],
+    queryFn: obtenerRecientes,
+  });
 
   const votar = useMutation({
     mutationFn: votarLey,
@@ -428,13 +622,26 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
 
   const ITEM_SIZE_RECENT = 108; // estimated height per law card (reduced spacing)
 
-  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+  const Row = ({
+    index,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+  }) => {
     const law = data ? data[index] : null;
     if (!law) return null;
     return (
       <div style={style} className="px-0 py-0.5">
-        <li className={`list-none rounded-xl border pl-6 pr-3 py-3 bg-background/70 ${(law as any)?._isNew ? 'animate-insert' : ''}`}>
-          <LawCard law={law} onUpvote={handleUpvote} onSave={handleSave} onOpen={onOpenLaw} />
+        <li
+          className={`list-none rounded-xl border pl-6 pr-3 py-3 bg-background/70 ${(law as any)?._isNew ? "animate-insert" : ""}`}
+        >
+          <LawCard
+            law={law}
+            onUpvote={handleUpvote}
+            onSave={handleSave}
+            onOpen={onOpenLaw}
+          />
         </li>
       </div>
     );
@@ -446,7 +653,10 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="pr-1 recent-scroll">
         <List
-          height={Math.min(LIST_MAX_HEIGHT, (data ? data.length : 0) * ITEM_SIZE_RECENT)}
+          height={Math.min(
+            LIST_MAX_HEIGHT,
+            (data ? data.length : 0) * ITEM_SIZE_RECENT,
+          )}
           itemCount={data ? data.length : 0}
           itemSize={ITEM_SIZE_RECENT}
           width="100%"
@@ -458,7 +668,17 @@ function FeedRecientes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boo
   );
 }
 
-const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: Law; onUpvote: (id: string) => void; onSave: (id: string) => void; onOpen: (law: Law, openComments?: boolean) => void }) {
+const LawCard = memo(function LawCard({
+  law,
+  onUpvote,
+  onSave,
+  onOpen,
+}: {
+  law: Law;
+  onUpvote: (id: string) => void;
+  onSave: (id: string) => void;
+  onOpen: (law: Law, openComments?: boolean) => void;
+}) {
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
   const [isSingleLine, setIsSingleLine] = useState(false);
 
@@ -474,24 +694,74 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
   return (
     <div>
       <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0 pr-14 cursor-pointer" onClick={() => onOpen(law)}>
+        <div
+          className="flex-1 min-w-0 pr-14 cursor-pointer"
+          onClick={() => onOpen(law)}
+        >
           <h4 className="font-medium text-base break-words">{law.titulo}</h4>
-          <p ref={subtitleRef} className={`text-[0.8125rem] text-muted-foreground break-words leading-tight ${isSingleLine ? "mt-1 transform translate-y-1" : "mt-0.5"}`}>{law.objetivo}</p>
-          {law.detalles && <p className="mt-1 text-sm break-words">{law.detalles}</p>}
+          <p
+            ref={subtitleRef}
+            className={`text-[0.8125rem] text-muted-foreground break-words leading-tight ${isSingleLine ? "mt-1 transform translate-y-1" : "mt-0.5"}`}
+          >
+            {law.objetivo}
+          </p>
+          {law.detalles && (
+            <p className="mt-1 text-sm break-words">{law.detalles}</p>
+          )}
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-5 -translate-x-1">
-          <button onClick={() => onUpvote(law.id)} aria-label="Upvote" className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4rem]">▲ {law.upvotes}</button>
+          <button
+            onClick={() => onUpvote(law.id)}
+            aria-label="Upvote"
+            className="rounded-full border bg-white hover:bg-cream-50 inline-flex items-center justify-center px-3 py-0.5 text-sm min-w-[4rem]"
+          >
+            ▲ {law.upvotes}
+          </button>
 
           <div className="flex items-center gap-2 mt-1">
             {/* comment icon (left) */}
-            <button onClick={() => onOpen(law, true)} aria-label="Perspectivas" className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8">
-              <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <button
+              onClick={() => onOpen(law, true)}
+              aria-label="Perspectivas"
+              className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8"
+            >
+              <svg
+                className="w-4 h-4 text-muted-foreground"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
 
             {/* save icon (right) */}
-            <button onClick={() => onSave(law.id)} aria-label="Guardar" className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8">
-              <svg className="w-4 h-4 text-muted-foreground transform translate-x-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <button
+              onClick={() => onSave(law.id)}
+              aria-label="Guardar"
+              className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8"
+            >
+              <svg
+                className="w-4 h-4 text-muted-foreground transform translate-x-[1px]"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         </div>
@@ -500,11 +770,33 @@ const LawCard = memo(function LawCard({ law, onUpvote, onSave, onOpen }: { law: 
   );
 });
 
-function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShowComments, onComment }: { onOpenLaw: (law: Law, openComments?: boolean) => void; selectedLaw: Law | null; showComments: boolean; setSelectedLaw: (l: Law | null) => void; setShowComments: (s: boolean) => void; onComment: (id: string, texto: string) => void; }) {
+function Ranking({
+  onOpenLaw,
+  selectedLaw,
+  showComments,
+  setSelectedLaw,
+  setShowComments,
+  onComment,
+}: {
+  onOpenLaw: (law: Law, openComments?: boolean) => void;
+  selectedLaw: Law | null;
+  showComments: boolean;
+  setSelectedLaw: (l: Law | null) => void;
+  setShowComments: (s: boolean) => void;
+  onComment: (id: string, texto: string) => void;
+}) {
   const [range, setRange] = useState<TimeRange>("month");
-  const { data, isLoading } = useQuery({ queryKey: ["ranking", range], queryFn: () => obtenerRanking(range), staleTime: 30000, refetchOnWindowFocus: false });
+  const { data, isLoading } = useQuery({
+    queryKey: ["ranking", range],
+    queryFn: () => obtenerRanking(range),
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
   const items = useMemo(() => data ?? [], [data]);
-  const displayedRanking = useMemo(() => items.slice(0, MAX_RANKING_ITEMS), [items]);
+  const displayedRanking = useMemo(
+    () => items.slice(0, MAX_RANKING_ITEMS),
+    [items],
+  );
 
   const ranges: { key: TimeRange; label: string }[] = [
     { key: "day", label: "Día" },
@@ -519,7 +811,8 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
   useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (!ddRef.current) return;
-      if (e.target instanceof Node && !ddRef.current.contains(e.target)) setOpen(false);
+      if (e.target instanceof Node && !ddRef.current.contains(e.target))
+        setOpen(false);
     }
     document.addEventListener("click", onDoc);
     return () => document.removeEventListener("click", onDoc);
@@ -536,7 +829,20 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
             aria-expanded={open}
           >
             {ranges.find((r) => r.key === range)?.label ?? "Filtrar"}
-            <svg className="w-3 h-3 text-muted-foreground" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg
+              className="w-3 h-3 text-muted-foreground"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 8l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
 
           {open && (
@@ -544,7 +850,10 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
               {ranges.map((r) => (
                 <button
                   key={r.key}
-                  onClick={() => { setRange(r.key); setOpen(false); }}
+                  onClick={() => {
+                    setRange(r.key);
+                    setOpen(false);
+                  }}
                   className={`w-full text-left px-3 py-2 text-sm ${range === r.key ? "bg-primary text-primary-foreground" : "hover:bg-gray-50"}`}
                 >
                   {r.label}
@@ -555,7 +864,9 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
         </div>
       </div>
 
-      {isLoading && <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>}
+      {isLoading && (
+        <p className="mt-3 text-sm text-muted-foreground">Cargando…</p>
+      )}
 
       <div className="mt-4" style={{ height: `${LIST_MAX_HEIGHT}px` }}>
         <List
@@ -564,7 +875,13 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
           itemSize={ITEM_HEIGHT_RANKING}
           width="100%"
         >
-          {({ index, style }: { index: number; style: React.CSSProperties }) => {
+          {({
+            index,
+            style,
+          }: {
+            index: number;
+            style: React.CSSProperties;
+          }) => {
             const l = displayedRanking[index];
             return (
               <div style={style} className="px-0">
@@ -572,10 +889,14 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                   onClick={() => onOpenLaw(l)}
                   className="flex items-center gap-4 rounded-lg p-3 hover:bg-white/40 transition-colors transition-shadow duration-150 cursor-pointer"
                 >
-                  <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{index + 1}</span>
+                  <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">
+                    {index + 1}
+                  </span>
 
                   <div className="flex-1">
-                    <p className="font-medium text-[0.95rem] text-left truncate">{l.titulo}</p>
+                    <p className="font-medium text-[0.95rem] text-left truncate">
+                      {l.titulo}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -591,32 +912,60 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
       {/* Modal / detail display */}
       {selectedLaw && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => { setSelectedLaw(null); setShowComments(false); }} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => {
+              setSelectedLaw(null);
+              setShowComments(false);
+            }}
+          />
           <div className="relative z-10 w-[min(720px,95%)] rounded-2xl bg-card p-6 shadow-xl">
             {/* Close X top-right */}
             <button
-              onClick={() => { setSelectedLaw(null); setShowComments(false); }}
+              onClick={() => {
+                setSelectedLaw(null);
+                setShowComments(false);
+              }}
               aria-label="Cerrar"
               className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-muted-foreground hover:bg-white"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 6l12 12M6 18L18 6"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
 
             <div className="mb-2">
               <h4 className="text-lg font-semibold">{selectedLaw!.titulo}</h4>
-              <p className="text-sm text-muted-foreground">{selectedLaw!.upvotes} votos</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedLaw!.upvotes} votos
+              </p>
             </div>
 
             <hr className="my-4" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h5 className="text-sm font-medium text-muted-foreground">Objetivo</h5>
+                <h5 className="text-sm font-medium text-muted-foreground">
+                  Objetivo
+                </h5>
                 <p className="mt-1">{selectedLaw!.objetivo}</p>
 
                 {selectedLaw!.detalles && (
                   <>
-                    <h5 className="text-sm font-medium text-muted-foreground mt-4">Detalles</h5>
+                    <h5 className="text-sm font-medium text-muted-foreground mt-4">
+                      Detalles
+                    </h5>
                     <p className="mt-1 text-sm">{selectedLaw!.detalles}</p>
                   </>
                 )}
@@ -625,7 +974,9 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
               <div>
                 <div className="flex flex-col h-full justify-between">
                   <div>
-                    <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
+                    <h5 className="text-sm font-medium text-muted-foreground">
+                      Autor
+                    </h5>
                     <p className="mt-1">{selectedLaw!.apodo ?? "-"}</p>
                   </div>
 
@@ -634,38 +985,66 @@ function Ranking({ onOpenLaw, selectedLaw, showComments, setSelectedLaw, setShow
                       onClick={() => setShowComments((s) => !s)}
                       className="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50"
                     >
-                      {showComments ? "Ocultar perspectivas" : "Ver perspectivas"}
+                      {showComments
+                        ? "Ocultar perspectivas"
+                        : "Ver perspectivas"}
                     </button>
 
                     {showComments && (
                       <div className="mt-3 max-h-40 overflow-auto rounded-md border bg-white p-2 text-sm">
-                        {Array.isArray(selectedLaw!.comentarios) && selectedLaw!.comentarios.length > 0 ? (
+                        {Array.isArray(selectedLaw!.comentarios) &&
+                        selectedLaw!.comentarios.length > 0 ? (
                           selectedLaw!.comentarios.map((c: any) => (
-                            <div key={c.id} className="py-1 border-b last:border-b-0">{c.texto}</div>
+                            <div
+                              key={c.id}
+                              className="py-1 border-b last:border-b-0"
+                            >
+                              {c.texto}
+                            </div>
                           ))
                         ) : (
-                          <div className="text-muted-foreground">Sin perspectivas</div>
+                          <div className="text-muted-foreground">
+                            Sin perspectivas
+                          </div>
                         )}
 
                         {/* comment input */}
                         <div className="mt-3 flex items-center gap-2">
-                          <input ref={commentRef} placeholder="Escribe tu perspectiva..." className="flex-1 rounded-md border px-2 py-1 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { const v = (e.target as HTMLInputElement).value.trim(); if (v) { onComment(selectedLaw!.id, v); (e.target as HTMLInputElement).value = ''; } } }} />
-                          <button className="px-3 py-1 rounded-md bg-primary text-primary-foreground" onClick={() => {
-                            if (!commentRef.current) return;
-                            const v = commentRef.current.value.trim();
-                            if (!v) return;
-                            onComment(selectedLaw!.id, v);
-                            commentRef.current.value = '';
-                          }}>Enviar</button>
+                          <input
+                            ref={commentRef}
+                            placeholder="Escribe tu perspectiva..."
+                            className="flex-1 rounded-md border px-2 py-1 text-sm"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                const v = (
+                                  e.target as HTMLInputElement
+                                ).value.trim();
+                                if (v) {
+                                  onComment(selectedLaw!.id, v);
+                                  (e.target as HTMLInputElement).value = "";
+                                }
+                              }
+                            }}
+                          />
+                          <button
+                            className="px-3 py-1 rounded-md bg-primary text-primary-foreground"
+                            onClick={() => {
+                              if (!commentRef.current) return;
+                              const v = commentRef.current.value.trim();
+                              if (!v) return;
+                              onComment(selectedLaw!.id, v);
+                              commentRef.current.value = "";
+                            }}
+                          >
+                            Enviar
+                          </button>
                         </div>
-
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       )}
