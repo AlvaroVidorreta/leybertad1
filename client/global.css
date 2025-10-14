@@ -221,8 +221,8 @@
 
   /* Global modern thin scrollbar for all scrollable elements */
   *::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+    width: 3px;
+    height: 3px;
   }
 
   *::-webkit-scrollbar-track {
@@ -232,7 +232,7 @@
   *::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
     border-radius: 999px;
-    border: 1px solid hsla(var(--primary-foreground), 0.12);
+    border: 0.5px solid hsla(var(--primary-foreground), 0.12);
     background-clip: padding-box;
   }
 
