@@ -223,7 +223,9 @@
   html *::-webkit-scrollbar,
   body *::-webkit-scrollbar,
   .recent-scroll *::-webkit-scrollbar,
-  .rounded-2xl *::-webkit-scrollbar {
+  .rounded-2xl *::-webkit-scrollbar,
+  *[style*="overflow"]::-webkit-scrollbar,
+  *[style*="overflow:"]::-webkit-scrollbar {
     width: 2px !important;
     height: 2px !important;
   }
