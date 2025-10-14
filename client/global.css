@@ -219,32 +219,39 @@
     box-shadow: 0 0 0 2px rgba(0,0,0,1);
   }
 
-  /* Modern thin scrollbar for the category grid */
-  .category-grid::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  /* Global modern thin scrollbar for all scrollable elements */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
   }
 
-  /* track: transparent so there's no white rectangle "behind" the bar */
-  .category-grid::-webkit-scrollbar-track {
+  *::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  /* thumb: use the primary button color to match the "Publicar" button */
-  .category-grid::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
     border-radius: 999px;
     border: 2px solid hsla(var(--primary-foreground), 0.12);
     background-clip: padding-box;
   }
 
-  /* Hover state: slightly darker */
-  .category-grid::-webkit-scrollbar-thumb:hover {
+  *::-webkit-scrollbar-thumb:hover {
     filter: brightness(0.95);
   }
 
-  /* Firefox: use scrollbar-color */
+  /* Ensure category-grid still has overflow behavior and uses same scrollbar settings for Firefox */
   .category-grid {
+    scrollbar-color: hsl(var(--primary)) transparent;
+    scrollbar-width: thin;
+  }
+
+  /* Firefox: apply global scrollbar styles to common scrollable selectors */
+  html,
+  body,
+  .category-grid,
+  .scrollable,
+  .custom-scrollbar {
     scrollbar-color: hsl(var(--primary)) transparent;
     scrollbar-width: thin;
   }
