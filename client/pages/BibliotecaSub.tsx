@@ -29,19 +29,17 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose }: { cate
   }, [matched]);
 
   return (
-    <div className="rounded-2xl border p-6 md:p-8 mt-6 bg-card">
-      <div className="relative mb-4">
-        <button
-          onClick={() => (onClose ? onClose() : navigate(-1))}
-          aria-label="Cerrar"
-          className="absolute left-4 top-4 p-2 rounded-full border bg-white/80 text-sm w-8 h-8 flex items-center justify-center"
-        >
-          ×
-        </button>
+    <div className="relative rounded-2xl border p-6 md:p-8 mt-6 bg-card">
+      <button
+        onClick={() => (onClose ? onClose() : navigate(-1))}
+        aria-label="Cerrar"
+        className="absolute -left-3 -top-3 p-2 rounded-full border bg-white/80 text-sm w-8 h-8 flex items-center justify-center shadow"
+      >
+        ×
+      </button>
 
-        <div>
-          <h3 className="text-2xl md:text-3xl font-semibold">{subLabel || categoryLabel}</h3>
-        </div>
+      <div className="mb-4">
+        <h3 className="text-2xl md:text-3xl font-semibold">{subLabel || categoryLabel}</h3>
       </div>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
