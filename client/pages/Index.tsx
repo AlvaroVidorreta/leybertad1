@@ -262,6 +262,7 @@ function UltimasLeyes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: bool
                       categoryProp={activeSub.category}
                       subProp={activeSub.sub}
                       onClose={() => setActiveSub(null)}
+                      onOpenLaw={onOpenLaw}
                     />
                   ) : (
                     <HorizontalCarousel
