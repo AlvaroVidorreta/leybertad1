@@ -30,17 +30,17 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose }: { cate
 
   return (
     <div className="rounded-2xl border p-6 md:p-8 mt-6 bg-card">
-      <div className="flex items-center gap-4 mb-4">
+      <div className="relative mb-4">
         <button
           onClick={() => (onClose ? onClose() : navigate(-1))}
-          className="px-3 py-1 rounded-full border bg-white/80 text-sm"
+          aria-label="Cerrar"
+          className="absolute left-4 top-4 p-2 rounded-full border bg-white/80 text-sm w-8 h-8 flex items-center justify-center"
         >
-          Volver
+          ×
         </button>
 
         <div>
           <h3 className="text-2xl md:text-3xl font-semibold">{subLabel || categoryLabel}</h3>
-          <p className="text-sm text-muted-foreground">Vista enfocada en el subapartado seleccionado</p>
         </div>
       </div>
 
