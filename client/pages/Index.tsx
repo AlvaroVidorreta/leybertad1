@@ -121,7 +121,7 @@ export default function Index() {
       {/* Separator and placeholder for "Últimas leyes" section */}
       <div className="mt-12 border-t border-border pt-10" aria-hidden="true" />
 
-      <UltimasLeyes />
+      <UltimasLeyes onOpenLaw={handleOpenLaw} />
     </AppLayout>
   );
 }
