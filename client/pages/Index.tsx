@@ -441,7 +441,7 @@ function HeroPublicar() {
               maxLength={40}
               onFocus={() => setExpand(true)}
               onBlur={handlePossibleCollapse}
-              placeholder="Introduce Ley (título de tu propuesta)"
+              placeholder="Introduce Ley o Propuesta (título)"
               className="w-full rounded-full border bg-white/80 backdrop-blur px-5 pr-24 py-3 text-base md:text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <button
@@ -487,7 +487,7 @@ function HeroPublicar() {
               onChange={(e) => setDetalles(e.target.value)}
               onFocus={() => setExpand(true)}
               onBlur={handlePossibleCollapse}
-              placeholder="Perspectiva personal / Detalles / Impacto estimado (recomendado)"
+              placeholder="Detalles / Perspectiva personal / Impacto estimado (recomendado)"
               className="mt-3 w-full rounded-md border bg-white/80 px-4 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
