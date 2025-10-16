@@ -126,7 +126,7 @@ export default function Index() {
   );
 }
 
-function UltimasLeyes() {
+function UltimasLeyes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boolean) => void }) {
   const { data: allLaws, isLoading } = useQuery({
     queryKey: ["recientes"],
     queryFn: obtenerRecientes,
