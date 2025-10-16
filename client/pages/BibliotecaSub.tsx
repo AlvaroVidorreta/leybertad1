@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { obtenerRecientes } from "@/lib/api";
 
 export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLaw }: { categoryProp?: string; subProp?: string; onClose?: () => void; onOpenLaw?: (law: any, openComments?: boolean) => void; }) {
