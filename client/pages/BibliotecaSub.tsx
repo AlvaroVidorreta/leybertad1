@@ -62,7 +62,13 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <h5 className="font-medium text-base">{l.titulo}</h5>
-                      <p className="text-sm text-muted-foreground mt-1">{l.objetivo}</p>
+                      <p className="text-sm text-muted-foreground mt-1" style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}>{l.objetivo}</p>
                     </div>
 
                     <div className="flex-shrink-0 flex flex-col items-center gap-2">
