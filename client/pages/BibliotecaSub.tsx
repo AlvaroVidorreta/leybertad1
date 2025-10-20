@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { obtenerRecientes } from "@/lib/api";
+import LawSummary from "@/components/LawSummary";
 
 export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLaw }: { categoryProp?: string; subProp?: string; onClose?: () => void; onOpenLaw?: (law: any, openComments?: boolean) => void; }) {
   const params = useParams();
@@ -61,14 +62,7 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
                 <li key={l.id} onClick={() => onOpenLaw ? onOpenLaw(l) : undefined} className="rounded-lg border p-3 bg-card cursor-pointer">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <h5 className="font-medium text-base">{l.titulo}</h5>
-                      <p className="text-sm text-muted-foreground mt-1" style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}>{l.objetivo}</p>
+                      <LawSummary title={l.titulo} objetivo={l.objetivo} />
                     </div>
 
                     <div className="flex-shrink-0 flex flex-col items-center gap-2">

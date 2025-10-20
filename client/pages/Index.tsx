@@ -22,6 +22,7 @@ import {
 import { Law, TimeRange } from "@shared/api";
 const QuoteRotator = lazy(() => import("@/components/QuoteRotator"));
 import { cn } from "@/lib/utils";
+import LawSummary from "@/components/LawSummary";
 import BibliotecaSub from "./BibliotecaSub";
 import AnalizadorPropuestas from "@/components/AnalizadorPropuestas";
 import HorizontalCarousel from "@/components/HorizontalCarousel";
@@ -680,17 +681,6 @@ const LawCard = memo(function LawCard({
   onSave: (id: string) => void;
   onOpen: (law: Law, openComments?: boolean) => void;
 }) {
-  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
-  const [isSingleLine, setIsSingleLine] = useState(false);
-
-  useLayoutEffect(() => {
-    const el = subtitleRef.current;
-    if (!el) return;
-    const style = window.getComputedStyle(el);
-    const lineHeight = parseFloat(style.lineHeight || "0");
-    const isSingle = el.scrollHeight <= lineHeight + 1;
-    setIsSingleLine(isSingle);
-  }, [law.objetivo]);
 
   return (
     <div>
@@ -699,20 +689,7 @@ const LawCard = memo(function LawCard({
           className="flex-1 min-w-0 pr-14 cursor-pointer"
           onClick={() => onOpen(law)}
         >
-          <h4 className="font-medium text-base break-words">{law.titulo}</h4>
-          <p
-            ref={subtitleRef}
-            className={`text-[0.8125rem] text-muted-foreground break-words leading-tight ${isSingleLine ? "mt-1 transform translate-y-1" : "mt-0.5"}`}
-            style={{
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {law.objetivo}
-          </p>
+          <LawSummary title={law.titulo} objetivo={law.objetivo} />
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-5 -translate-x-1">
