@@ -703,12 +703,16 @@ const LawCard = memo(function LawCard({
           <p
             ref={subtitleRef}
             className={`text-[0.8125rem] text-muted-foreground break-words leading-tight ${isSingleLine ? "mt-1 transform translate-y-1" : "mt-0.5"}`}
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
             {law.objetivo}
           </p>
-          {law.detalles && (
-            <p className="mt-1 text-sm break-words">{law.detalles}</p>
-          )}
         </div>
 
         <div className="flex-shrink-0 flex flex-col items-center gap-1 -ml-5 -translate-x-1">
