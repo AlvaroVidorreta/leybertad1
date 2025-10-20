@@ -683,8 +683,8 @@ const LawCard = memo(function LawCard({
 }) {
 
   return (
-    <div>
-      <div className="flex items-start justify-between gap-3">
+    <div className="h-full">
+      <div className="flex items-center justify-between gap-3 h-full">
         <div
           className="flex-1 min-w-0 pr-14 cursor-pointer"
           onClick={() => onOpen(law)}
