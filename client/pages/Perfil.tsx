@@ -169,10 +169,7 @@ export default function Perfil() {
             {!loading && profile &&
               profile.created.slice(0, 5).map((law) => (
                 <a key={law.id} href={`/laws/${law.id}`} className="block border rounded-md p-3 hover:shadow-sm flex justify-between items-start">
-                  <div>
-                    <div className="font-semibold">{law.titulo}</div>
-                    <div className="text-sm text-muted-foreground truncate">{law.objetivo}</div>
-                  </div>
+                    <LawSummary title={law.titulo} objetivo={law.objetivo} className="max-w-[calc(100%-5rem)]" titleClassName="font-semibold" />
                   <div className="text-sm text-muted-foreground flex items-center gap-2">
                     <span className="font-semibold">▲ {law.upvotes}</span>
                   </div>
@@ -232,10 +229,7 @@ export default function Perfil() {
 
             {savedLaws.map((law) => (
               <a key={law.id} href={`/laws/${law.id}`} className="block border rounded-md p-3 hover:shadow-sm flex justify-between items-start">
-                <div>
-                  <div className="font-semibold">{law.titulo}</div>
-                  <div className="text-sm text-muted-foreground truncate">{law.objetivo}</div>
-                </div>
+                  <LawSummary title={law.titulo} objetivo={law.objetivo} className="max-w-[calc(100%-5rem)]" titleClassName="font-semibold" />
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
                   <Bookmark />
                   <span className="font-semibold">▲ {law.upvotes}</span>
