@@ -91,6 +91,22 @@ export default function Index() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
   });
 
+  // add vote/save mutations at page level so modal can call them safely
+  const votar = useMutation({
+    mutationFn: (id: string) => votarLey(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["recientes"] });
+      qc.invalidateQueries({ queryKey: ["ranking"] });
+    },
+  });
+  const guardar = useMutation({
+    mutationFn: (id: string) => guardarLey(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
+  });
+
+  const handleUpvote = useCallback((id: string) => votar.mutate(id), [votar]);
+  const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
+
   const handleOpenLaw = (law: Law, openComments = false) => {
     setSelectedLaw(law);
     setShowComments(openComments);
@@ -105,7 +121,7 @@ export default function Index() {
       <HeroPublicar />
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <section id="recientes" className="lg:col-span-2">
-          <FeedRecientes onOpenLaw={handleOpenLaw} />
+          <FeedRecientes onOpenLaw={handleOpenLaw} onComment={(id,text)=>comentar.mutate({id,text})} />
         </section>
         <aside className="lg:col-span-1">
           <Ranking
@@ -594,8 +610,10 @@ import { FixedSizeList as List } from "react-window";
 
 function FeedRecientes({
   onOpenLaw,
+  onComment,
 }: {
   onOpenLaw: (law: Law, openComments?: boolean) => void;
+  onComment: (id: string, texto: string) => void;
 }) {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
