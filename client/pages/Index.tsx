@@ -893,7 +893,7 @@ function Ranking({
 
       {/* Modal / detail display */}
       {selectedLaw && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={() => {
@@ -901,7 +901,8 @@ function Ranking({
               setShowComments(false);
             }}
           />
-          <div className="relative z-10 w-[min(720px,95%)] rounded-2xl bg-card p-6 shadow-xl">
+
+          <div className="relative z-10 w-full max-w-4xl rounded-2xl bg-card shadow-xl overflow-hidden">
             {/* Close X top-right */}
             <button
               onClick={() => {
@@ -927,105 +928,107 @@ function Ranking({
               </svg>
             </button>
 
-            <div className="mb-2">
-              <h4 className="text-lg font-semibold">{selectedLaw!.titulo}</h4>
-              <p className="text-sm text-muted-foreground">
-                {selectedLaw!.upvotes} votos
-              </p>
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-h-[85vh]">
+              <div className="lg:col-span-2 overflow-auto pr-2">
+                <header className="mb-4">
+                  <h3 className="text-2xl font-bold leading-tight">{selectedLaw!.titulo}</h3>
+                  <div className="mt-2 text-sm text-muted-foreground">{selectedLaw!.upvotes} votos • {selectedLaw!.createdAt ? new Date(selectedLaw!.createdAt).toLocaleString() : ''}</div>
+                </header>
 
-            <hr className="my-4" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h5 className="text-sm font-medium text-muted-foreground">
-                  Objetivo
-                </h5>
-                <p className="mt-1">{selectedLaw!.objetivo}</p>
+                <section className="mb-4">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Objetivo</h4>
+                  <p className="text-sm leading-relaxed whitespace-pre-line">{selectedLaw!.objetivo}</p>
+                </section>
 
                 {selectedLaw!.detalles && (
-                  <>
-                    <h5 className="text-sm font-medium text-muted-foreground mt-4">
-                      Detalles
-                    </h5>
-                    <p className="mt-1 text-sm">{selectedLaw!.detalles}</p>
-                  </>
+                  <section className="mb-4">
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Detalles</h4>
+                    <p className="text-sm leading-relaxed whitespace-pre-line">{selectedLaw!.detalles}</p>
+                  </section>
                 )}
+
+                <section>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Comentarios</h4>
+                  <div className="space-y-2">
+                    {Array.isArray(selectedLaw!.comentarios) && selectedLaw!.comentarios.length > 0 ? (
+                      <div className="max-h-64 overflow-auto rounded-md border bg-white p-3 text-sm">
+                        {selectedLaw!.comentarios.map((c: any) => (
+                          <div key={c.id} className="py-2 border-b last:border-b-0">
+                            <div className="text-sm">{c.texto}</div>
+                            <div className="text-xs text-muted-foreground mt-1">{c.autor ?? ''}</div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">Aún no hay comentarios.</div>
+                    )}
+
+                    <div className="mt-3 flex items-center gap-2">
+                      <input
+                        ref={commentRef}
+                        placeholder="Escribe tu perspectiva..."
+                        className="flex-1 rounded-md border px-3 py-2 text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            const v = (e.target as HTMLInputElement).value.trim();
+                            if (v) {
+                              onComment(selectedLaw!.id, v);
+                              (e.target as HTMLInputElement).value = "";
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
+                        onClick={() => {
+                          if (!commentRef.current) return;
+                          const v = commentRef.current.value.trim();
+                          if (!v) return;
+                          onComment(selectedLaw!.id, v);
+                          commentRef.current.value = "";
+                        }}
+                      >
+                        Enviar
+                      </button>
+                    </div>
+                  </div>
+                </section>
               </div>
 
-              <div>
-                <div className="flex flex-col h-full justify-between">
-                  <div>
-                    <h5 className="text-sm font-medium text-muted-foreground">
-                      Autor
-                    </h5>
-                    <p className="mt-1">{selectedLaw!.apodo ?? "-"}</p>
-                  </div>
+              <aside className="lg:col-span-1 border rounded-lg p-4 h-full flex flex-col gap-4">
+                <div>
+                  <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
+                  <div className="mt-1 text-sm">{selectedLaw!.apodo ?? "-"}</div>
+                </div>
 
-                  <div className="mt-4">
-                    <button
-                      onClick={() => setShowComments((s) => !s)}
-                      className="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50"
-                    >
-                      {showComments
-                        ? "Ocultar perspectivas"
-                        : "Ver perspectivas"}
-                    </button>
-
-                    {showComments && (
-                      <div className="mt-3 max-h-40 overflow-auto rounded-md border bg-white p-2 text-sm">
-                        {Array.isArray(selectedLaw!.comentarios) &&
-                        selectedLaw!.comentarios.length > 0 ? (
-                          selectedLaw!.comentarios.map((c: any) => (
-                            <div
-                              key={c.id}
-                              className="py-1 border-b last:border-b-0"
-                            >
-                              {c.texto}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-muted-foreground">
-                            Sin perspectivas
-                          </div>
-                        )}
-
-                        {/* comment input */}
-                        <div className="mt-3 flex items-center gap-2">
-                          <input
-                            ref={commentRef}
-                            placeholder="Escribe tu perspectiva..."
-                            className="flex-1 rounded-md border px-2 py-1 text-sm"
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                const v = (
-                                  e.target as HTMLInputElement
-                                ).value.trim();
-                                if (v) {
-                                  onComment(selectedLaw!.id, v);
-                                  (e.target as HTMLInputElement).value = "";
-                                }
-                              }
-                            }}
-                          />
-                          <button
-                            className="px-3 py-1 rounded-md bg-primary text-primary-foreground"
-                            onClick={() => {
-                              if (!commentRef.current) return;
-                              const v = commentRef.current.value.trim();
-                              if (!v) return;
-                              onComment(selectedLaw!.id, v);
-                              commentRef.current.value = "";
-                            }}
-                          >
-                            Enviar
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                <div>
+                  <h5 className="text-sm font-medium text-muted-foreground">Meta</h5>
+                  <div className="mt-1 text-sm text-muted-foreground">
+                    ▲ {selectedLaw!.upvotes} votos
                   </div>
                 </div>
-              </div>
+
+                <div className="mt-auto flex flex-col gap-2">
+                  <button
+                    onClick={() => handleUpvote(selectedLaw!.id)}
+                    className="w-full px-3 py-2 rounded-md bg-cream-50 border"
+                  >
+                    ▲ Votar
+                  </button>
+                  <button
+                    onClick={() => handleSave(selectedLaw!.id)}
+                    className="w-full px-3 py-2 rounded-md border bg-white"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    onClick={() => setShowComments(true)}
+                    className="w-full px-3 py-2 rounded-md bg-white border"
+                  >
+                    Ver perspectivas
+                  </button>
+                </div>
+              </aside>
             </div>
           </div>
         </div>
