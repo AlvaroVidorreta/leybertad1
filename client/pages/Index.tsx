@@ -1041,16 +1041,10 @@ function Ranking({
                 <div>
                   <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
                   <div className="mt-1 text-sm">{selectedLaw!.apodo ?? "-"}</div>
+                  <div className="mt-2 text-sm text-muted-foreground">▲ {selectedLaw!.upvotes} votos</div>
                 </div>
 
                 <div className="mt-auto flex flex-col gap-2">
-                  <button
-                    onClick={() => handleUpvote(selectedLaw!.id)}
-                    className="w-full px-3 py-2 rounded-md bg-cream-50 border"
-                  >
-                    ▲ Votar
-                  </button>
-
                   <button
                     onClick={() => setShowComments(true)}
                     className="w-full px-3 py-2 rounded-md bg-white border"
