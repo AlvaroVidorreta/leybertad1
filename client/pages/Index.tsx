@@ -1043,13 +1043,6 @@ function Ranking({
                   <div className="mt-1 text-sm">{selectedLaw!.apodo ?? "-"}</div>
                 </div>
 
-                <div>
-                  <h5 className="text-sm font-medium text-muted-foreground">Meta</h5>
-                  <div className="mt-1 text-sm text-muted-foreground">
-                    ▲ {selectedLaw!.upvotes} votos
-                  </div>
-                </div>
-
                 <div className="mt-auto flex flex-col gap-2">
                   <button
                     onClick={() => handleUpvote(selectedLaw!.id)}
@@ -1057,12 +1050,7 @@ function Ranking({
                   >
                     ▲ Votar
                   </button>
-                  <button
-                    onClick={() => handleSave(selectedLaw!.id)}
-                    className="w-full px-3 py-2 rounded-md border bg-white"
-                  >
-                    Guardar
-                  </button>
+
                   <button
                     onClick={() => setShowComments(true)}
                     className="w-full px-3 py-2 rounded-md bg-white border"
