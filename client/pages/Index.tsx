@@ -34,7 +34,7 @@ const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS; // exact pixel 
 // Shared categories used across Biblioteca and publishing modal
 const CATEGORIES = [
   {
-    title: "Economía",
+    title: "Econom��a",
     subs: ["Presupuestos", "Impuestos", "Salarios Públicos", "Subvenciones"],
   },
   {
@@ -990,7 +990,7 @@ function Ranking({
                 )}
 
                 <section>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Comentarios</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Perspectivas</h4>
                   <div className="space-y-2">
                     {Array.isArray(selectedLaw!.comentarios) && selectedLaw!.comentarios.length > 0 ? (
                       <div className="max-h-64 overflow-auto rounded-md border bg-white p-3 text-sm">
