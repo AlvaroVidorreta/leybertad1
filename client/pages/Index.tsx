@@ -34,7 +34,7 @@ const LIST_MAX_HEIGHT = ITEM_HEIGHT_RANKING * MAX_RANKING_ITEMS; // exact pixel 
 // Shared categories used across Biblioteca and publishing modal
 const CATEGORIES = [
   {
-    title: "Econom��a",
+    title: "Economía",
     subs: ["Presupuestos", "Impuestos", "Salarios Públicos", "Subvenciones"],
   },
   {
@@ -1002,7 +1002,7 @@ function Ranking({
                         ))}
                       </div>
                     ) : (
-                      <div className="text-sm text-muted-foreground">Aún no hay comentarios.</div>
+                      <div className="text-sm text-muted-foreground">Aún no hay perspectivas.</div>
                     )}
 
                     <div className="mt-3 flex items-center gap-2">
