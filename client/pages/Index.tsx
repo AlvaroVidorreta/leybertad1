@@ -948,9 +948,33 @@ function Ranking({
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-h-[85vh]">
               <div className="lg:col-span-2 overflow-auto pr-2">
-                <header className="mb-4">
-                  <h3 className="text-2xl font-bold leading-tight">{selectedLaw!.titulo}</h3>
-                  <div className="mt-2 text-sm text-muted-foreground">{selectedLaw!.upvotes} votos • {selectedLaw!.createdAt ? new Date(selectedLaw!.createdAt).toLocaleString() : ''}</div>
+                <header className="mb-4 flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-2xl font-bold leading-tight">{selectedLaw!.titulo}</h3>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSave(selectedLaw!.id)}
+                      aria-label="Guardar"
+                      className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8"
+                    >
+                      <svg
+                        className="w-4 h-4 text-muted-foreground transform translate-x-[1px]"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M6 2h9a2 2 0 0 1 2 2v16l-7-3-7 3V4a2 2 0 0 1 2-2z"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </header>
 
                 <section className="mb-4">
