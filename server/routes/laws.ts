@@ -72,7 +72,7 @@ export const commentLaw: RequestHandler = async (req, res) => {
     res.json(response);
   } catch (err: any) {
     if (err && err.message === "NOT_FOUND") return res.status(404).json({ error: "Ley no encontrada" });
-    res.status(500).json({ error: "Error al guardar comentario" });
+    res.status(500).json({ error: "Error al guardar perspectiva" });
   }
 };
 
