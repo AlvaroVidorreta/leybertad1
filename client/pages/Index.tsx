@@ -116,27 +116,6 @@ export default function Index() {
     setShowComments(false);
   };
 
-  // compute related laws for modal (based on category if available, otherwise fall back to top upvoted)
-  const relatedLaws = useMemo(() => {
-    if (!selectedLaw) return [] as Law[];
-    const all = qc.getQueryData<Law[]>(["recientes"]) || [];
-    const others = all.filter((l) => l.id !== selectedLaw.id);
-    if ((selectedLaw as any).category) {
-      const sameCat = others.filter((l) => (l as any).category === (selectedLaw as any).category);
-      if (sameCat.length > 0) return sameCat.slice(0, 4);
-    }
-    // fallback: find by shared words in title/objectivo
-    const words = (selectedLaw.titulo + " " + (selectedLaw.objetivo || "")).toLowerCase().split(/\W+/).filter(Boolean);
-    const important = words.filter((w) => w.length > 4).slice(0, 6);
-    if (important.length === 0) return others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
-    const matched = others
-      .map((l) => ({ l, score: important.reduce((s, w) => s + ((l.titulo + " " + (l.objetivo || "")).toLowerCase().includes(w) ? 1 : 0), 0) }))
-      .filter((x) => x.score > 0)
-      .sort((a, b) => b.score - a.score || (b.l.upvotes || 0) - (a.l.upvotes || 0))
-      .map((x) => x.l)
-      .slice(0, 4);
-    return matched.length > 0 ? matched : others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
-  }, [selectedLaw, qc]);
 
   return (
     <AppLayout>
