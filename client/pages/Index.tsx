@@ -1068,6 +1068,7 @@ function Ranking({
                   <div className="mt-2 text-sm text-muted-foreground">▲ {selectedLaw!.upvotes} votos</div>
 
                   <div className="mt-4">
+                    <div className="my-2 border-t border-border" />
                     <h5 className="text-sm font-medium text-muted-foreground">Leyes relacionadas</h5>
                     {relatedLaws.length === 0 ? (
                       <div className="text-xs text-muted-foreground mt-2">No hay leyes relacionadas.</div>
@@ -1083,7 +1084,6 @@ function Ranking({
                               className="text-left w-full rounded-md px-2 py-1 hover:bg-gray-50"
                             >
                               <div className="font-medium truncate">{r.titulo}</div>
-                              <div className="text-xs text-muted-foreground">▲ {r.upvotes}</div>
                             </button>
                           </li>
                         ))}
