@@ -28,10 +28,13 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<div aria-hidden /> }>
+        <Suspense fallback={<div aria-hidden />}>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/biblioteca/:category/:sub" element={<BibliotecaSub />} />
+            <Route
+              path="/biblioteca/:category/:sub"
+              element={<BibliotecaSub />}
+            />
             <Route path="/perfil" element={<Perfil />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

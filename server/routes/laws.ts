@@ -1,11 +1,22 @@
 import { RequestHandler } from "express";
-import { LawInput, CommentInput, CreateLawResponse, LawsResponse, LawUpdatedResponse, RankingResponse, TimeRange } from "@shared/api";
+import {
+  LawInput,
+  CommentInput,
+  CreateLawResponse,
+  LawsResponse,
+  LawUpdatedResponse,
+  RankingResponse,
+  TimeRange,
+} from "@shared/api";
 import { db } from "../db";
 
 function getVisitorKey(req: any) {
-  const header = req.headers && (req.headers["x-visitor-id"] || req.headers["x-visitorid"]);
+  const header =
+    req.headers && (req.headers["x-visitor-id"] || req.headers["x-visitorid"]);
   if (header && typeof header === "string" && header.trim()) return header;
-  return req.ip || (req.connection && req.connection.remoteAddress) || "unknown";
+  return (
+    req.ip || (req.connection && req.connection.remoteAddress) || "unknown"
+  );
 }
 
 export const createLaw: RequestHandler = async (req, res) => {
@@ -20,7 +31,12 @@ export const createLaw: RequestHandler = async (req, res) => {
     res.json(response);
   } catch (err: any) {
     if (err && err.message === "RATE_LIMIT_EXCEEDED") {
-      return res.status(429).json({ error: "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados" });
+      return res
+        .status(429)
+        .json({
+          error:
+            "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados",
+        });
     }
     res.status(500).json({ error: "Error al crear la ley" });
   }
@@ -44,8 +60,10 @@ export const upvoteLaw: RequestHandler = async (req, res) => {
     const response: LawUpdatedResponse = { law };
     res.json(response);
   } catch (err: any) {
-    if (err && err.message === "NOT_FOUND") return res.status(404).json({ error: "Ley no encontrada" });
-    if (err && err.message === "ALREADY_VOTED") return res.status(400).json({ error: "Ya votaste esta ley" });
+    if (err && err.message === "NOT_FOUND")
+      return res.status(404).json({ error: "Ley no encontrada" });
+    if (err && err.message === "ALREADY_VOTED")
+      return res.status(400).json({ error: "Ya votaste esta ley" });
     res.status(500).json({ error: "Error al procesar voto" });
   }
 };
@@ -57,7 +75,8 @@ export const saveLaw: RequestHandler = async (req, res) => {
     const response: LawUpdatedResponse = { law };
     res.json(response);
   } catch (err: any) {
-    if (err && err.message === "NOT_FOUND") return res.status(404).json({ error: "Ley no encontrada" });
+    if (err && err.message === "NOT_FOUND")
+      return res.status(404).json({ error: "Ley no encontrada" });
     res.status(500).json({ error: "Error al guardar ley" });
   }
 };
@@ -65,13 +84,15 @@ export const saveLaw: RequestHandler = async (req, res) => {
 export const commentLaw: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { texto } = req.body as CommentInput;
-  if (!texto || typeof texto !== "string") return res.status(400).json({ error: "Perspectiva requerida" });
+  if (!texto || typeof texto !== "string")
+    return res.status(400).json({ error: "Perspectiva requerida" });
   try {
     const law = await db.commentLaw(id, texto);
     const response: LawUpdatedResponse = { law };
     res.json(response);
   } catch (err: any) {
-    if (err && err.message === "NOT_FOUND") return res.status(404).json({ error: "Ley no encontrada" });
+    if (err && err.message === "NOT_FOUND")
+      return res.status(404).json({ error: "Ley no encontrada" });
     res.status(500).json({ error: "Error al guardar perspectiva" });
   }
 };

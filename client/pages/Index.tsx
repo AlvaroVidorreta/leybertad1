@@ -116,13 +116,15 @@ export default function Index() {
     setShowComments(false);
   };
 
-
   return (
     <AppLayout>
       <HeroPublicar />
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <section id="recientes" className="lg:col-span-2">
-          <FeedRecientes onOpenLaw={handleOpenLaw} onComment={(id,text)=>comentar.mutate({id,text})} />
+          <FeedRecientes
+            onOpenLaw={handleOpenLaw}
+            onComment={(id, text) => comentar.mutate({ id, text })}
+          />
         </section>
         <aside className="lg:col-span-1">
           <Ranking
@@ -144,7 +146,11 @@ export default function Index() {
   );
 }
 
-function UltimasLeyes({ onOpenLaw }: { onOpenLaw: (law: Law, openComments?: boolean) => void }) {
+function UltimasLeyes({
+  onOpenLaw,
+}: {
+  onOpenLaw: (law: Law, openComments?: boolean) => void;
+}) {
   const { data: allLaws, isLoading } = useQuery({
     queryKey: ["recientes"],
     queryFn: obtenerRecientes,
@@ -700,7 +706,6 @@ const LawCard = memo(function LawCard({
   onSave: (id: string) => void;
   onOpen: (law: Law, openComments?: boolean) => void;
 }) {
-
   return (
     <div className="h-full">
       <div className="flex items-center justify-between gap-3 h-full">
@@ -817,19 +822,41 @@ function Ranking({
     const all = qc.getQueryData<Law[]>(["recientes"]) || [];
     const others = all.filter((l) => l.id !== selectedLaw.id);
     if ((selectedLaw as any).category) {
-      const sameCat = others.filter((l) => (l as any).category === (selectedLaw as any).category);
+      const sameCat = others.filter(
+        (l) => (l as any).category === (selectedLaw as any).category,
+      );
       if (sameCat.length > 0) return sameCat.slice(0, 4);
     }
-    const words = (selectedLaw.titulo + " " + (selectedLaw.objetivo || "")).toLowerCase().split(/\W+/).filter(Boolean);
+    const words = (selectedLaw.titulo + " " + (selectedLaw.objetivo || ""))
+      .toLowerCase()
+      .split(/\W+/)
+      .filter(Boolean);
     const important = words.filter((w) => w.length > 4).slice(0, 6);
-    if (important.length === 0) return others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+    if (important.length === 0)
+      return others
+        .slice(0, 4)
+        .sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
     const matched = others
-      .map((l) => ({ l, score: important.reduce((s, w) => s + ((l.titulo + " " + (l.objetivo || "")).toLowerCase().includes(w) ? 1 : 0), 0) }))
+      .map((l) => ({
+        l,
+        score: important.reduce(
+          (s, w) =>
+            s +
+            ((l.titulo + " " + (l.objetivo || "")).toLowerCase().includes(w)
+              ? 1
+              : 0),
+          0,
+        ),
+      }))
       .filter((x) => x.score > 0)
-      .sort((a, b) => b.score - a.score || (b.l.upvotes || 0) - (a.l.upvotes || 0))
+      .sort(
+        (a, b) => b.score - a.score || (b.l.upvotes || 0) - (a.l.upvotes || 0),
+      )
       .map((x) => x.l)
       .slice(0, 4);
-    return matched.length > 0 ? matched : others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+    return matched.length > 0
+      ? matched
+      : others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
   }, [selectedLaw, qc]);
 
   useEffect(() => {
@@ -974,7 +1001,9 @@ function Ranking({
               <div className="lg:col-span-2 overflow-auto pr-2">
                 <header className="mb-4 flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-2xl font-bold leading-tight">{selectedLaw!.titulo}</h3>
+                    <h3 className="text-2xl font-bold leading-tight">
+                      {selectedLaw!.titulo}
+                    </h3>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -1002,31 +1031,49 @@ function Ranking({
                 </header>
 
                 <section className="mb-4">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Objetivo</h4>
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{selectedLaw!.objetivo}</p>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                    Objetivo
+                  </h4>
+                  <p className="text-sm leading-relaxed whitespace-pre-line">
+                    {selectedLaw!.objetivo}
+                  </p>
                 </section>
 
                 {selectedLaw!.detalles && (
                   <section className="mb-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Detalles</h4>
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{selectedLaw!.detalles}</p>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                      Detalles
+                    </h4>
+                    <p className="text-sm leading-relaxed whitespace-pre-line">
+                      {selectedLaw!.detalles}
+                    </p>
                   </section>
                 )}
 
                 <section>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Perspectivas</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                    Perspectivas
+                  </h4>
                   <div className="space-y-2">
-                    {Array.isArray(selectedLaw!.comentarios) && selectedLaw!.comentarios.length > 0 ? (
+                    {Array.isArray(selectedLaw!.comentarios) &&
+                    selectedLaw!.comentarios.length > 0 ? (
                       <div className="max-h-64 overflow-auto rounded-md border bg-white p-3 text-sm">
                         {selectedLaw!.comentarios.map((c: any) => (
-                          <div key={c.id} className="py-2 border-b last:border-b-0">
+                          <div
+                            key={c.id}
+                            className="py-2 border-b last:border-b-0"
+                          >
                             <div className="text-sm">{c.texto}</div>
-                            <div className="text-xs text-muted-foreground mt-1">{c.autor ?? ''}</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {c.autor ?? ""}
+                            </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="text-sm text-muted-foreground">Aún no hay perspectivas.</div>
+                      <div className="text-sm text-muted-foreground">
+                        Aún no hay perspectivas.
+                      </div>
                     )}
 
                     <div className="mt-3 flex items-center gap-2">
@@ -1036,7 +1083,9 @@ function Ranking({
                         className="flex-1 rounded-md border px-3 py-2 text-sm"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            const v = (e.target as HTMLInputElement).value.trim();
+                            const v = (
+                              e.target as HTMLInputElement
+                            ).value.trim();
                             if (v) {
                               onComment(selectedLaw!.id, v);
                               (e.target as HTMLInputElement).value = "";
@@ -1063,15 +1112,25 @@ function Ranking({
 
               <aside className="lg:col-span-1 border rounded-lg p-4 h-full flex flex-col gap-4">
                 <div>
-                  <h5 className="text-sm font-medium text-muted-foreground">Autor</h5>
-                  <div className="mt-1 text-sm">{selectedLaw!.apodo ?? "-"}</div>
-                  <div className="mt-2 text-sm text-muted-foreground">▲ {selectedLaw!.upvotes} votos</div>
+                  <h5 className="text-sm font-medium text-muted-foreground">
+                    Autor
+                  </h5>
+                  <div className="mt-1 text-sm">
+                    {selectedLaw!.apodo ?? "-"}
+                  </div>
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    ▲ {selectedLaw!.upvotes} votos
+                  </div>
 
                   <div className="mt-4">
                     <div className="my-2 border-t border-border" />
-                    <h5 className="text-sm font-medium text-muted-foreground">Leyes relacionadas</h5>
+                    <h5 className="text-sm font-medium text-muted-foreground">
+                      Leyes relacionadas
+                    </h5>
                     {relatedLaws.length === 0 ? (
-                      <div className="text-xs text-muted-foreground mt-2">No hay leyes relacionadas.</div>
+                      <div className="text-xs text-muted-foreground mt-2">
+                        No hay leyes relacionadas.
+                      </div>
                     ) : (
                       <ol className="mt-2 space-y-2 text-sm">
                         {relatedLaws.map((r) => (
@@ -1083,7 +1142,9 @@ function Ranking({
                               }}
                               className="text-left w-full rounded-md px-2 py-1 hover:bg-gray-50"
                             >
-                              <div className="font-medium truncate">{r.titulo}</div>
+                              <div className="font-medium truncate">
+                                {r.titulo}
+                              </div>
                             </button>
                           </li>
                         ))}

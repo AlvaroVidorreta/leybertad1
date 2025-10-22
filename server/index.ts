@@ -2,7 +2,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { commentLaw, createLaw, listRecent, ranking, saveLaw, upvoteLaw } from "./routes/laws";
+import {
+  commentLaw,
+  createLaw,
+  listRecent,
+  ranking,
+  saveLaw,
+  upvoteLaw,
+} from "./routes/laws";
 import { profileHandler } from "./routes/profile";
 
 export function createServer() {
