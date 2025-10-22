@@ -65,7 +65,7 @@ export const saveLaw: RequestHandler = async (req, res) => {
 export const commentLaw: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { texto } = req.body as CommentInput;
-  if (!texto || typeof texto !== "string") return res.status(400).json({ error: "Comentario requerido" });
+  if (!texto || typeof texto !== "string") return res.status(400).json({ error: "Perspectiva requerida" });
   try {
     const law = await db.commentLaw(id, texto);
     const response: LawUpdatedResponse = { law };
