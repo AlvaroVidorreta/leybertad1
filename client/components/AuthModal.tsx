@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useState, FormEvent } from "react";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 
 export default function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
