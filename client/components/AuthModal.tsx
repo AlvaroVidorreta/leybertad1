@@ -82,10 +82,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
             className="px-3 py-2 rounded border flex items-center gap-3 justify-center"
             aria-label="Continuar con Google"
           >
-            {/* Google SVG logo */}
-            <svg width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M43.6 20.4H42V20.0H24v8h11.3C33.6 33.4 29.3 36 24 36c-7.7 0-14-6.3-14-14s6.3-14 14-14c3.6 0 6.9 1.3 9.4 3.4l6.6-6.6C34.9 2.9 29.8 1 24 1 11.9 1 2 10.9 2 23s9.9 22 22 22c11 0 20-7.7 21.8-18H43.6z" fill="#EA4335"/>
-            </svg>
+            <img src="https://cdn.builder.io/api/v1/image/assets%2Fc11605d2398a4e01a080aa84aba2263c%2F43f4b6f41852435ab6a0fd3ffcded29e?format=webp&width=800" alt="G" className="w-5 h-5" />
             <span>Continuar con Google</span>
           </button>
 
