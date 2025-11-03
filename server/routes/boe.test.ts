@@ -39,8 +39,8 @@ const fakeSummary = {
   }
 };
 
-beforeEach(() => {
-  __test_reset_rate();
+beforeEach(async () => {
+  await __test_reset_rate();
   // mock global.fetch
   (global as any).fetch = vi.fn(async () => ({ ok: true, json: async () => fakeSummary }));
 });
@@ -67,7 +67,7 @@ describe('boeHandler', () => {
 
   it('enforces rate limit', async () => {
     const req = mockReq({ q: 'iva' });
-    const res = mockRes();
+    // consume allowed requests
     for (let i = 0; i < RATE_LIMIT_MAX; i++) {
       await boeHandler(req, mockRes() as any, () => {});
     }
