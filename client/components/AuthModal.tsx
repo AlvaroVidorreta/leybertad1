@@ -37,8 +37,8 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       // Friendly guidance for common misconfiguration
       const msg = err?.message || String(err);
       setError(
-        msg.includes("auth/domain-not-allowed")
-          ? "Dominio no autorizado en Firebase. Añade tu dominio en la consola de Firebase (Authentication → Sign-in method → Authorized domains)."
+        (msg.includes("auth/domain-not-allowed") || msg.includes("unauthorized-domain") || msg.includes("auth/unauthorized-domain"))
+          ? "Dominio no autorizado en Firebase. Añade tu dominio en la consola de Firebase (Authentication → Sign-in method → Authorized domains). Si estás probando localmente añade 'localhost' o el host que uses."
           : msg,
       );
     } finally {
