@@ -74,7 +74,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const hasResults = results && results.length > 0;
 
   return (
-    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[72vh]'}`}>
+    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[40vh]'}`}>
       {/* header/hint area: show only before any search; animate collapse */}
       <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="flex items-center justify-center h-24">
@@ -86,9 +86,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
       </div>
 
       {/* results area */}
-      <div className="mt-0 transition-opacity duration-200" style={{ opacity: results === null ? 0 : 1 }}>
+      <div className="mt-0 transition-opacity duration-200 flex flex-col min-h-0" style={{ opacity: results === null ? 0 : 1 }}>
         {results !== null && (
-          <div>
+          <div className="flex-1 min-h-0 flex flex-col">
             {!hasResults && (
               <div className="text-center text-sm text-gray-300 py-6">
                 No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
@@ -96,36 +96,34 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
             )}
 
             {hasResults && (
-              <div>
+              <div className="flex-1 min-h-0 overflow-auto">
                 <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
-                <div className="overflow-auto" style={{ maxHeight: 'calc(72vh - 96px)' }}>
-                  <ul className="space-y-2 p-1">
-                    {results!.map((r) => (
-                      <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
-                        <div className="flex items-start gap-3">
-                          <Relevance value={Math.round(r.score * 100)} small />
+                <ul className="space-y-2 p-1">
+                  {results!.map((r) => (
+                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                      <div className="flex items-start gap-3">
+                        <Relevance value={Math.round(r.score * 100)} small />
 
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-3">
-                              <div className="min-w-0">
-                                <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
-                                <p className="mt-1 italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
-                              </div>
-                              <a
-                                href={r.law.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
-                              >
-                                Consultar →
-                              </a>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
+                              <p className="mt-1 italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
                             </div>
+                            <a
+                              href={r.law.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
+                            >
+                              Consultar →
+                            </a>
                           </div>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
