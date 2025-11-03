@@ -1,5 +1,4 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 import AuthModal from "@/components/AuthModal";
