@@ -74,12 +74,14 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const hasResults = results && results.length > 0;
 
   return (
-    <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white overflow-hidden max-h-[72vh]">
+    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[72vh]'}`}>
       {/* header/hint area: show only before any search; animate collapse */}
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100 pb-3' : 'max-h-0 opacity-0'}`}>
-        <div className="mb-2">
-          <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
-          <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="flex items-center justify-center h-24">
+          <div className="text-center">
+            <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
+            <p className="text-sm text-gray-300 mt-2">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
+          </div>
         </div>
       </div>
 
