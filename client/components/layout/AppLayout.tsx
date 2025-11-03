@@ -28,6 +28,11 @@ function CollapsibleHeader() {
   const accountRef = useRef<HTMLDivElement | null>(null);
   const closeTimerRef = useRef<number | null>(null);
 
+  // Firebase auth and realtime sync
+  const { user, loading, signOut } = useFirebaseAuth();
+  useFirebaseSync();
+  const [authOpen, setAuthOpen] = useState(false);
+
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (!accountRef.current) return;
@@ -140,12 +145,16 @@ function CollapsibleHeader() {
 
             <div className="flex items-center justify-end col-start-3 gap-3">
               {!inUltimasSection && (
-                <button
-                  aria-label="Iniciar sesión"
-                  className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise"
-                >
-                  Iniciar sesión
-                </button>
+                <>
+                  <button
+                    aria-label="Iniciar sesión"
+                    onClick={() => setAuthOpen(true)}
+                    className="hidden md:inline-flex text-xs px-3 py-2 rounded-full border bg-white/80 btn-micro-raise"
+                  >
+                    Iniciar sesión
+                  </button>
+                  <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+                </>
               )}
 
               <button
@@ -187,7 +196,7 @@ function CollapsibleHeader() {
                   aria-expanded={accountOpen}
                   className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm btn-micro-shimmer"
                 >
-                  Cuenta
+                  {user ? (user.email || "Cuenta") : "Cuenta"}
                 </button>
 
                 {accountOpen && (
@@ -224,7 +233,12 @@ function CollapsibleHeader() {
                       Perfil
                     </a>
                     <button
-                      onClick={() => setAccountOpen(false)}
+                      onClick={async () => {
+                        setAccountOpen(false);
+                        try {
+                          await signOut();
+                        } catch (err) {}
+                      }}
                       className="w-full text-left px-3 py-2 text-sm hover:bg-white/5 rounded-md"
                     >
                       Cerrar sesión
