@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import LawSummary from "@/components/LawSummary";
 import { Button } from "@/components/ui/button";
 import { obtenerRecientes } from "@/lib/api";
 import { Link, useNavigate } from "react-router-dom";
