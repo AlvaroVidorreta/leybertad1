@@ -1,8 +1,51 @@
 import { RequestHandler } from "express";
+import fs from "fs/promises";
+import path from "path";
 
 // Simple in-memory cache to avoid hammering BOE
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours
 const cache = new Map<string, { ts: number; items: any[] }>();
+
+const CACHE_FILE = path.resolve(process.cwd(), "server", "data", "boe_cache.json");
+let cacheDirty = false;
+
+function log(...args: any[]) {
+  const ts = new Date().toISOString();
+  console.log("[boe]", ts, ...args);
+}
+
+async function loadPersistedCache() {
+  try {
+    await fs.mkdir(path.dirname(CACHE_FILE), { recursive: true });
+    const raw = await fs.readFile(CACHE_FILE, "utf-8");
+    const parsed = JSON.parse(raw || "{}") as Record<string, { ts: number; items: any[] }>;
+    for (const k of Object.keys(parsed || {})) {
+      cache.set(k, parsed[k]);
+    }
+    log("Loaded persisted cache with", cache.size, "entries");
+  } catch (err) {
+    // no file yet or parse error
+    log("No persisted cache found or failed to load, starting fresh");
+  }
+}
+
+async function persistCache() {
+  try {
+    if (!cacheDirty) return;
+    const obj: Record<string, { ts: number; items: any[] }> = {};
+    for (const [k, v] of cache.entries()) obj[k] = v;
+    await fs.writeFile(CACHE_FILE, JSON.stringify(obj, null, 2), "utf-8");
+    cacheDirty = false;
+    log("Persisted cache to disk", CACHE_FILE);
+  } catch (err) {
+    console.error("[boe] Error persisting cache:", err);
+  }
+}
+
+// load on module init
+loadPersistedCache();
+// periodic flush
+setInterval(() => persistCache().catch((e) => console.error(e)), 5 * 60 * 1000);
 
 async function fetchSummary(date: string) {
   const cacheKey = `summary:${date}`;
@@ -11,16 +54,26 @@ async function fetchSummary(date: string) {
 
   const url = `https://boe.es/datosabiertos/api/boe/sumario/${date}`;
   try {
+    log("Fetching BOE summary for", date);
     const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      log("BOE responded with status", res.status);
+      return null;
+    }
     const data = await res.json();
     if (data && data.status && String(data.status.code) === "200") {
       const items = extractItems(data.data || {});
       cache.set(cacheKey, { ts: Date.now(), items });
+      cacheDirty = true;
+      // persist asynchronously but await to reduce data loss window
+      await persistCache();
+      log("Fetched and cached", items.length, "items for", date);
       return items;
     }
+    log("BOE summary missing or bad status for", date);
     return null;
   } catch (err) {
+    console.error("[boe] fetchSummary error:", err);
     return null;
   }
 }
