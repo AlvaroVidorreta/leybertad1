@@ -1133,7 +1133,7 @@ function Ranking({
                 </section>
               </div>
 
-              <aside className="lg:col-span-1 border rounded-lg p-4 h-full flex flex-col gap-4">
+              <aside className="lg:col-span-1 border rounded-lg p-4 h-full flex flex-col gap-4 min-h-0">
                 <div>
                   <h5 className="text-sm font-medium text-muted-foreground">
                     Autor
@@ -1144,36 +1144,36 @@ function Ranking({
                   <div className="mt-2 text-sm text-muted-foreground">
                     ▲ {selectedLaw!.upvotes} votos
                   </div>
+                </div>
 
-                  <div className="mt-4">
-                    <div className="my-2 border-t border-border" />
-                    <h5 className="text-sm font-medium text-muted-foreground">
-                      Leyes relacionadas
-                    </h5>
-                    {relatedLaws.length === 0 ? (
-                      <div className="text-xs text-muted-foreground mt-2">
-                        No hay leyes relacionadas.
-                      </div>
-                    ) : (
-                      <ol className="mt-2 space-y-2 text-sm">
-                        {relatedLaws.map((r) => (
-                          <li key={r.id}>
-                            <button
-                              onClick={() => {
-                                setSelectedLaw(r);
-                                setShowComments(false);
-                              }}
-                              className="text-left w-full rounded-md px-2 py-1 hover:bg-gray-50"
-                            >
-                              <div className="font-medium truncate">
-                                {r.titulo}
-                              </div>
-                            </button>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
+                <div className="mt-4 flex-1 min-h-0 overflow-auto">
+                  <div className="my-2 border-t border-border" />
+                  <h5 className="text-sm font-medium text-muted-foreground">
+                    Leyes relacionadas
+                  </h5>
+                  {relatedLaws.length === 0 ? (
+                    <div className="text-xs text-muted-foreground mt-2">
+                      No hay leyes relacionadas.
+                    </div>
+                  ) : (
+                    <ol className="mt-2 space-y-2 text-sm">
+                      {relatedLaws.map((r) => (
+                        <li key={r.id}>
+                          <button
+                            onClick={() => {
+                              setSelectedLaw(r);
+                              setShowComments(false);
+                            }}
+                            className="text-left w-full rounded-md px-2 py-1 hover:bg-gray-50"
+                          >
+                            <div className="font-medium truncate">
+                              {r.titulo}
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                 </div>
 
                 <div className="mt-auto flex flex-col gap-2">
