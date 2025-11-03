@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import ReactDOM from "react-dom";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 
 export default function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -22,7 +22,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     }
   };
 
-  return (
+  const node = (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md p-6 bg-white rounded-xl border">
@@ -44,4 +44,6 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(node, document.body);
 }
