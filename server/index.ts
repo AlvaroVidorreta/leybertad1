@@ -11,6 +11,7 @@ import {
   upvoteLaw,
 } from "./routes/laws";
 import { profileHandler } from "./routes/profile";
+import { boeHandler } from "./routes/boe";
 
 export function createServer() {
   const app = express();
@@ -35,6 +36,9 @@ export function createServer() {
   app.post("/api/laws/:id/save", saveLaw);
   app.post("/api/laws/:id/comment", commentLaw);
   app.get("/api/ranking", ranking);
+
+  // BOE search endpoint
+  app.get("/api/boe/search", boeHandler);
 
   // Profile endpoint for current visitor
   app.get("/api/profile", profileHandler);
