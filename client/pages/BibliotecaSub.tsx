@@ -47,32 +47,34 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
       </div>
 
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 border rounded-md bg-background p-4">
+        <div className="md:col-span-2 border rounded-md bg-background p-4 flex flex-col min-h-0">
           <h4 className="font-medium mb-3">Leyes relacionadas ({matched.length})</h4>
 
-          {isLoading && <div className="text-sm text-muted-foreground">Cargando…</div>}
+          <div className="mt-2 min-h-0 flex-1 overflow-auto">
+            {isLoading && <div className="text-sm text-muted-foreground">Cargando…</div>}
 
-          {!isLoading && matched.length === 0 && (
-            <div className="text-sm text-muted-foreground">No se encontraron leyes para este subapartado.</div>
-          )}
+            {!isLoading && matched.length === 0 && (
+              <div className="text-sm text-muted-foreground">No se encontraron leyes para este subapartado.</div>
+            )}
 
-          {!isLoading && matched.length > 0 && (
-            <ul className="space-y-3">
-              {matched.map((l: any) => (
-                <li key={l.id} onClick={() => onOpenLaw ? onOpenLaw(l) : undefined} className="rounded-lg border p-3 bg-card cursor-pointer">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <LawSummary title={l.titulo} objetivo={l.objetivo} />
+            {!isLoading && matched.length > 0 && (
+              <ul className="space-y-3">
+                {matched.map((l: any) => (
+                  <li key={l.id} onClick={() => onOpenLaw ? onOpenLaw(l) : undefined} className="rounded-lg border p-3 bg-card cursor-pointer">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <LawSummary title={l.titulo} objetivo={l.objetivo} />
+                      </div>
+
+                      <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                        <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
+                      </div>
                     </div>
-
-                    <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                      <div className="rounded-full border px-3 py-0.5 text-sm bg-white">▲ {l.upvotes}</div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <aside className="md:col-span-1 border rounded-md bg-background p-4">
