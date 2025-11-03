@@ -1,5 +1,8 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import AuthModal from "@/components/AuthModal";
+import useFirebaseSync from "@/hooks/useFirebaseSync";
 
 export default function AppLayout({ children }: PropsWithChildren) {
   return (
