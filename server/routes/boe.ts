@@ -51,6 +51,11 @@ function filterItemsByTerm(items: any[], term: string) {
   return items.filter((it) => it && it.titulo && String(it.titulo).toLowerCase().includes(t));
 }
 
+// Simple rate limiter: maxRequests per minute per visitor
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_MAX = 30;
+const rateMap = new Map<string, { ts: number; count: number }>();
+
 export const boeHandler: RequestHandler = async (req, res) => {
   const q = String(req.query.q || "").trim();
   const date = String(req.query.date || "").trim();
