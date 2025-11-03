@@ -61,6 +61,18 @@ export const boeHandler: RequestHandler = async (req, res) => {
   const date = String(req.query.date || "").trim();
   const limit = Math.max(1, Math.min(50, Number(req.query.limit || 8)));
 
+  // rate limit check
+  const visitor = (req.headers && (req.headers['x-visitor-id'] || req.headers['x-visitorid'])) || req.ip || (req.connection && (req.connection as any).remoteAddress) || 'unknown';
+  const now = Date.now();
+  const state = rateMap.get(String(visitor));
+  if (!state || now - state.ts > RATE_LIMIT_WINDOW_MS) {
+    rateMap.set(String(visitor), { ts: now, count: 1 });
+  } else {
+    state.count++;
+    rateMap.set(String(visitor), state);
+    if (state.count > RATE_LIMIT_MAX) return res.status(429).json({ error: 'rate_limit_exceeded' });
+  }
+
   if (!q) return res.status(400).json({ error: "q query param required" });
 
   // If date provided, use it; otherwise try today and previous 6 days until we find data
@@ -122,3 +134,11 @@ export const boeHandler: RequestHandler = async (req, res) => {
 
   res.json({ results, meta: { query: q, tried: datesToTry.length, took_ms: 0 } });
 };
+
+// Test helpers
+export function __test_reset_rate() {
+  rateMap.clear();
+  cache.clear();
+}
+
+export { RATE_LIMIT_MAX };
