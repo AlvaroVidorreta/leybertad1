@@ -12,11 +12,36 @@ export default function AnalizadorPropuestas() {
     setResults(null);
     if (!q) return;
     setIsLoading(true);
-    // Simulate async analysis latency for UX feedback
-    await new Promise((r) => setTimeout(r, 450));
-    const r = analyzeProposal(q, 8);
-    setResults(r);
-    setIsLoading(false);
+
+    try {
+      // small UX delay
+      await new Promise((r) => setTimeout(r, 350));
+      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(q)}&limit=8`);
+      if (!res.ok) throw new Error("api_error");
+      const json = await res.json();
+      if (json && Array.isArray(json.results)) {
+        const mapped: AnalyzerMatch[] = json.results.map((r: any) => ({
+          law: {
+            id: r.id || r.title,
+            title: r.title || "Sin título",
+            summary: r.summary || "",
+            url: r.pdf_url || r.boe_url || r.url || "#",
+            keywords: [],
+          },
+          score: typeof r.score === "number" ? r.score : 1,
+          matched: Array.isArray(r.matched_terms) ? r.matched_terms : [q],
+        }));
+        setResults(mapped);
+        setIsLoading(false);
+        return;
+      }
+      throw new Error("no_results");
+    } catch (err) {
+      // fallback to local analyzer when API fails
+      const fallback = analyzeProposal(q, 8);
+      setResults(fallback);
+      setIsLoading(false);
+    }
   }
 
   const hasResults = results && results.length > 0;
