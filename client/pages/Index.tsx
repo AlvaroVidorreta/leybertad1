@@ -123,7 +123,7 @@ export default function Index() {
         <section id="recientes" className="lg:col-span-2">
           <FeedRecientes
             onOpenLaw={handleOpenLaw}
-            onComment={(id, text) => comentar.mutate({ id, text })}
+            onComment={(id, texto) => comentar.mutate({ id, texto })}
           />
         </section>
         <aside className="lg:col-span-1">
