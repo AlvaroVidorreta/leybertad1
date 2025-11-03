@@ -189,9 +189,15 @@ export const boeHandler: RequestHandler = async (req, res) => {
 };
 
 // Test helpers
-export function __test_reset_rate() {
+export async function __test_reset_rate() {
   rateMap.clear();
   cache.clear();
+  cacheDirty = false;
+  try {
+    await fs.unlink(CACHE_FILE).catch(() => null);
+  } catch (e) {
+    // ignore
+  }
 }
 
 export { RATE_LIMIT_MAX };
