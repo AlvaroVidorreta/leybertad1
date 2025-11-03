@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signInAnonymously as fbSignInAnonymously,
   signOut as fbSignOut,
   onAuthStateChanged,
@@ -30,8 +32,23 @@ export default function useFirebaseAuth() {
     return createUserWithEmailAndPassword(auth, email, password);
   }, []);
 
+  // Try popup first, fallback to redirect when popups are blocked or not supported.
   const signInWithGoogle = useCallback(async () => {
-    return signInWithPopup(auth, googleProvider);
+    try {
+      return await signInWithPopup(auth, googleProvider);
+    } catch (err: any) {
+      // If popup is blocked or not supported, try redirect flow.
+      const code = err?.code || err?.message || "";
+      if (
+        code.includes("popup") ||
+        code.includes("operation-not-supported") ||
+        code.includes("auth/operation-not-supported-in-this-environment")
+      ) {
+        return signInWithRedirect(auth, googleProvider);
+      }
+      // rethrow other errors (like unauthorized domain) so UI can handle them
+      throw err;
+    }
   }, []);
 
   const signInAnonymous = useCallback(async () => {
