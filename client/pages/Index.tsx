@@ -134,6 +134,8 @@ export default function Index() {
             setSelectedLaw={setSelectedLaw}
             setShowComments={setShowComments}
             onComment={(id, texto) => comentar.mutate({ id, texto })}
+            onUpvote={handleUpvote}
+            onSave={handleSave}
           />
         </aside>
       </div>
@@ -783,6 +785,8 @@ function Ranking({
   setSelectedLaw,
   setShowComments,
   onComment,
+  onUpvote,
+  onSave,
 }: {
   onOpenLaw: (law: Law, openComments?: boolean) => void;
   selectedLaw: Law | null;
@@ -790,6 +794,8 @@ function Ranking({
   setSelectedLaw: (l: Law | null) => void;
   setShowComments: (s: boolean) => void;
   onComment: (id: string, texto: string) => void;
+  onUpvote?: (id: string) => void;
+  onSave?: (id: string) => void;
 }) {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, isLoading } = useQuery({
