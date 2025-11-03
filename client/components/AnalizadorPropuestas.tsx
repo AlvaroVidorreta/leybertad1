@@ -75,23 +75,27 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
   return (
     <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white">
-      <div className="mb-2">
-        <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
-        <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
-      </div>
-
-      <div>
-        {/* compact hint instead of large textarea to free vertical space */}
-        <div className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-sm text-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="truncate">{text || "Usa la barra superior derecha para introducir la propuesta..."}</div>
-            <div className="text-xs text-gray-400 ml-2">Analizador</div>
+      {results === null && (
+        <>
+          <div className="mb-2">
+            <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
+            <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
           </div>
-        </div>
-      </div>
+
+          <div>
+            {/* compact hint instead of large textarea to free vertical space */}
+            <div className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-sm text-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="truncate">{text || "Usa la barra superior derecha para introducir la propuesta..."}</div>
+                <div className="text-xs text-gray-400 ml-2">Analizador</div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {results !== null && (
-        <div className="mt-4">
+        <div className="mt-0">
           {!hasResults && (
             <div className="text-center text-sm text-gray-300 py-6">
               No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
