@@ -11,7 +11,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
 
   if (!open) return null;
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
