@@ -326,17 +326,34 @@ function UltimasLeyes({
                 <div className="md:w-96 w-full">
                   <div className="relative">
                     <input
-                      value={qApproved}
-                      onChange={(e) => setQApproved(e.target.value)}
-                      aria-label="Buscar en últimas aprobadas"
-                      placeholder="Buscar en Últimas aprobadas..."
+                      value={isFlipped ? (typeof (window as any).__ANALYZER_TMP_Q__ !== 'undefined' ? (window as any).__ANALYZER_TMP_Q__ : qApproved) : qApproved}
+                      onChange={(e) => {
+                        if (isFlipped) {
+                          // when flipped, keep local analyzerQ in window var to avoid changing existing qApproved logic
+                          (window as any).__ANALYZER_TMP_Q__ = e.target.value;
+                          // also update debounced value used elsewhere
+                          setQApproved(e.target.value);
+                        } else {
+                          setQAll(e.target.value);
+                        }
+                      }}
+                      aria-label={isFlipped ? "Analizar propuesta" : "Buscar en últimas aprobadas"}
+                      placeholder={isFlipped ? "Analizar propuesta..." : "Buscar en Últimas aprobadas..."}
                       className="w-full rounded-full border bg-white/5 px-5 pr-28 py-3 text-base md:text-lg text-white placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     />
                     <button
-                      onClick={() => {}}
+                      onClick={() => {
+                        if (isFlipped) {
+                          // trigger global analyzer event by incrementing a custom event on window
+                          const ev = new CustomEvent('analyzer:trigger', { detail: { q: (window as any).__ANALYZER_TMP_Q__ || qApproved } });
+                          window.dispatchEvent(ev);
+                        } else {
+                          // placeholder for search in front face
+                        }
+                      }}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm"
                     >
-                      Buscar
+                      {isFlipped ? 'Analizar' : 'Buscar'}
                     </button>
                   </div>
 
