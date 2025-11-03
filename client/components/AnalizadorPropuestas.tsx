@@ -1,22 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 import { cn } from "@/lib/utils";
 
-export default function AnalizadorPropuestas() {
+export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:{ externalQuery?: string; externalTrigger?: number }) {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalyzerMatch[] | null>(null);
+  const mounted = useRef(true);
 
-  async function onAnalyze() {
-    const q = text.trim();
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+
+  async function analyzeQuery(q: string) {
+    const query = String(q || "").trim();
     setResults(null);
-    if (!q) return;
+    if (!query) return;
     setIsLoading(true);
 
     try {
-      // small UX delay
-      await new Promise((r) => setTimeout(r, 350));
-      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(q)}&limit=8`);
+      await new Promise((r) => setTimeout(r, 250));
+      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(query)}&limit=8`);
       if (!res.ok) throw new Error("api_error");
       const json = await res.json();
       if (json && Array.isArray(json.results)) {
@@ -29,20 +34,42 @@ export default function AnalizadorPropuestas() {
             keywords: [],
           },
           score: typeof r.score === "number" ? r.score : 1,
-          matched: Array.isArray(r.matched_terms) ? r.matched_terms : [q],
+          matched: Array.isArray(r.matched_terms) ? r.matched_terms : [query],
         }));
+        if (!mounted.current) return;
         setResults(mapped);
         setIsLoading(false);
         return;
       }
       throw new Error("no_results");
     } catch (err) {
-      // fallback to local analyzer when API fails
-      const fallback = analyzeProposal(q, 8);
+      const fallback = analyzeProposal(query, 8);
+      if (!mounted.current) return;
       setResults(fallback);
       setIsLoading(false);
     }
   }
+
+  // expose external trigger via window event
+  useEffect(() => {
+    function handler(e: any) {
+      const q = e?.detail?.q;
+      if (q && typeof q === "string") {
+        setText(q);
+        analyzeQuery(q);
+      }
+    }
+    window.addEventListener('analyzer:trigger', handler as EventListener);
+    return () => window.removeEventListener('analyzer:trigger', handler as EventListener);
+  }, []);
+
+  // also support direct prop trigger
+  useEffect(() => {
+    if (externalTrigger && externalQuery) {
+      setText(externalQuery);
+      analyzeQuery(externalQuery);
+    }
+  }, [externalTrigger]);
 
   const hasResults = results && results.length > 0;
 
@@ -50,29 +77,16 @@ export default function AnalizadorPropuestas() {
     <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white">
       <div className="mb-2">
         <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
-        <p className="text-sm text-gray-300 mt-1">Introduce el título o la idea principal de tu propuesta para encontrar leyes vigentes relacionadas.</p>
+        <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
       </div>
 
       <div>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Ej: 'Modificar el IVA de los productos culturales al 4%'..."
-          className="w-full min-h-[80px] rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-base placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-        />
-        <div className="mt-2 flex items-center justify-end">
-          <button
-            onClick={onAnalyze}
-            disabled={!text.trim() || isLoading}
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs disabled:opacity-50",
-            )}
-          >
-            {isLoading && (
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/70 border-t-transparent" aria-hidden />
-            )}
-            <span>{isLoading ? "Analizando…" : "Analizar Concordancia"}</span>
-          </button>
+        {/* compact hint instead of large textarea to free vertical space */}
+        <div className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-sm text-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="truncate">{text || "Usa la barra superior derecha para introducir la propuesta..."}</div>
+            <div className="text-xs text-gray-400 ml-2">Analizador</div>
+          </div>
         </div>
       </div>
 
@@ -87,32 +101,34 @@ export default function AnalizadorPropuestas() {
           {hasResults && (
             <div>
               <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
-              <ul className="space-y-3">
-                {results!.map((r) => (
-                  <li key={r.law.id} className="rounded-xl border border-white/15 bg-white/[0.03] p-4">
-                    <div className="flex items-start gap-4">
-                      <Relevance value={Math.round(r.score * 100)} />
+              <div className="max-h-[36vh] overflow-auto">
+                <ul className="space-y-2">
+                  {results!.map((r) => (
+                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                      <div className="flex items-start gap-3">
+                        <Relevance value={Math.round(r.score * 100)} small />
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <h6 className="font-medium text-[0.95rem] text-white truncate">{r.law.title}</h6>
-                            <p className="mt-1 italic text-sm text-gray-300">{r.law.summary}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
+                              <p className="mt-1 italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
+                            </div>
+                            <a
+                              href={r.law.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
+                            >
+                              Consultar →
+                            </a>
                           </div>
-                          <a
-                            href={r.law.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
-                          >
-                            Consultar en la Biblioteca →
-                          </a>
                         </div>
                       </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
         </div>
@@ -121,17 +137,19 @@ export default function AnalizadorPropuestas() {
   );
 }
 
-function Relevance({ value }: { value: number }) {
+function Relevance({ value, small }: { value: number; small?: boolean }) {
   const clamped = Math.max(0, Math.min(100, value));
+  const size = small ? 36 : 48;
+  const font = small ? 'text-[10px]' : 'text-xs';
   const gradient = `conic-gradient(#d4b46a ${clamped * 3.6}deg, rgba(255,255,255,0.1) 0)`; // goldish accent
   return (
     <div className="flex-shrink-0">
-      <div className="relative h-12 w-12 rounded-full" style={{ background: gradient }} aria-label={`${clamped}% Relevante`}>
-        <div className="absolute inset-[3px] rounded-full bg-[#0b1220] grid place-items-center text-xs text-white/90">
+      <div className={`relative rounded-full`} style={{ background: gradient, height: size, width: size }} aria-label={`${clamped}% Relevante`}>
+        <div className={`absolute inset-[3px] rounded-full bg-[#0b1220] grid place-items-center ${font} text-white/90`}>
           {clamped}%
         </div>
       </div>
-      <div className="mt-1 text-[10px] uppercase tracking-wide text-gray-300 text-center">Relevante</div>
+      <div className="mt-1 text-[9px] uppercase tracking-wide text-gray-300 text-center">Relevante</div>
     </div>
   );
 }
