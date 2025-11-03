@@ -1014,7 +1014,7 @@ function Ranking({
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleSave(selectedLaw!.id)}
+                      onClick={() => onSave?.(selectedLaw!.id)}
                       aria-label="Guardar"
                       className="rounded-full bg-white border hover:bg-gray-50 inline-flex items-center justify-center w-8 h-8"
                     >
