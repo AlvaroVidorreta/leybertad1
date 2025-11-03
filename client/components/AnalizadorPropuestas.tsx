@@ -74,69 +74,61 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const hasResults = results && results.length > 0;
 
   return (
-    <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white">
-      {results === null && (
-        <>
-          <div className="mb-2">
-            <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
-            <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
-          </div>
+    <div className="rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white overflow-hidden max-h-[72vh]">
+      {/* header/hint area: show only before any search; animate collapse */}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100 pb-3' : 'max-h-0 opacity-0'}`}>
+        <div className="mb-2">
+          <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
+          <p className="text-sm text-gray-300 mt-1">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
+        </div>
+      </div>
 
+      {/* results area */}
+      <div className="mt-0 transition-opacity duration-200" style={{ opacity: results === null ? 0 : 1 }}>
+        {results !== null && (
           <div>
-            {/* compact hint instead of large textarea to free vertical space */}
-            <div className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-sm text-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="truncate">{text || "Usa la barra superior derecha para introducir la propuesta..."}</div>
-                <div className="text-xs text-gray-400 ml-2">Analizador</div>
+            {!hasResults && (
+              <div className="text-center text-sm text-gray-300 py-6">
+                No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            )}
 
-      {results !== null && (
-        <div className="mt-0">
-          {!hasResults && (
-            <div className="text-center text-sm text-gray-300 py-6">
-              No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
-            </div>
-          )}
+            {hasResults && (
+              <div>
+                <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
+                <div className="overflow-auto" style={{ maxHeight: 'calc(72vh - 96px)' }}>
+                  <ul className="space-y-2 p-1">
+                    {results!.map((r) => (
+                      <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                        <div className="flex items-start gap-3">
+                          <Relevance value={Math.round(r.score * 100)} small />
 
-          {hasResults && (
-            <div>
-              <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
-              <div className="max-h-[36vh] overflow-auto">
-                <ul className="space-y-2">
-                  {results!.map((r) => (
-                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
-                      <div className="flex items-start gap-3">
-                        <Relevance value={Math.round(r.score * 100)} small />
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0">
-                              <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
-                              <p className="mt-1 italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
+                                <p className="mt-1 italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
+                              </div>
+                              <a
+                                href={r.law.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
+                              >
+                                Consultar →
+                              </a>
                             </div>
-                            <a
-                              href={r.law.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline"
-                            >
-                              Consultar →
-                            </a>
                           </div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
