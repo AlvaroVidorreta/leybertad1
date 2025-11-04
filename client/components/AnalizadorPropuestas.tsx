@@ -103,15 +103,23 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
               <div className="flex-1 min-h-0 overflow-auto">
                 <div className="flex items-center justify-between mb-2">
                   <h5 className="text-lg font-semibold">Leyes Relacionadas Sugeridas</h5>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setShowFilter((s) => !s)} className="text-sm px-2 py-1 rounded-md border bg-white/5">Filtrar por tiempo</button>
+                  <div className="flex items-center gap-2 relative">
+                    <button
+                      onClick={() => setShowFilter((s) => !s)}
+                      className="text-sm px-3 py-1 rounded-md border bg-white/5 hover:bg-white/10 flex items-center gap-2"
+                      aria-expanded={showFilter}
+                      aria-label="Filtrar por tiempo"
+                    >
+                      Filtrar por tiempo
+                    </button>
+
                     {showFilter && (
-                      <select value={timeframe} onChange={(e) => { setTimeframe(e.target.value as any); if (text) analyzeQuery(text); }} className="text-sm bg-white/5 rounded-md px-2 py-1">
-                        <option value="any">Cualquiera</option>
-                        <option value="week">Última semana</option>
-                        <option value="month">Último mes</option>
-                        <option value="year">Último año</option>
-                      </select>
+                      <div className="absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-gray-800 border border-white/10 text-white z-30">
+                        <button className={`w-full text-left px-3 py-2 ${timeframe === 'any' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('any'); if (text) analyzeQuery(text); setShowFilter(false); }}>Cualquiera</button>
+                        <button className={`w-full text-left px-3 py-2 ${timeframe === 'week' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('week'); if (text) analyzeQuery(text); setShowFilter(false); }}>Última semana</button>
+                        <button className={`w-full text-left px-3 py-2 ${timeframe === 'month' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('month'); if (text) analyzeQuery(text); setShowFilter(false); }}>Último mes</button>
+                        <button className={`w-full text-left px-3 py-2 ${timeframe === 'year' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('year'); if (text) analyzeQuery(text); setShowFilter(false); }}>Último año</button>
+                      </div>
                     )}
                   </div>
                 </div>
