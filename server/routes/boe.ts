@@ -184,6 +184,7 @@ export const boeHandler: RequestHandler = async (req, res) => {
       summary: String(item.subtitulo || item.extracto || item.texto || ""),
       pdf_url: pdf || null,
       boe_url: boe || null,
+      date: entry._date || null,
       score: 1, // basic exact-title-match scoring for now
       matched_terms: [q],
     };
