@@ -45,7 +45,20 @@ export default function Perfil() {
       try {
         const [pRes, laws] = await Promise.all([fetch("/api/profile").then((r) => r.json()), obtenerRecientes()]);
         if (!mounted) return;
-        setProfile(pRes as ProfileResponse);
+        // apply local overrides (saved in localStorage) to profile so editing persists client-side
+        try {
+          const visitor = localStorage.getItem('visitorId') || 'unknown';
+          const raw = localStorage.getItem(`profile_override:${visitor}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const merged = { ...(pRes as ProfileResponse), displayName: parsed.displayName || (pRes as ProfileResponse).displayName, username: parsed.username || (pRes as ProfileResponse).username } as ProfileResponse;
+            setProfile(merged);
+          } else {
+            setProfile(pRes as ProfileResponse);
+          }
+        } catch (e) {
+          setProfile(pRes as ProfileResponse);
+        }
         setAllLaws(laws as Law[]);
       } catch (err) {
         logger.error(err);
