@@ -88,7 +88,7 @@ export default function Perfil() {
 
   return (
     <div className="max-w-4xl mx-auto relative">
-      <BackButton onBack={() => navigate(-1)} />
+      <BackButton onBack={() => navigate('/')} />
 
       <section className="flex items-center gap-6 py-6 border-b mb-6">
         <Avatar className="h-20 w-20">
