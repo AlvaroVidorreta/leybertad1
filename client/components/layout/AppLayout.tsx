@@ -196,7 +196,7 @@ function CollapsibleHeader() {
                   aria-expanded={accountOpen}
                   className="ml-2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm btn-micro-shimmer"
                 >
-                  {user ? (user.email || "Cuenta") : "Cuenta"}
+                  Cuenta
                 </button>
 
                 {accountOpen && (
