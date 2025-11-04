@@ -211,10 +211,10 @@ export const boeHandler: RequestHandler = async (req, res) => {
   }
 
   // compute cutoff date for filtering items by their own dates (inclusive)
-  const now = new Date();
+  const nowDate = new Date();
   const cutoffDate = explicitDate
     ? new Date(Number(explicitDate.slice(0, 4)), Number(explicitDate.slice(4, 6)) - 1, Number(explicitDate.slice(6, 8)))
-    : new Date(now.getTime() - daysToTryCount * 24 * 60 * 60 * 1000);
+    : new Date(nowDate.getTime() - daysToTryCount * 24 * 60 * 60 * 1000);
 
   const startTime = Date.now();
 
