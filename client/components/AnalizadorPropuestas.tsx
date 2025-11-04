@@ -195,7 +195,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   );
 }
 
-function Relevance({ value, small }: { value: number; small?: boolean }) {
+function Relevance({ value, small, className }: { value: number; small?: boolean; className?: string }) {
   const clamped = Math.max(0, Math.min(100, value));
   const size = small ? 32 : 44;
   const font = small ? 'text-[9px]' : 'text-xs';
