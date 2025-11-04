@@ -164,7 +164,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                   {results!.map((r) => (
                     <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
                       <div className="flex items-center gap-3">
-                        <Relevance value={Math.round(r.score * 100)} small />
+                        <Relevance value={Math.round(r.score * 100)} small className="self-center" />
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
