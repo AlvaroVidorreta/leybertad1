@@ -13,6 +13,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     return () => { mounted.current = false; };
   }, []);
 
+  const [showFilter, setShowFilter] = useState(false);
+  const [timeframe, setTimeframe] = useState<'any'|'week'|'month'|'year'>('any');
+
   async function analyzeQuery(q: string) {
     const query = String(q || "").trim();
     setResults(null);
@@ -21,7 +24,8 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
     try {
       await new Promise((r) => setTimeout(r, 250));
-      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(query)}&limit=8`);
+      const sinceParam = timeframe === 'week' ? '&since_days=7' : timeframe === 'month' ? '&since_days=30' : timeframe === 'year' ? '&since_days=365' : '';
+      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(query)}&limit=8${sinceParam}`);
       if (!res.ok) throw new Error("api_error");
       const json = await res.json();
       if (json && Array.isArray(json.results)) {
@@ -97,11 +101,24 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
             {hasResults && (
               <div className="flex-1 min-h-0 overflow-auto">
-                <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="text-lg font-semibold">Leyes Relacionadas Sugeridas</h5>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowFilter((s) => !s)} className="text-sm px-2 py-1 rounded-md border bg-white/5">Filtrar por tiempo</button>
+                    {showFilter && (
+                      <select value={timeframe} onChange={(e) => { setTimeframe(e.target.value as any); if (text) analyzeQuery(text); }} className="text-sm bg-white/5 rounded-md px-2 py-1">
+                        <option value="any">Cualquiera</option>
+                        <option value="week">Última semana</option>
+                        <option value="month">Último mes</option>
+                        <option value="year">Último año</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
                 <ul className="space-y-2 p-1">
                   {results!.map((r) => (
                     <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-center gap-3">
                         <Relevance value={Math.round(r.score * 100)} small />
 
                         <div className="flex-1 min-w-0">
