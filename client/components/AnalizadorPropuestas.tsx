@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 import { cn } from "@/lib/utils";
+import ReactDOM from "react-dom";
+import { useEffect, useRef, useState } from "react";
 
 export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:{ externalQuery?: string; externalTrigger?: number }) {
   const [text, setText] = useState("");
@@ -15,6 +17,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
   const [showFilter, setShowFilter] = useState(false);
   const [timeframe, setTimeframe] = useState<'any'|'week'|'month'|'year'>('any');
+  const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
 
   async function analyzeQuery(q: string) {
     const query = String(q || "").trim();
@@ -66,6 +71,27 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     window.addEventListener('analyzer:trigger', handler as EventListener);
     return () => window.removeEventListener('analyzer:trigger', handler as EventListener);
   }, []);
+
+  // compute menu position when opened
+  useEffect(() => {
+    if (showFilter) {
+      const rect = anchorRef.current?.getBoundingClientRect() || null;
+      setMenuRect(rect);
+    }
+  }, [showFilter]);
+
+  // click outside to close
+  useEffect(() => {
+    function onDocDown(e: MouseEvent) {
+      const target = e.target as Node | null;
+      if (!showFilter) return;
+      if (menuRef.current && (menuRef.current === target || menuRef.current.contains(target))) return;
+      if (anchorRef.current && (anchorRef.current === target || anchorRef.current.contains(target))) return;
+      setShowFilter(false);
+    }
+    document.addEventListener('mousedown', onDocDown);
+    return () => document.removeEventListener('mousedown', onDocDown);
+  }, [showFilter]);
 
   // also support direct prop trigger
   useEffect(() => {
