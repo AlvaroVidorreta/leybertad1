@@ -10,7 +10,7 @@ type Props = {
 export default function LawSummary({ title, objetivo, className = "", titleClassName = "" }: Props) {
   return (
     <div className={"flex flex-col justify-center " + className}>
-      <div className={(titleClassName ? titleClassName + " " : "") + "font-medium text-base"} style={{ lineHeight: 1.1 }}>
+      <div className={(titleClassName ? titleClassName + " " : "") + "font-medium text-base leading-5 translate-y-0.5"}>
         {title}
       </div>
       {objetivo ? (
