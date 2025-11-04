@@ -14,16 +14,38 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
+export const FIREBASE_ENABLED = Boolean(firebaseConfig.apiKey);
+
 // Basic validation to surface clearer errors in development
-if (!firebaseConfig.apiKey) {
+if (!FIREBASE_ENABLED) {
   // eslint-disable-next-line no-console
   console.error("Missing Firebase API key (VITE_FIREBASE_API_KEY). Authentication will fail.");
 }
 
-const app = !firebaseApp.getApps().length ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
+let app: any = null;
+let auth: any = null;
+let googleProvider: any = null;
+let db: any = null;
+let storage: any = null;
 
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const db = getDatabase(app);
-export const storage = getStorage(app);
+if (FIREBASE_ENABLED) {
+  app = !firebaseApp.getApps().length ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
+  try {
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    db = getDatabase(app);
+    storage = getStorage(app);
+  } catch (e) {
+    // If something goes wrong initializing, ensure we don't crash the whole app. Log and continue with disabled mode.
+    // eslint-disable-next-line no-console
+    console.error('Firebase initialization failed', e);
+    auth = null;
+    googleProvider = null;
+    db = null;
+    storage = null;
+    app = null;
+  }
+}
+
+export { auth, googleProvider, db, storage };
 export default app;
