@@ -1,4 +1,5 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
@@ -12,6 +13,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+// Basic validation to surface clearer errors in development
+if (!firebaseConfig.apiKey) {
+  // eslint-disable-next-line no-console
+  console.error("Missing Firebase API key (VITE_FIREBASE_API_KEY). Authentication will fail.");
+}
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
