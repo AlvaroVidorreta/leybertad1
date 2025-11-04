@@ -1,13 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 
-export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:{ externalQuery?: string; externalTrigger?: number }) {
+export default function AnalizadorPropuestas({ externalQuery, externalTrigger }: { externalQuery?: string; externalTrigger?: number }) {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalyzerMatch[] | null>(null);
-  const mounted = useRef(true);
+  const mounted = useRef(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -60,8 +59,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
   // expose external trigger via window event
   useEffect(() => {
-    function handler(e: any) {
-      const q = e?.detail?.q;
+    function handler(e: Event) {
+      const ce = e as CustomEvent<Record<string, unknown>>;
+      const q = ce?.detail && (ce.detail as any).q;
       if (q && typeof q === "string") {
         setText(q);
         analyzeQuery(q);
