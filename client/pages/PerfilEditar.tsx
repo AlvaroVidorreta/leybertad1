@@ -47,12 +47,27 @@ export default function PerfilEditar() {
     };
   }, []);
 
-  const save = () => {
-    const visitor = localStorage.getItem("visitorId") || "unknown";
+  const save = async () => {
     const payload = { displayName: displayName.trim(), username: username.trim() };
-    localStorage.setItem(`profile_override:${visitor}`, JSON.stringify(payload));
-    toast({ title: "Perfil guardado", description: "Tus cambios se han guardado localmente." });
-    navigate("/perfil");
+    try {
+      const visitor = localStorage.getItem("visitorId");
+      const headers: any = { "Content-Type": "application/json" };
+      if (visitor) headers["x-visitor-id"] = visitor;
+      const res = await fetch("/api/profile", { method: "POST", headers, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error("Error saving profile");
+      const data = await res.json();
+      // also persist locally as fallback
+      const localVisitor = localStorage.getItem("visitorId") || "unknown";
+      localStorage.setItem(`profile_override:${localVisitor}`, JSON.stringify(payload));
+      toast({ title: "Perfil guardado", description: "Tus cambios se han guardado." });
+      navigate("/perfil");
+    } catch (e) {
+      // fallback to local only
+      const visitor = localStorage.getItem("visitorId") || "unknown";
+      localStorage.setItem(`profile_override:${visitor}`, JSON.stringify(payload));
+      toast({ title: "Perfil guardado (local)", description: "No se pudo guardar en el servidor; se guardó localmente." });
+      navigate("/perfil");
+    }
   };
 
   const clear = () => {
