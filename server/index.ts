@@ -42,6 +42,7 @@ export function createServer() {
 
   // Profile endpoint for current visitor
   app.get("/api/profile", profileHandler);
+  app.post("/api/profile", profileUpdateHandler);
 
   return app;
 }
