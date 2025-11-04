@@ -159,7 +159,7 @@ export const boeHandler: RequestHandler = async (req, res) => {
   }
 
   // Map to response shape
-  const results = allMatches.slice(0, limit).map((entry: any) => {
+  let results = allMatches.map((entry: any) => {
     const item = entry.item || entry;
     const title = item.titulo || item.titulo_largo || "Sin título";
     // pdf link in the BOE summary often lies in item.url_pdf.texto
@@ -189,6 +189,32 @@ export const boeHandler: RequestHandler = async (req, res) => {
       matched_terms: [q],
     };
   });
+
+  // Ensure results prioritize those from the last year, sorted newest->oldest
+  try {
+    const today = new Date();
+    const cutoff = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+    const cutoffStr = `${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, '0')}${String(cutoff.getDate()).padStart(2, '0')}`;
+
+    results.sort((a: any, b: any) => {
+      const aDate = a.date || '';
+      const bDate = b.date || '';
+      const aIsRecent = aDate >= cutoffStr;
+      const bIsRecent = bDate >= cutoffStr;
+      if (aIsRecent && !bIsRecent) return -1;
+      if (!aIsRecent && bIsRecent) return 1;
+      // if both same recency status, sort by date desc (newest first)
+      if (aDate && bDate) return bDate.localeCompare(aDate);
+      if (aDate) return -1;
+      if (bDate) return 1;
+      return 0;
+    });
+  } catch (e) {
+    // ignore sorting errors
+  }
+
+  // limit
+  results = results.slice(0, limit);
 
   res.json({ results, meta: { query: q, tried: datesToTry.length, took_ms: 0 } });
 };
