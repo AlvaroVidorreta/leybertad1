@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 import { cn } from "@/lib/utils";
 import ReactDOM from "react-dom";
+import { useEffect, useRef, useState } from "react";
 
 export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:{ externalQuery?: string; externalTrigger?: number }) {
   const [text, setText] = useState("");
