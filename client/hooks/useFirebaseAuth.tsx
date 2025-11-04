@@ -28,6 +28,18 @@ export default function useFirebaseAuth() {
       setUser(u);
       setLoading(false);
     });
+
+    // If a redirect sign-in flow was used, getRedirectResult resolves with the credential or throws a descriptive error
+    (async () => {
+      try {
+        await getRedirectResult(auth);
+      } catch (err) {
+        // Non-fatal: log for diagnostics, UI can still rely on onAuthStateChanged
+        // eslint-disable-next-line no-console
+        console.warn("Firebase redirect sign-in failed", err);
+      }
+    })();
+
     return () => unsub();
   }, []);
 
