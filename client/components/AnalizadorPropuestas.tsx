@@ -204,7 +204,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                       <div className="flex items-center">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0 flex flex-col justify-center space-y-1 translate-y-1">
+                            <div className="min-w-0 flex flex-col justify-center space-y-1">
                               <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
                               <p className="italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
                             </div>
@@ -212,7 +212,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                               href={r.law.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline flex items-center py-1"
+                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline flex items-center py-2 self-center"
                             >
                               Consultar →
                             </a>
