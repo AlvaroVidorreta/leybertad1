@@ -325,7 +325,7 @@ export const boeHandler: RequestHandler = async (req, res) => {
       summary: String((item as any).subtitulo || (item as any).extracto || (item as any).texto || ""),
       pdf_url: pdf || null,
       boe_url: boe || null,
-      date: entry._date || null,
+      date: entry.itemDate || entry._date || null,
       score: 0,
       matched_terms: [q],
     };
