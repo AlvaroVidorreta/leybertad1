@@ -23,18 +23,20 @@ app.get("*", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Fusion Starter server running on port ${port}`);
-  console.log(`📱 Frontend: http://localhost:${port}`);
-  console.log(`🔧 API: http://localhost:${port}/api`);
+  if (process.env.NODE_ENV !== "production") {
+    console.info(`🚀 Fusion Starter server running on port ${port}`);
+    console.info(`📱 Frontend: http://localhost:${port}`);
+    console.info(`🔧 API: http://localhost:${port}/api`);
+  }
 });
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  console.log("🛑 Received SIGTERM, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production") console.info("🛑 Received SIGTERM, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  console.log("🛑 Received SIGINT, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production") console.info("🛑 Received SIGINT, shutting down gracefully");
   process.exit(0);
 });

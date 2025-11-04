@@ -1,6 +1,6 @@
-import { RequestHandler } from "express";
 import fs from "fs/promises";
 import path from "path";
+import type { RequestHandler } from "express";
 
 // Simple in-memory cache to avoid hammering BOE
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours
@@ -9,9 +9,12 @@ const cache = new Map<string, { ts: number; items: any[] }>();
 const CACHE_FILE = path.resolve(process.cwd(), "server", "data", "boe_cache.json");
 let cacheDirty = false;
 
-function log(...args: any[]) {
-  const ts = new Date().toISOString();
-  console.log("[boe]", ts, ...args);
+function log(...args: unknown[]) {
+  // only verbose in non-production environments
+  if (process.env.NODE_ENV !== "production") {
+    const ts = new Date().toISOString();
+    console.debug("[boe]", ts, ...args);
+  }
 }
 
 async function loadPersistedCache() {
@@ -78,14 +81,14 @@ async function fetchSummary(date: string) {
   }
 }
 
-function extractItems(data: any, itemsList: any[] = []): any[] {
+function extractItems(data: unknown, itemsList: any[] = []): any[] {
   if (!data) return itemsList;
   if (Array.isArray(data)) {
     for (const item of data) extractItems(item, itemsList);
     return itemsList;
   }
   if (typeof data === "object") {
-    for (const key of Object.keys(data)) {
+    for (const key of Object.keys(data as Record<string, unknown>)) {
       const value = (data as any)[key];
       if (key === "item") {
         if (Array.isArray(value)) itemsList.push(...value);
@@ -181,7 +184,7 @@ export const boeHandler: RequestHandler = async (req, res) => {
     return {
       id: item.referencia || item.id || `${entry._date}-${Math.random().toString(36).slice(2,8)}`,
       title: String(title),
-      summary: String(item.subtitulo || item.extracto || item.texto || ""),
+      summary: String((item as any).subtitulo || (item as any).extracto || (item as any).texto || ""),
       pdf_url: pdf || null,
       boe_url: boe || null,
       date: entry._date || null,
