@@ -9,6 +9,7 @@ type DataShape = {
   laws: Law[];
   creationsByVisitor: Record<string, string[]>;
   votesByVisitor: Record<string, string[]>;
+  profiles?: Record<string, { displayName?: string; username?: string }>;
 };
 
 async function ensureDataFile() {
@@ -16,7 +17,7 @@ async function ensureDataFile() {
     await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
     await fs.access(DATA_FILE);
   } catch (err) {
-    const initial: DataShape = { laws: [], creationsByVisitor: {}, votesByVisitor: {} };
+    const initial: DataShape = { laws: [], creationsByVisitor: {}, votesByVisitor: {}, profiles: {} };
     await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2), "utf-8");
   }
 }
@@ -29,6 +30,7 @@ async function readData(): Promise<DataShape> {
     parsed.laws = parsed.laws || [];
     parsed.creationsByVisitor = parsed.creationsByVisitor || {};
     parsed.votesByVisitor = parsed.votesByVisitor || {};
+    parsed.profiles = parsed.profiles || {};
     return parsed;
   } catch (err) {
     const initial: DataShape = { laws: [], creationsByVisitor: {}, votesByVisitor: {} };
@@ -134,6 +136,19 @@ export const db = {
 
   async rawData() {
     return await readData();
+  },
+
+  async getProfile(visitorKey: string) {
+    const data = await readData();
+    return (data.profiles || {})[visitorKey] || null;
+  },
+
+  async setProfile(visitorKey: string, payload: { displayName?: string; username?: string }) {
+    const data = await readData();
+    data.profiles = data.profiles || {};
+    data.profiles[visitorKey] = { ...(data.profiles[visitorKey] || {}), ...(payload || {}) };
+    await writeData(data);
+    return data.profiles[visitorKey];
   },
 };
 
