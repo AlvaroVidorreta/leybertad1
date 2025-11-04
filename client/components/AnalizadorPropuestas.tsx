@@ -201,9 +201,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                 <ul className="space-y-2 p-1">
                   {results!.map((r) => (
                     <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
-                      <div className="flex items-center gap-3">
-                        <Relevance value={Math.round(r.score * 100)} small className="self-center" />
-
+                      <div className="flex items-center">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0 flex flex-col justify-center space-y-1">
@@ -228,22 +226,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
             </div>
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-function Relevance({ value, small, className }: { value: number; small?: boolean; className?: string }) {
-  const clamped = Math.max(0, Math.min(100, value));
-  const size = small ? 32 : 44;
-  const font = small ? 'text-[9px]' : 'text-xs';
-  const gradient = `conic-gradient(#d4b46a ${clamped * 3.6}deg, rgba(255,255,255,0.1) 0)`; // goldish accent
-  return (
-    <div className={`flex-shrink-0 ${className || ""}`}>
-      <div className={`relative rounded-full`} style={{ background: gradient, height: size, width: size }} aria-label={`${clamped}%`}>
-        <div className={`absolute inset-[3px] rounded-full bg-[#0b1220] grid place-items-center ${font} text-white/90`}>
-          {clamped}%
-        </div>
       </div>
     </div>
   );
