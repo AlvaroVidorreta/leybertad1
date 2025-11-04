@@ -40,12 +40,41 @@ let storage: any = null;
 if (FIREBASE_ENABLED) {
   app = !firebaseApp.getApps().length ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
   try {
+    // auth is safe to initialize with apiKey
     auth = getAuth(app);
     googleProvider = new GoogleAuthProvider();
-    db = getDatabase(app);
-    storage = getStorage(app);
+
+    // initialize Realtime Database only when we have a databaseURL or projectId
+    const databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_DATABASE_URL) || (typeof process !== 'undefined' && (process.env as any).VITE_FIREBASE_DATABASE_URL) || '';
+    const haveDbConfig = Boolean(databaseURL || projectId);
+    if (haveDbConfig) {
+      try {
+        db = getDatabase(app);
+      } catch (e) {
+        // don't treat as fatal; log and continue without db
+        // eslint-disable-next-line no-console
+        console.warn('Firebase Realtime Database not available or misconfigured, continuing without db.', e);
+        db = null;
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('Skipping Realtime Database initialization: missing VITE_FIREBASE_DATABASE_URL or projectId');
+    }
+
+    // initialize Storage only if storageBucket provided
+    if (storageBucket) {
+      try {
+        storage = getStorage(app);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Firebase Storage not available or misconfigured, continuing without storage.', e);
+        storage = null;
+      }
+    } else {
+      storage = null;
+    }
   } catch (e) {
-    // If something goes wrong initializing, ensure we don't crash the whole app. Log and continue with disabled mode.
+    // If something goes wrong initializing critical parts, ensure we don't crash the whole app. Log and continue with disabled mode.
     // eslint-disable-next-line no-console
     console.error('Firebase initialization failed', e);
     auth = null;
