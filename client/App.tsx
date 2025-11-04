@@ -11,6 +11,7 @@ const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const BibliotecaSub = lazy(() => import("./pages/BibliotecaSub"));
 const Perfil = lazy(() => import("./pages/Perfil"));
+const PerfilEditar = lazy(() => import("./pages/PerfilEditar"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
