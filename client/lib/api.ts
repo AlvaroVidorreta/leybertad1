@@ -1,5 +1,7 @@
 import { CommentInput, CreateLawResponse, Law, LawInput, LawsResponse, LawUpdatedResponse, RankingResponse, TimeRange } from "@shared/api";
 
+import logger from "./logger";
+
 function getVisitorId() {
   try {
     let v = localStorage.getItem("visitorId");
@@ -60,7 +62,7 @@ async function safeFetch(path: string, opts?: RequestInit) {
   // Nothing worked — throw more informative error
   const err = new Error(`Network fetch failed for ${path}. Tried ${candidates.join(', ')}`);
   (err as any).cause = lastErr;
-  console.error('[safeFetch] All fetch attempts failed', err, lastErr);
+  logger.error('[safeFetch] All fetch attempts failed', err, lastErr);
   throw err;
 }
 

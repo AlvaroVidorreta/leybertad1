@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import logger from "../utils/logger";
 import type { RequestHandler } from "express";
 
 // Simple in-memory cache to avoid hammering BOE
@@ -8,6 +9,14 @@ const cache = new Map<string, { ts: number; items: any[] }>();
 
 const CACHE_FILE = path.resolve(process.cwd(), "server", "data", "boe_cache.json");
 let cacheDirty = false;
+const MAX_CACHE_ENTRIES = Number(process.env.MAX_CACHE_ENTRIES || 500);
+function evictIfNeeded() {
+  while (cache.size > MAX_CACHE_ENTRIES) {
+    const firstKey = cache.keys().next().value;
+    if (!firstKey) break;
+    cache.delete(firstKey);
+  }
+}
 
 function log(...args: unknown[]) {
   // only verbose in non-production environments
@@ -41,14 +50,14 @@ async function persistCache() {
     cacheDirty = false;
     log("Persisted cache to disk", CACHE_FILE);
   } catch (err) {
-    console.error("[boe] Error persisting cache:", err);
+    logger.error("[boe] Error persisting cache:", err);
   }
 }
 
 // load on module init
 loadPersistedCache();
 // periodic flush
-setInterval(() => persistCache().catch((e) => console.error(e)), 5 * 60 * 1000);
+setInterval(() => persistCache().catch((e) => logger.error(e)), 5 * 60 * 1000);
 
 async function fetchSummary(date: string) {
   const cacheKey = `summary:${date}`;
@@ -76,7 +85,7 @@ async function fetchSummary(date: string) {
     log("BOE summary missing or bad status for", date);
     return null;
   } catch (err) {
-    console.error("[boe] fetchSummary error:", err);
+    logger.error("[boe] fetchSummary error:", err);
     return null;
   }
 }

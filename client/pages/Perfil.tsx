@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import logger from "@/lib/logger";
 import LawSummary from "@/components/LawSummary";
 import { Button } from "@/components/ui/button";
 import { obtenerRecientes } from "@/lib/api";
@@ -47,7 +48,7 @@ export default function Perfil() {
         setProfile(pRes as ProfileResponse);
         setAllLaws(laws as Law[]);
       } catch (err) {
-        console.error(err);
+        logger.error(err);
       } finally {
         if (mounted) setLoading(false);
       }
