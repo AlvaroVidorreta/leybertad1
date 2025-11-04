@@ -192,11 +192,14 @@ export const boeHandler: RequestHandler = async (req, res) => {
 
   // If date provided, use it; otherwise try today and previous N days until we find data
   const datesToTry: string[] = [];
-  if (date && isValidYYYYMMDD(date)) {
-    datesToTry.push(date);
+  const explicitDate = date && isValidYYYYMMDD(date) ? date : null;
+  // determine days window (defaults to 7)
+  const daysParam = explicitDate ? 1 : (Number(req.query.since_days || 7) || 7);
+  const daysToTryCount = Math.min(365, Math.max(1, Math.floor(daysParam)));
+
+  if (explicitDate) {
+    datesToTry.push(explicitDate);
   } else {
-    const daysParam = Number(req.query.since_days || 7) || 7;
-    const daysToTryCount = Math.min(365, Math.max(1, Math.floor(daysParam)));
     const today = new Date();
     for (let i = 0; i < daysToTryCount; i++) {
       const d = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
@@ -207,7 +210,54 @@ export const boeHandler: RequestHandler = async (req, res) => {
     }
   }
 
+  // compute cutoff date for filtering items by their own dates (inclusive)
+  const now = new Date();
+  const cutoffDate = explicitDate
+    ? new Date(Number(explicitDate.slice(0, 4)), Number(explicitDate.slice(4, 6)) - 1, Number(explicitDate.slice(6, 8)))
+    : new Date(now.getTime() - daysToTryCount * 24 * 60 * 60 * 1000);
+
   const startTime = Date.now();
+
+  // helper to recursively find a date string inside item objects and parse to Date
+  function findDateInObject(obj: unknown): Date | null {
+    try {
+      if (!obj) return null;
+      if (typeof obj === 'string') {
+        const s = obj.trim();
+        // ISO date
+        const isoMatch = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch) return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+        // YYYYMMDD
+        const ymd = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+        if (ymd) return new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]));
+        // DD/MM/YYYY or DD-MM-YYYY
+        const dmy = s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
+        if (dmy) return new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
+        return null;
+      }
+      if (Array.isArray(obj)) {
+        for (const it of obj) {
+          const f = findDateInObject(it);
+          if (f) return f;
+        }
+      }
+      if (typeof obj === 'object') {
+        for (const k of Object.keys(obj as Record<string, unknown>)) {
+          const v = (obj as any)[k];
+          // common spanish date-like keys
+          if (/fecha|fecha_publicacion|fecha_publica|fecha_doc|fecha_disposicion|fecha_firma/i.test(k)) {
+            const parsed = findDateInObject(v);
+            if (parsed) return parsed;
+          }
+          const f = findDateInObject(v);
+          if (f) return f;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 
   // We'll fetch summaries in small batches to improve latency while allowing early exit when we have enough matches
   const concurrency = 4;
@@ -225,8 +275,22 @@ export const boeHandler: RequestHandler = async (req, res) => {
       for (const m of matches) {
         const ref = m.referencia || m.id || JSON.stringify(m);
         if (seenRefs.has(ref)) continue;
+        // determine an item-level date (prefer the item's own date fields)
+        let itemDate: Date | null = findDateInObject(m);
+        if (!itemDate && br.dt && /^[0-9]{8}$/.test(String(br.dt))) {
+          itemDate = new Date(Number(String(br.dt).slice(0, 4)), Number(String(br.dt).slice(4, 6)) - 1, Number(String(br.dt).slice(6, 8)));
+        }
+        // if we have a cutoff, ensure itemDate is within range
+        if (cutoffDate && itemDate) {
+          // include if itemDate >= cutoffDate (same or newer)
+          if (itemDate.getTime() < cutoffDate.getTime()) continue;
+        } else if (cutoffDate && !itemDate && explicitDate) {
+          // if explicit date was requested but no item date and br.dt exists, allow only if br.dt matches explicitDate
+          if (String(br.dt) !== explicitDate) continue;
+        }
+
         seenRefs.add(ref);
-        allMatches.push({ _date: br.dt, item: m });
+        allMatches.push({ _date: br.dt, item: m, itemDate: itemDate ? `${itemDate.getFullYear()}${String(itemDate.getMonth() + 1).padStart(2, '0')}${String(itemDate.getDate()).padStart(2, '0')}` : null });
         if (allMatches.length >= limit) break;
       }
       if (allMatches.length >= limit) break;
