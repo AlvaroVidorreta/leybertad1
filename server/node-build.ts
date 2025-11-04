@@ -1,6 +1,7 @@
 import path from "path";
 import { createServer } from "./index";
 import * as express from "express";
+import logger from "./utils/logger";
 
 const app = createServer();
 const port = process.env.PORT || 3000;
@@ -24,19 +25,19 @@ app.get("*", (req, res) => {
 
 app.listen(port, () => {
   if (process.env.NODE_ENV !== "production") {
-    console.info(`🚀 Fusion Starter server running on port ${port}`);
-    console.info(`📱 Frontend: http://localhost:${port}`);
-    console.info(`🔧 API: http://localhost:${port}/api`);
+    logger.info(`🚀 Fusion Starter server running on port ${port}`);
+    logger.info(`📱 Frontend: http://localhost:${port}`);
+    logger.info(`🔧 API: http://localhost:${port}/api`);
   }
 });
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  if (process.env.NODE_ENV !== "production") console.info("🛑 Received SIGTERM, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production") logger.info("🛑 Received SIGTERM, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  if (process.env.NODE_ENV !== "production") console.info("🛑 Received SIGINT, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production") logger.info("🛑 Received SIGINT, shutting down gracefully");
   process.exit(0);
 });
