@@ -19,16 +19,44 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
 
+  const cacheRef = useRef<Map<string, AnalyzerMatch[]>>(new Map());
+  const abortRef = useRef<AbortController | null>(null);
+
   async function analyzeQuery(q: string) {
     const query = String(q || "").trim();
-    setResults(null);
     if (!query) return;
+
+    const key = `${query}|${timeframe}`;
+
+    // if we already have cached results for this query+timeframe, reuse them
+    const cached = cacheRef.current.get(key);
+    if (cached) {
+      setResults(cached);
+      setIsLoading(false);
+      return;
+    }
+
+    // prevent duplicate concurrent calls
     setIsLoading(true);
+    setResults(null);
+
+    // abort previous request
+    try {
+      abortRef.current?.abort();
+    } catch (e) {
+      /* ignore */
+    }
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
-      await new Promise((r) => setTimeout(r, 250));
+      // small debounce to avoid rapid repeated calls
+      await new Promise((r) => setTimeout(r, 180));
+
       const sinceParam = timeframe === 'week' ? '&since_days=7' : timeframe === 'month' ? '&since_days=30' : timeframe === 'year' ? '&since_days=365' : '';
-      const res = await fetch(`/api/boe/search?q=${encodeURIComponent(query)}&limit=8${sinceParam}`);
+      const url = `/api/boe/search?q=${encodeURIComponent(query)}&limit=8${sinceParam}`;
+      const res = await fetch(url, { signal: controller.signal });
+
       if (!res.ok) throw new Error("api_error");
       const json = await res.json();
       if (json && Array.isArray(json.results)) {
@@ -43,17 +71,27 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
           score: typeof r.score === "number" ? r.score : 1,
           matched: Array.isArray(r.matched_terms) ? r.matched_terms : [query],
         }));
+
         if (!mounted.current) return;
+        cacheRef.current.set(key, mapped);
         setResults(mapped);
         setIsLoading(false);
+        abortRef.current = null;
         return;
       }
+
       throw new Error("no_results");
-    } catch (err) {
+    } catch (err: any) {
+      // if aborted, ignore silently
+      if (err && err.name === 'AbortError') return;
+
+      // fallback to local analyzer if API fails
       const fallback = analyzeProposal(query, 8);
       if (!mounted.current) return;
+      cacheRef.current.set(key, fallback);
       setResults(fallback);
       setIsLoading(false);
+      abortRef.current = null;
     }
   }
 
