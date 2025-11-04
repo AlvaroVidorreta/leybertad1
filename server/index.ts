@@ -10,7 +10,7 @@ import {
   saveLaw,
   upvoteLaw,
 } from "./routes/laws";
-import { profileHandler } from "./routes/profile";
+import { profileHandler, profileUpdateHandler } from "./routes/profile";
 import { boeHandler } from "./routes/boe";
 
 export function createServer() {
