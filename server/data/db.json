@@ -77,5 +77,11 @@
     "20dac55b-c6ac-494e-8b6d-6a64fc7af7af": [
       "6bbdd98a-1461-4aea-9dff-5148dab9c711"
     ]
+  },
+  "profiles": {
+    "20dac55b-c6ac-494e-8b6d-6a64fc7af7af": {
+      "displayName": "SrVido",
+      "username": "SrVido"
+    }
   }
 }
