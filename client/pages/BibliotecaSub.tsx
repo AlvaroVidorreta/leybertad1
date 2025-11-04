@@ -1,13 +1,22 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { obtenerRecientes } from "@/lib/api";
 import LawSummary from "@/components/LawSummary";
 
-export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLaw }: { categoryProp?: string; subProp?: string; onClose?: () => void; onOpenLaw?: (law: any, openComments?: boolean) => void; }) {
+type Law = {
+  id: string;
+  titulo: string;
+  objetivo?: string;
+  detalles?: string;
+  createdAt?: string;
+  upvotes?: number;
+};
+
+export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLaw }: { categoryProp?: string; subProp?: string; onClose?: () => void; onOpenLaw?: (law: Law, openComments?: boolean) => void; }) {
   const params = useParams();
   const navigate = useNavigate();
-  const { data: laws, isLoading } = useQuery({ queryKey: ["recientes"], queryFn: obtenerRecientes, staleTime: 10000, refetchOnWindowFocus: false });
+  const { data: laws = [], isLoading } = useQuery<Law[]>({ queryKey: ["recientes"], queryFn: obtenerRecientes, staleTime: 10000, refetchOnWindowFocus: false });
 
   const category = categoryProp ?? params.category;
   const sub = subProp ?? params.sub;
@@ -19,17 +28,21 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
     const items = laws ?? [];
     const term = (subLabel || categoryLabel).toLowerCase();
     const filtered = term
-      ? items.filter((l: any) => {
-          const hay = [l.titulo, l.objetivo, l.detalles].filter(Boolean).join(" ").toLowerCase();
+      ? items.filter((l) => {
+          const hay = [l.titulo, l.objetivo, (l as any).detalles].filter(Boolean).join(" ").toLowerCase();
           return hay.includes(term);
         })
       : items;
     // sort by newest first
-    return filtered.slice().sort((a: any, b: any) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    return filtered.slice().sort((a, b) => {
+      const aDate = a.createdAt ? Date.parse(a.createdAt) : 0;
+      const bDate = b.createdAt ? Date.parse(b.createdAt) : 0;
+      return bDate - aDate;
+    });
   }, [laws, subLabel, categoryLabel]);
 
   const ranking = useMemo(() => {
-    return [...matched].sort((a: any, b: any) => (b.upvotes || 0) - (a.upvotes || 0)).slice(0, 5);
+    return [...matched].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0)).slice(0, 5);
   }, [matched]);
 
   return (
@@ -59,7 +72,7 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
 
             {!isLoading && matched.length > 0 && (
               <ul className="space-y-3">
-                {matched.map((l: any) => (
+                {matched.map((l) => (
                   <li key={l.id} onClick={() => onOpenLaw ? onOpenLaw(l) : undefined} className="rounded-lg border p-3 bg-card cursor-pointer">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
@@ -87,7 +100,7 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
 
           {!isLoading && ranking.length > 0 && (
             <ol className="space-y-2">
-              {ranking.map((r: any, idx: number) => (
+              {ranking.map((r, idx) => (
                 <li key={r.id} className="flex items-start gap-3">
                   <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{idx + 1}</div>
                   <div className="flex-1">
