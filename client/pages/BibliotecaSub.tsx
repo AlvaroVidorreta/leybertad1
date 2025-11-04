@@ -74,7 +74,7 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
               <ul className="space-y-3">
                 {matched.map((l) => (
                   <li key={l.id} onClick={() => onOpenLaw ? onOpenLaw(l) : undefined} className="rounded-lg border p-3 bg-card cursor-pointer">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="flex-1">
                         <LawSummary title={l.titulo} objetivo={l.objetivo} />
                       </div>
@@ -101,7 +101,7 @@ export default function BibliotecaSub({ categoryProp, subProp, onClose, onOpenLa
           {!isLoading && ranking.length > 0 && (
             <ol className="space-y-2">
               {ranking.map((r, idx) => (
-                <li key={r.id} className="flex items-start gap-3">
+                <li key={r.id} className="flex items-center gap-3">
                   <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cream-200 text-sm font-semibold">{idx + 1}</div>
                   <div className="flex-1">
                     <div className="font-medium text-sm truncate">{r.titulo}</div>
