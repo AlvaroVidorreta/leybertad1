@@ -40,6 +40,7 @@ const App = () => (
                 element={<BibliotecaSub />}
               />
               <Route path="/perfil" element={<Perfil />} />
+              <Route path="/perfil/editar" element={<PerfilEditar />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
