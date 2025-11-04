@@ -21,7 +21,6 @@ function evictIfNeeded() {
 }
 
 function log(...args: unknown[]) {
-  // only verbose in non-production environments
   if (process.env.NODE_ENV !== "production") {
     const ts = new Date().toISOString();
     console.debug("[boe]", ts, ...args);
@@ -38,7 +37,6 @@ async function loadPersistedCache() {
     }
     log("Loaded persisted cache with", cache.size, "entries");
   } catch (err) {
-    // no file yet or parse error
     log("No persisted cache found or failed to load, starting fresh");
   }
 }
@@ -75,10 +73,10 @@ async function fetchSummary(date: string) {
       return null;
     }
     const data = await res.json();
-    if (data && data.status && String(data.status.code) === "200") {
+    if (data && (data.status && String(data.status.code) === "200")) {
       const items = extractItems(data.data || {});
       cache.set(cacheKey, { ts: Date.now(), items });
-evictIfNeeded();
+      evictIfNeeded();
       cacheDirty = true;
       // persist asynchronously but await to reduce data loss window
       await persistCache();
@@ -93,7 +91,7 @@ evictIfNeeded();
   }
 }
 
-function extractItems(data: unknown, itemsList: any[] = []): any[] {
+function extractItems(data: unknown, itemsList: any[] = []) {
   if (!data) return itemsList;
   if (Array.isArray(data)) {
     for (const item of data) extractItems(item, itemsList);
@@ -113,16 +111,65 @@ function extractItems(data: unknown, itemsList: any[] = []): any[] {
   return itemsList;
 }
 
+function findPdfInObject(obj: unknown): string | null {
+  try {
+    if (!obj) return null;
+    if (typeof obj === 'string') return obj.includes('.pdf') ? obj : null;
+    if (Array.isArray(obj)) {
+      for (const it of obj) {
+        const f = findPdfInObject(it);
+        if (f) return f;
+      }
+    }
+    if (typeof obj === 'object') {
+      for (const k of Object.keys(obj as Record<string, unknown>)) {
+        const v = (obj as any)[k];
+        if (typeof v === 'string' && v.includes('.pdf')) return v;
+        const f = findPdfInObject(v);
+        if (f) return f;
+      }
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function normalizeTerm(term: string) {
+  return String(term || "").trim().toLowerCase();
+}
+
 function filterItemsByTerm(items: any[], term: string) {
-  const t = term.trim().toLowerCase();
+  const t = normalizeTerm(term);
   if (!t) return [];
-  return items.filter((it) => it && it.titulo && String(it.titulo).toLowerCase().includes(t));
+  const parts = t.split(/\s+/).filter(Boolean);
+  return items.filter((it) => {
+    if (!it) return false;
+    const fields: string[] = [];
+    if (it.titulo) fields.push(String(it.titulo));
+    if (it.titulo_largo) fields.push(String(it.titulo_largo));
+    if (it.subtitulo) fields.push(String(it.subtitulo));
+    if (it.extracto) fields.push(String(it.extracto));
+    if (it.texto) fields.push(String(it.texto));
+    if (it.referencia) fields.push(String(it.referencia));
+    const haystack = fields.join(' ').toLowerCase();
+    return parts.every((p) => haystack.includes(p));
+  });
 }
 
 // Simple rate limiter: maxRequests per minute per visitor
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 30;
 const rateMap = new Map<string, { ts: number; count: number }>();
+
+function isValidYYYYMMDD(s: string) {
+  if (!/^[0-9]{8}$/.test(s)) return false;
+  const y = Number(s.slice(0, 4));
+  const m = Number(s.slice(4, 6));
+  const d = Number(s.slice(6, 8));
+  const dt = new Date(y, m - 1, d);
+  return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+}
 
 export const boeHandler: RequestHandler = async (req, res) => {
   const q = String(req.query.q || "").trim();
@@ -145,11 +192,10 @@ export const boeHandler: RequestHandler = async (req, res) => {
 
   // If date provided, use it; otherwise try today and previous N days until we find data
   const datesToTry: string[] = [];
-  if (date && /^\d{8}$/.test(date)) {
+  if (date && isValidYYYYMMDD(date)) {
     datesToTry.push(date);
   } else {
     const daysParam = Number(req.query.since_days || 7) || 7;
-    // cap to reasonable maximum to avoid huge scans
     const daysToTryCount = Math.min(365, Math.max(1, Math.floor(daysParam)));
     const today = new Date();
     for (let i = 0; i < daysToTryCount; i++) {
@@ -161,15 +207,30 @@ export const boeHandler: RequestHandler = async (req, res) => {
     }
   }
 
+  const startTime = Date.now();
+
+  // We'll fetch summaries in small batches to improve latency while allowing early exit when we have enough matches
+  const concurrency = 4;
   let allMatches: any[] = [];
-  for (const dt of datesToTry) {
-    const items = await fetchSummary(dt);
-    if (!items) continue;
-    const matches = filterItemsByTerm(items, q);
-    if (matches.length > 0) {
-      allMatches.push(...matches.map((m: any) => ({ _date: dt, item: m })));
+  const seenRefs = new Set<string>();
+
+  for (let i = 0; i < datesToTry.length; i += concurrency) {
+    const batch = datesToTry.slice(i, i + concurrency);
+    const batchPromises = batch.map((dt) => fetchSummary(dt).then((items) => ({ dt, items })).catch(() => ({ dt, items: null })));
+    const batchResults = await Promise.all(batchPromises);
+    for (const br of batchResults) {
+      const items = br.items;
+      if (!items) continue;
+      const matches = filterItemsByTerm(items, q);
+      for (const m of matches) {
+        const ref = m.referencia || m.id || JSON.stringify(m);
+        if (seenRefs.has(ref)) continue;
+        seenRefs.add(ref);
+        allMatches.push({ _date: br.dt, item: m });
+        if (allMatches.length >= limit) break;
+      }
+      if (allMatches.length >= limit) break;
     }
-    // if we found many, stop early
     if (allMatches.length >= limit) break;
   }
 
@@ -177,80 +238,89 @@ export const boeHandler: RequestHandler = async (req, res) => {
   let results = allMatches.map((entry: any) => {
     const item = entry.item || entry;
     const title = item.titulo || item.titulo_largo || "Sin título";
-    // pdf link in the BOE summary often lies in item.url_pdf.texto
+    // find pdf link robustly
     let pdf = null;
     try {
       if (item.url_pdf && typeof item.url_pdf === "object") {
-        // url_pdf may be {"texto": "https://...pdf"}
-        pdf = item.url_pdf.texto || item.url_pdf[0] || null;
+        if (typeof item.url_pdf === 'string') pdf = item.url_pdf;
+        else if (item.url_pdf.texto) pdf = item.url_pdf.texto;
+        else pdf = findPdfInObject(item.url_pdf);
       }
-      if (!pdf && item.url && typeof item.url === "string" && item.url.includes(".pdf")) pdf = item.url;
+      if (!pdf) pdf = findPdfInObject(item);
+      if (!pdf && item.url && typeof item.url === "string" && item.url.includes('.pdf')) pdf = item.url;
     } catch (e) {
       pdf = null;
     }
 
-    // boe_url: attempt to use item.url or build from referencia
     let boe = item.url || null;
     if (!boe && item.referencia) boe = `https://www.boe.es/eli/${item.referencia}`;
 
     return {
-      id: item.referencia || item.id || `${entry._date}-${Math.random().toString(36).slice(2,8)}`,
+      id: item.referencia || item.id || `${entry._date}-${Math.random().toString(36).slice(2, 8)}`,
       title: String(title),
       summary: String((item as any).subtitulo || (item as any).extracto || (item as any).texto || ""),
       pdf_url: pdf || null,
       boe_url: boe || null,
       date: entry._date || null,
-      score: 0, // placeholder - scoring applied below
+      score: 0,
       matched_terms: [q],
     };
   });
 
-  // Compute relevance score for each result (pluggable - can be migrated to embeddings later)
+  // Compute relevance score for each result
   try {
     results = results.map((r: any) => ({ ...r, score: computeScore(r, q) }));
   } catch (e) {
     logger.warn('Scoring failed', e);
   }
 
-  // Ensure results prioritize those from the last year, sorted newest->oldest
+  // Ensure results prioritize those from the last year, sorted newest->oldest and by score
   try {
     const today = new Date();
     const cutoff = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
-    const cutoffStr = `${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, '0')}${String(cutoff.getDate()).padStart(2, '0')}`;
+    const cutoffNum = Number(`${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, '0')}${String(cutoff.getDate()).padStart(2, '0')}`);
+
+    const toNum = (s: any) => {
+      if (!s) return 0;
+      if (typeof s === 'number') return s;
+      const ss = String(s).trim();
+      if (/^[0-9]{8}$/.test(ss)) return Number(ss);
+      // try ISO parse
+      const d = new Date(ss);
+      if (isNaN(d.getTime())) return 0;
+      return Number(`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`);
+    };
 
     results.sort((a: any, b: any) => {
       const scoreDiff = (b.score || 0) - (a.score || 0);
       if (scoreDiff !== 0) return scoreDiff;
-      const aDate = a.date || '';
-      const bDate = b.date || '';
-      const aIsRecent = aDate >= cutoffStr;
-      const bIsRecent = bDate >= cutoffStr;
+      const aNum = toNum(a.date);
+      const bNum = toNum(b.date);
+      const aIsRecent = aNum >= cutoffNum;
+      const bIsRecent = bNum >= cutoffNum;
       if (aIsRecent && !bIsRecent) return -1;
       if (!aIsRecent && bIsRecent) return 1;
-      // if both same recency status, sort by date desc (newest first)
-      if (aDate && bDate) return bDate.localeCompare(aDate);
-      if (aDate) return -1;
-      if (bDate) return 1;
+      if (aNum && bNum) return bNum - aNum; // newest first
+      if (aNum) return -1;
+      if (bNum) return 1;
       return 0;
     });
   } catch (e) {
-    // ignore sorting errors
+    // ignore
   }
 
   // limit
   results = results.slice(0, limit);
 
-  {
-    const body = { results, meta: { query: q, tried: datesToTry.length, took_ms: 0 } };
-    try {
-      const etag = crypto.createHash('sha1').update(JSON.stringify(body)).digest('hex');
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-      res.setHeader('ETag', etag);
-    } catch (e) {
-      logger.warn('Failed to compute ETag', e);
-    }
-    res.json(body);
+  const body = { results, meta: { query: q, tried: datesToTry.length, took_ms: Date.now() - startTime } };
+  try {
+    const etag = crypto.createHash('sha1').update(JSON.stringify(body)).digest('hex');
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.setHeader('ETag', etag);
+  } catch (e) {
+    logger.warn('Failed to compute ETag', e);
   }
+  res.json(body);
 };
 
 // Test helpers
