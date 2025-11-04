@@ -204,7 +204,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                       <div className="flex items-center">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0 flex flex-col justify-center space-y-1">
+                            <div className="min-w-0 flex flex-col justify-center space-y-1 translate-y-1">
                               <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
                               <p className="italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
                             </div>
