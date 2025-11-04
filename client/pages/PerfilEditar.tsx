@@ -69,7 +69,7 @@ export default function PerfilEditar() {
       {!loading && profile && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Nombre a mostrar</label>
+            <label className="block text-sm font-medium mb-1">Nombre</label>
             <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full border rounded px-3 py-2" />
           </div>
 
