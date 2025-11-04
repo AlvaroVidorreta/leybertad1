@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import crypto from "crypto";
 import logger from "../utils/logger";
 import type { RequestHandler } from "express";
 
@@ -76,6 +77,7 @@ async function fetchSummary(date: string) {
     if (data && data.status && String(data.status.code) === "200") {
       const items = extractItems(data.data || {});
       cache.set(cacheKey, { ts: Date.now(), items });
+evictIfNeeded();
       cacheDirty = true;
       // persist asynchronously but await to reduce data loss window
       await persistCache();
@@ -228,7 +230,17 @@ export const boeHandler: RequestHandler = async (req, res) => {
   // limit
   results = results.slice(0, limit);
 
-  res.json({ results, meta: { query: q, tried: datesToTry.length, took_ms: 0 } });
+  {
+    const body = { results, meta: { query: q, tried: datesToTry.length, took_ms: 0 } };
+    try {
+      const etag = crypto.createHash('sha1').update(JSON.stringify(body)).digest('hex');
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      res.setHeader('ETag', etag);
+    } catch (e) {
+      logger.warn('Failed to compute ETag', e);
+    }
+    res.json(body);
+  }
 };
 
 // Test helpers
