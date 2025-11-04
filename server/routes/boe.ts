@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 import logger from "../utils/logger";
+import { computeScore } from "../utils/scoring";
 import type { RequestHandler } from "express";
 
 // Simple in-memory cache to avoid hammering BOE
@@ -199,10 +200,17 @@ export const boeHandler: RequestHandler = async (req, res) => {
       pdf_url: pdf || null,
       boe_url: boe || null,
       date: entry._date || null,
-      score: 1, // basic exact-title-match scoring for now
+      score: 0, // placeholder - scoring applied below
       matched_terms: [q],
     };
   });
+
+  // Compute relevance score for each result (pluggable - can be migrated to embeddings later)
+  try {
+    results = results.map((r: any) => ({ ...r, score: computeScore(r, q) }));
+  } catch (e) {
+    logger.warn('Scoring failed', e);
+  }
 
   // Ensure results prioritize those from the last year, sorted newest->oldest
   try {
@@ -211,6 +219,8 @@ export const boeHandler: RequestHandler = async (req, res) => {
     const cutoffStr = `${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, '0')}${String(cutoff.getDate()).padStart(2, '0')}`;
 
     results.sort((a: any, b: any) => {
+      const scoreDiff = (b.score || 0) - (a.score || 0);
+      if (scoreDiff !== 0) return scoreDiff;
       const aDate = a.date || '';
       const bDate = b.date || '';
       const aIsRecent = aDate >= cutoffStr;
