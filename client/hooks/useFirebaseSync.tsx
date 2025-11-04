@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ref as dbRef, onValue } from "firebase/database";
-import { db } from "@/lib/firebase";
+import { db, FIREBASE_ENABLED } from "@/lib/firebase";
 import { useQueryClient } from "@tanstack/react-query";
 
 // Keeps React Query cache keys 'recientes' and 'ranking' in sync with Realtime Database '/laws'
@@ -8,6 +8,8 @@ export default function useFirebaseSync() {
   const qc = useQueryClient();
 
   useEffect(() => {
+    if (!FIREBASE_ENABLED || !db) return;
+
     try {
       const r = dbRef(db, "laws");
       const unsub = onValue(r, (snap) => {
