@@ -74,7 +74,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const hasResults = results && results.length > 0;
 
   return (
-    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[40vh]'}`}>
+    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[36vh]'}`}>
       {/* header/hint area: show only before any search; animate collapse */}
       <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="flex items-center justify-center h-24">
@@ -100,7 +100,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                 <h5 className="text-lg font-semibold mb-3">Leyes Relacionadas Sugeridas</h5>
                 <ul className="space-y-2 p-1">
                   {results!.map((r) => (
-                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
                       <div className="flex items-start gap-3">
                         <Relevance value={Math.round(r.score * 100)} small />
 
@@ -135,17 +135,16 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
 function Relevance({ value, small }: { value: number; small?: boolean }) {
   const clamped = Math.max(0, Math.min(100, value));
-  const size = small ? 36 : 48;
-  const font = small ? 'text-[10px]' : 'text-xs';
+  const size = small ? 32 : 44;
+  const font = small ? 'text-[9px]' : 'text-xs';
   const gradient = `conic-gradient(#d4b46a ${clamped * 3.6}deg, rgba(255,255,255,0.1) 0)`; // goldish accent
   return (
     <div className="flex-shrink-0">
-      <div className={`relative rounded-full`} style={{ background: gradient, height: size, width: size }} aria-label={`${clamped}% Relevante`}>
+      <div className={`relative rounded-full`} style={{ background: gradient, height: size, width: size }} aria-label={`${clamped}%`}>
         <div className={`absolute inset-[3px] rounded-full bg-[#0b1220] grid place-items-center ${font} text-white/90`}>
           {clamped}%
         </div>
       </div>
-      <div className="mt-1 text-[9px] uppercase tracking-wide text-gray-300 text-center">Relevante</div>
     </div>
   );
 }
