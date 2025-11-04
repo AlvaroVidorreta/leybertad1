@@ -212,7 +212,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                               href={r.law.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline h-8 flex items-center"
+                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline flex items-center py-1"
                             >
                               Consultar →
                             </a>
