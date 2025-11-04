@@ -201,7 +201,7 @@ function Relevance({ value, small, className }: { value: number; small?: boolean
   const font = small ? 'text-[9px]' : 'text-xs';
   const gradient = `conic-gradient(#d4b46a ${clamped * 3.6}deg, rgba(255,255,255,0.1) 0)`; // goldish accent
   return (
-    <div className="flex-shrink-0">
+    <div className={`flex-shrink-0 ${className || ""}`}>
       <div className={`relative rounded-full`} style={{ background: gradient, height: size, width: size }} aria-label={`${clamped}%`}>
         <div className={`absolute inset-[3px] rounded-full bg-[#0b1220] grid place-items-center ${font} text-white/90`}>
           {clamped}%
