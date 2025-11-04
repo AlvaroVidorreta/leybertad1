@@ -251,9 +251,10 @@ function UltimasLeyes({
                     />
                     <button
                       onClick={() => {}}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm group overflow-hidden transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30"
                     >
-                      Buscar
+                      <span className="pointer-events-none absolute inset-y-0 left-[-80%] w-[180%] -skew-x-12 bg-gradient-to-r from-white/40 via-white/20 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
+                      <span className="relative z-10">Buscar</span>
                     </button>
                   </div>
 
@@ -351,9 +352,10 @@ function UltimasLeyes({
                           // placeholder for search in front face
                         }
                       }}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm group overflow-hidden transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30"
                     >
-                      {isFlipped ? 'Analizar' : 'Buscar'}
+                      <span className="pointer-events-none absolute inset-y-0 left-[-80%] w-[180%] -skew-x-12 bg-gradient-to-r from-white/40 via-white/20 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
+                      <span className="relative z-10">{isFlipped ? 'Analizar' : 'Buscar'}</span>
                     </button>
                   </div>
 
