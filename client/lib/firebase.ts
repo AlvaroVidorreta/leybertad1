@@ -1,5 +1,5 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { initializeApp, getApps, getApp } from "firebase/app";
+import * as firebaseApp from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
@@ -20,7 +20,7 @@ if (!firebaseConfig.apiKey) {
   console.error("Missing Firebase API key (VITE_FIREBASE_API_KEY). Authentication will fail.");
 }
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = !firebaseApp.getApps().length ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
