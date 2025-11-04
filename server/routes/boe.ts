@@ -128,12 +128,16 @@ export const boeHandler: RequestHandler = async (req, res) => {
 
   if (!q) return res.status(400).json({ error: "q query param required" });
 
-  // If date provided, use it; otherwise try today and previous 6 days until we find data
+  // If date provided, use it; otherwise try today and previous N days until we find data
   const datesToTry: string[] = [];
-  if (date && /^\d{8}$/.test(date)) datesToTry.push(date);
-  else {
+  if (date && /^\d{8}$/.test(date)) {
+    datesToTry.push(date);
+  } else {
+    const daysParam = Number(req.query.since_days || 7) || 7;
+    // cap to reasonable maximum to avoid huge scans
+    const daysToTryCount = Math.min(365, Math.max(1, Math.floor(daysParam)));
     const today = new Date();
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < daysToTryCount; i++) {
       const d = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, "0");
