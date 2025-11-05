@@ -1,6 +1,16 @@
 {
   "laws": [
     {
+      "id": "a1ec6a87-f2fe-4ee5-84a6-a09bfdc6cd95",
+      "titulo": "Prueba integracion",
+      "objetivo": "Test automático",
+      "apodo": "auto",
+      "createdAt": "2025-11-05T14:19:26.862Z",
+      "upvotes": 0,
+      "saves": 0,
+      "comentarios": []
+    },
+    {
       "id": "042e62e8-83bb-463d-a944-1d8a2fe48262",
       "titulo": "Pedro Sánchez juicio inmediato",
       "objetivo": "Que se haga justicia con el presidente que liberó a +100 violadores, que firmó con Independentistas y Etarras pese a prometer lo contrario, y cuya familia y círculo cercano está hasta el cuello de cor",
@@ -71,6 +81,9 @@
     ],
     "61e4c8d6-3f97-488d-8dd4-2ab7949dbc54": [
       "2025-10-06T22:23:48.377Z"
+    ],
+    "integration-demo-1762352366797": [
+      "2025-11-05T14:19:26.862Z"
     ]
   },
   "votesByVisitor": {
