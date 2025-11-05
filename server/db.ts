@@ -263,10 +263,11 @@ export const db = {
     return law;
   },
 
-  async commentLaw(id: string, texto: string) {
+  async commentLaw(id: string, texto: string, author?: string) {
     if (firestore) {
       const trimmed = String(texto).slice(0, 200);
-      const comment: Comment = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+      const comment: any = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+      if (author) comment.author = author;
       const lawRef = firestore.collection('laws').doc(id);
       const lawDoc = await lawRef.get();
       if (!lawDoc.exists) throw new Error('NOT_FOUND');
@@ -289,7 +290,8 @@ export const db = {
     const law = data.laws.find((l) => l.id === id);
     if (!law) throw new Error('NOT_FOUND');
     const trimmed = String(texto).slice(0, 200);
-    const comment: Comment = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+    const comment: any = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+    if (author) comment.author = author;
 
     // Append locally
     law.comentarios.push(comment);
