@@ -853,6 +853,8 @@ function Ranking({
   const ddRef = useRef<HTMLDivElement | null>(null);
   const commentRef = useRef<HTMLInputElement | null>(null);
 
+  const { user: currentUser } = useFirebaseAuth();
+
   const qc = useQueryClient();
   // related laws for the modal aside — only show relations when category or subcategory match, up to 5
   const relatedLaws = useMemo(() => {
