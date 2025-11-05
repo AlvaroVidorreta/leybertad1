@@ -86,8 +86,39 @@ export const commentLaw: RequestHandler = async (req, res) => {
   const { texto } = req.body as CommentInput;
   if (!texto || typeof texto !== "string")
     return res.status(400).json({ error: "Perspectiva requerida" });
+
+  // Require Firebase ID token in Authorization header
+  const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
+  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Autenticación requerida' });
+  }
+  const idToken = authHeader.replace(/^Bearer\s+/, '');
+
   try {
-    const law = await db.commentLaw(id, texto);
+    // initialize admin if available
+    let admin: any = null;
+    try {
+      admin = await import('firebase-admin');
+      if (!admin.apps || !admin.apps.length) {
+        const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
+        let svcObj: any = null;
+        try { svcObj = JSON.parse(svc); } catch (e) {
+          try { svcObj = JSON.parse(Buffer.from(svc || '', 'base64').toString('utf-8')); } catch (err) { svcObj = null; }
+        }
+        if (svcObj) {
+          admin.initializeApp({ credential: admin.credential.cert(svcObj), projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID });
+        }
+      }
+    } catch (e) {
+      // admin may be unavailable; deny
+      return res.status(500).json({ error: 'Server misconfigured for authentication' });
+    }
+
+    const decoded = await admin.auth().verifyIdToken(idToken).catch(() => null);
+    if (!decoded) return res.status(401).json({ error: 'Token inválido' });
+    const uid = decoded.uid;
+
+    const law = await db.commentLaw(id, texto, uid);
     const response: LawUpdatedResponse = { law };
     res.json(response);
   } catch (err: any) {
