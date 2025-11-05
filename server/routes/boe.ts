@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import fs from "fs/promises";
 import logger from "../utils/logger";
 import { computeScore } from "../utils/scoring";
 import type { RequestHandler } from "express";
@@ -305,9 +306,9 @@ export const boeHandler: RequestHandler = async (req, res) => {
     // find pdf link robustly
     let pdf = null;
     try {
-      if (item.url_pdf && typeof item.url_pdf === "object") {
+      if (item.url_pdf) {
         if (typeof item.url_pdf === 'string') pdf = item.url_pdf;
-        else if (item.url_pdf.texto) pdf = item.url_pdf.texto;
+        else if (item.url_pdf && typeof item.url_pdf === 'object' && (item.url_pdf as any).texto) pdf = (item.url_pdf as any).texto;
         else pdf = findPdfInObject(item.url_pdf);
       }
       if (!pdf) pdf = findPdfInObject(item);
