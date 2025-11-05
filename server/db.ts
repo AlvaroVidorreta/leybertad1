@@ -99,7 +99,7 @@ let admin: any = null;
       }
     }
     if (!svcObj) return;
-    admin = await import('firebase-admin');
+    { const _mod = await import('firebase-admin'); admin = (_mod && (_mod.default || _mod)) || _mod; }
     if (!admin.apps || !admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(svcObj),
