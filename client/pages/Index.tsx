@@ -841,47 +841,25 @@ function Ranking({
   const commentRef = useRef<HTMLInputElement | null>(null);
 
   const qc = useQueryClient();
-  // related laws for the modal aside
+  // related laws for the modal aside — only show relations when category or subcategory match, up to 5
   const relatedLaws = useMemo(() => {
     if (!selectedLaw) return [] as Law[];
     const all = qc.getQueryData<Law[]>(["recientes"]) || [];
     const others = all.filter((l) => l.id !== selectedLaw.id);
-    if ((selectedLaw as any).category) {
-      const sameCat = others.filter(
-        (l) => (l as any).category === (selectedLaw as any).category,
-      );
-      if (sameCat.length > 0) return sameCat.slice(0, 4);
-    }
-    const words = (selectedLaw.titulo + " " + (selectedLaw.objetivo || ""))
-      .toLowerCase()
-      .split(/\W+/)
-      .filter(Boolean);
-    const important = words.filter((w) => w.length > 4).slice(0, 6);
-    if (important.length === 0)
-      return others
-        .slice(0, 4)
-        .sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
-    const matched = others
-      .map((l) => ({
-        l,
-        score: important.reduce(
-          (s, w) =>
-            s +
-            ((l.titulo + " " + (l.objetivo || "")).toLowerCase().includes(w)
-              ? 1
-              : 0),
-          0,
-        ),
-      }))
-      .filter((x) => x.score > 0)
-      .sort(
-        (a, b) => b.score - a.score || (b.l.upvotes || 0) - (a.l.upvotes || 0),
-      )
-      .map((x) => x.l)
-      .slice(0, 4);
-    return matched.length > 0
-      ? matched
-      : others.slice(0, 4).sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+
+    const selCat = (selectedLaw as any).category;
+    const selSub = (selectedLaw as any).subcategory;
+
+    if (!selCat && !selSub) return [] as Law[];
+
+    const same = others.filter((l) => {
+      const lcat = (l as any).category;
+      const lsub = (l as any).subcategory;
+      return (selCat && lcat && lcat === selCat) || (selSub && lsub && lsub === selSub);
+    });
+
+    // return up to 5 related laws when matching by category or subcategory
+    return same.slice(0, 5);
   }, [selectedLaw, qc]);
 
   useEffect(() => {
@@ -1178,14 +1156,6 @@ function Ranking({
                   )}
                 </div>
 
-                <div className="mt-auto flex flex-col gap-2">
-                  <button
-                    onClick={() => setShowComments(true)}
-                    className="w-full px-3 py-2 rounded-md bg-white border"
-                  >
-                    Ver perspectivas
-                  </button>
-                </div>
               </aside>
             </div>
           </div>
