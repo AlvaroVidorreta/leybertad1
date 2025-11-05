@@ -25,6 +25,8 @@ export async function getAdmin() {
       });
     }
     cachedAdmin = admin;
+    // eslint-disable-next-line no-console
+    console.info('Firebase Admin initialized successfully');
     return cachedAdmin;
   } catch (e) {
     // eslint-disable-next-line no-console
