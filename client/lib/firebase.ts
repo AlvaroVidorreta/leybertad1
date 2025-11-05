@@ -51,7 +51,7 @@ if (FIREBASE_ENABLED) {
     const haveDbConfig = Boolean(databaseURL || projectId);
     if (haveDbConfig) {
       try {
-        db = getDatabase(app);
+        db = databaseURL ? getDatabase(app, databaseURL) : getDatabase(app);
       } catch (e) {
         // don't treat as fatal; log and continue without db
         // eslint-disable-next-line no-console
