@@ -41,37 +41,35 @@ export const handleDemo: RequestHandler = async (req, res) => {
       return res.json({ ok: true, uid: decoded.uid, token_issued_at: decoded.iat || null });
     }
 
-    // Protected tests: create a law, then call save and comment endpoints using the idToken
-    const base = `http://localhost:8080`;
+    // Protected tests: use internal DB methods directly to avoid HTTP self-calls
+    const { db } = await import('../db');
+    try {
+      const visitorKey = `integration-demo-${Date.now()}`;
+      const createdLaw = await db.createLaw({ titulo: 'Prueba integracion', objetivo: 'Test automático', apodo: 'auto' }, visitorKey);
+      const lawId = createdLaw.id;
 
-    // 1) Create a new law via server endpoint (no auth required)
-    const createResp = await fetch(`${base}/api/laws`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ titulo: 'Prueba integracion', objetivo: 'Test automático', apodo: 'auto' }),
-    });
-    const createdBody = await createResp.json().catch(() => ({}));
-    if (!createResp.ok || !createdBody || !createdBody.law || !createdBody.law.id) {
-      return res.status(500).json({ ok: false, error: 'Failed to create law', details: createdBody });
+      // Save with verified uid
+      let saveResult: any = null;
+      try {
+        const saved = await db.saveLaw(lawId, decoded.uid);
+        saveResult = { ok: true, saved };
+      } catch (e: any) {
+        saveResult = { ok: false, error: String(e && (e.message || e)) };
+      }
+
+      // Comment with verified uid
+      let commentResult: any = null;
+      try {
+        const commented = await db.commentLaw(lawId, 'Comentario de prueba automatizado', decoded.uid);
+        commentResult = { ok: true, commented };
+      } catch (e: any) {
+        commentResult = { ok: false, error: String(e && (e.message || e)) };
+      }
+
+      return res.json({ ok: true, uid: decoded.uid, lawId, create: createdLaw, save: saveResult, comment: commentResult });
+    } catch (e: any) {
+      return res.status(500).json({ ok: false, error: 'Failed to create law', details: String(e && (e.message || e)) });
     }
-    const lawId = createdBody.law.id;
-
-    // 2) Call save endpoint with Authorization header
-    const saveResp = await fetch(`${base}/api/laws/${encodeURIComponent(lawId)}/save`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${idToken}` },
-    });
-    const saveBody = await saveResp.json().catch(() => ({}));
-
-    // 3) Call comment endpoint with Authorization header
-    const commentResp = await fetch(`${base}/api/laws/${encodeURIComponent(lawId)}/comment`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
-      body: JSON.stringify({ texto: 'Comentario de prueba automatizado' }),
-    });
-    const commentBody = await commentResp.json().catch(() => ({}));
-
-    return res.json({ ok: true, uid: decoded.uid, lawId, create: createdBody, save: { status: saveResp.status, body: saveBody }, comment: { status: commentResp.status, body: commentBody } });
   } catch (err: any) {
     return res.status(500).json({ ok: false, error: String(err && (err.message || err)) });
   }
