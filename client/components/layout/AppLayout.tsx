@@ -40,8 +40,13 @@ function CollapsibleHeader() {
         setAccountOpen(false);
     }
     document.addEventListener("click", onDocClick);
+
+    const onOpenAuth = () => setAuthOpen(true);
+    window.addEventListener('open-auth', onOpenAuth as EventListener);
+
     return () => {
       document.removeEventListener("click", onDocClick);
+      window.removeEventListener('open-auth', onOpenAuth as EventListener);
       if (closeTimerRef.current) {
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
