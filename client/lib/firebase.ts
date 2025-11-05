@@ -8,6 +8,7 @@ import { getStorage } from "firebase/storage";
 const apiKey = import.meta.env.VITE_FIREBASE_API_KEY || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_API_KEY) || (typeof process !== 'undefined' && (process.env as any).VITE_FIREBASE_API_KEY) || '';
 const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_AUTH_DOMAIN) || '';
 const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_PROJECT_ID) || '';
+const databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_DATABASE_URL) || (typeof process !== 'undefined' && (process.env as any).VITE_FIREBASE_DATABASE_URL) || '';
 const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_STORAGE_BUCKET) || '';
 const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_MESSAGING_SENDER_ID) || '';
 const appId = import.meta.env.VITE_FIREBASE_APP_ID || (typeof window !== 'undefined' && (window as any).__env?.VITE_FIREBASE_APP_ID) || '';
@@ -17,6 +18,7 @@ const firebaseConfig = {
   apiKey,
   authDomain,
   projectId,
+  databaseURL,
   storageBucket,
   messagingSenderId,
   appId,
