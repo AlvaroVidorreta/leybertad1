@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
 import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 
 export default function AnalizadorPropuestas({ externalQuery, externalTrigger }: { externalQuery?: string; externalTrigger?: number }) {
@@ -11,11 +10,13 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
   const [showFilter, setShowFilter] = useState(false);
-  const [timeframe, setTimeframe] = useState<'any'|'week'|'month'|'year'>('any');
+  const [timeframe, setTimeframe] = useState<'any' | 'week' | 'month' | 'year'>('any');
   const anchorRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
@@ -23,14 +24,13 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const cacheRef = useRef<Map<string, AnalyzerMatch[]>>(new Map());
   const abortRef = useRef<AbortController | null>(null);
 
-  async function analyzeQuery(q: string, tf?: 'any'|'week'|'month'|'year') {
+  async function analyzeQuery(q: string, tf?: 'any' | 'week' | 'month' | 'year') {
     const query = String(q || "").trim();
     if (!query) return;
 
     const timeframeToUse = tf || timeframe;
     const key = `${query}|${timeframeToUse}`;
 
-    // if we already have cached results for this query+timeframe, reuse them
     const cached = cacheRef.current.get(key);
     if (cached) {
       setResults(cached);
@@ -38,11 +38,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
       return;
     }
 
-    // prevent duplicate concurrent calls
     setIsLoading(true);
     setResults(null);
 
-    // abort previous request
     try {
       abortRef.current?.abort();
     } catch (e) {
@@ -52,7 +50,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     abortRef.current = controller;
 
     try {
-      // small debounce to avoid rapid repeated calls
       await new Promise((r) => setTimeout(r, 180));
 
       const sinceParam = timeframeToUse === 'week' ? '&since_days=7' : timeframeToUse === 'month' ? '&since_days=30' : timeframeToUse === 'year' ? '&since_days=365' : '';
@@ -84,10 +81,8 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
       throw new Error("no_results");
     } catch (err: any) {
-      // if aborted, ignore silently
       if (err && err.name === 'AbortError') return;
 
-      // fallback to local analyzer if API fails
       const fallback = analyzeProposal(query, 8);
       if (!mounted.current) return;
       cacheRef.current.set(key, fallback);
@@ -97,7 +92,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     }
   }
 
-  // expose external trigger via window event
   useEffect(() => {
     function handler(e: Event) {
       const ce = e as CustomEvent<Record<string, unknown>>;
@@ -111,7 +105,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     return () => window.removeEventListener('analyzer:trigger', handler as EventListener);
   }, []);
 
-  // compute menu position when opened
   useEffect(() => {
     if (showFilter) {
       const rect = anchorRef.current?.getBoundingClientRect() || null;
@@ -119,7 +112,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     }
   }, [showFilter]);
 
-  // click outside to close
   useEffect(() => {
     function onDocDown(e: MouseEvent) {
       const target = e.target as Node | null;
@@ -132,7 +124,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     return () => document.removeEventListener('mousedown', onDocDown);
   }, [showFilter]);
 
-  // also support direct prop trigger
   useEffect(() => {
     if (externalTrigger && externalQuery) {
       setText(externalQuery);
@@ -144,7 +135,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
   return (
     <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[36vh]'}`}>
-      {/* header/hint area: show only before any search; animate collapse */}
       <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="flex items-center justify-center h-24">
           <div className="text-center">
@@ -154,7 +144,6 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
         </div>
       </div>
 
-      {/* results area */}
       <div className="mt-0 transition-opacity duration-200 flex flex-col min-h-0" style={{ opacity: results === null ? 0 : 1 }}>
         {results !== null && (
           <div className="flex-1 min-h-0 flex flex-col">
