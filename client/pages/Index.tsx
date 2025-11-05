@@ -85,6 +85,7 @@ export default function Index() {
   const qc = useQueryClient();
   const [selectedLaw, setSelectedLaw] = useState<Law | null>(null);
   const [showComments, setShowComments] = useState(false);
+  const { user: currentUser, loading: authLoading } = useFirebaseAuth();
 
   const comentar = useMutation({
     mutationFn: ({ id, texto }: { id: string; texto: string }) =>
