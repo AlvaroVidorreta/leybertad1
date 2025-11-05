@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import { db } from "../db";
-import type { RequestHandler } from "express";
 
 function getVisitorKey(req: any) {
   const header = req.headers && (req.headers["x-visitor-id"] || req.headers["x-visitorid"]);

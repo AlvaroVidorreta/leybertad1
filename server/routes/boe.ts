@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 import crypto from "crypto";
-import fs from "fs/promises";
 import logger from "../utils/logger";
 import { computeScore } from "../utils/scoring";
 import type { RequestHandler } from "express";
