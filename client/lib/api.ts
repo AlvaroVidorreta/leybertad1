@@ -99,8 +99,21 @@ export async function votarLey(id: string): Promise<Law> {
 }
 
 export async function guardarLey(id: string): Promise<Law> {
-  const res = await safeFetch(`/api/laws/${id}/save`, { method: "POST" });
-  if (!res.ok) throw new Error("Error al guardar");
+  const headers: Record<string, string> = { "x-visitor-id": getVisitorId() };
+  try {
+    if (FIREBASE_ENABLED && auth && auth.currentUser) {
+      const token = await auth.currentUser.getIdToken();
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+    }
+  } catch (e) {
+    // ignore token fetch errors — server will require auth and respond accordingly
+  }
+
+  const res = await safeFetch(`/api/laws/${id}/save`, { method: "POST", headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.error || "Error al guardar");
+  }
   const data = (await res.json()) as LawUpdatedResponse;
   return data.law;
 }
