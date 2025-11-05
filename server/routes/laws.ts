@@ -70,6 +70,48 @@ export const upvoteLaw: RequestHandler = async (req, res) => {
 
 export const saveLaw: RequestHandler = async (req, res) => {
   const { id } = req.params;
+
+  // If Authorization header present, validate Firebase token and associate save with profile
+  const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
+  if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+    const idToken = authHeader.replace(/^Bearer\s+/, '');
+    try {
+      let admin: any = null;
+      try {
+        admin = await import('firebase-admin');
+        if (!admin.apps || !admin.apps.length) {
+          const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
+          let svcObj: any = null;
+          try { svcObj = JSON.parse(svc); } catch (e) {
+            try { svcObj = JSON.parse(Buffer.from(svc || '', 'base64').toString('utf-8')); } catch (err) { svcObj = null; }
+          }
+          if (svcObj) {
+            admin.initializeApp({ credential: admin.credential.cert(svcObj), projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID });
+          }
+        }
+      } catch (e) {
+        return res.status(500).json({ error: 'Server misconfigured for authentication' });
+      }
+
+      const decoded = await admin.auth().verifyIdToken(idToken).catch(() => null);
+      if (!decoded) return res.status(401).json({ error: 'Token inválido' });
+      const uid = decoded.uid;
+
+      try {
+        const law = await db.saveLaw(id, uid);
+        const response: LawUpdatedResponse = { law };
+        return res.json(response);
+      } catch (err: any) {
+        if (err && err.message === "NOT_FOUND")
+          return res.status(404).json({ error: "Ley no encontrada" });
+        return res.status(500).json({ error: "Error al guardar ley" });
+      }
+    } catch (err) {
+      return res.status(500).json({ error: 'Error validating token' });
+    }
+  }
+
+  // No auth header — still increment saves counter but do not associate with profile
   try {
     const law = await db.saveLaw(id);
     const response: LawUpdatedResponse = { law };
