@@ -75,25 +75,10 @@ export const saveLaw: RequestHandler = async (req, res) => {
   const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
   if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
     const idToken = authHeader.replace(/^Bearer\s+/, '');
+    // Use centralized admin helper to avoid repeated dynamic imports and parsing
     try {
-      let admin: any = null;
-      try {
-        admin = await import('firebase-admin');
-        if (!admin.apps || !admin.apps.length) {
-          const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
-          let svcObj: any = null;
-          try { svcObj = JSON.parse(svc); } catch (e) {
-            try { svcObj = JSON.parse(Buffer.from(svc || '', 'base64').toString('utf-8')); } catch (err) { svcObj = null; }
-          }
-          if (svcObj) {
-            admin.initializeApp({ credential: admin.credential.cert(svcObj), projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID });
-          }
-        }
-      } catch (e) {
-        return res.status(500).json({ error: 'Server misconfigured for authentication' });
-      }
-
-      const decoded = await admin.auth().verifyIdToken(idToken).catch(() => null);
+      const { verifyIdToken } = await import('../utils/firebaseAdmin');
+      const decoded = await verifyIdToken(idToken);
       if (!decoded) return res.status(401).json({ error: 'Token inválido' });
       const uid = decoded.uid;
 
@@ -136,38 +121,20 @@ export const commentLaw: RequestHandler = async (req, res) => {
   }
   const idToken = authHeader.replace(/^Bearer\s+/, '');
 
-  try {
-    // initialize admin if available
-    let admin: any = null;
     try {
-      admin = await import('firebase-admin');
-      if (!admin.apps || !admin.apps.length) {
-        const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
-        let svcObj: any = null;
-        try { svcObj = JSON.parse(svc); } catch (e) {
-          try { svcObj = JSON.parse(Buffer.from(svc || '', 'base64').toString('utf-8')); } catch (err) { svcObj = null; }
-        }
-        if (svcObj) {
-          admin.initializeApp({ credential: admin.credential.cert(svcObj), projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID });
-        }
-      }
-    } catch (e) {
-      // admin may be unavailable; deny
-      return res.status(500).json({ error: 'Server misconfigured for authentication' });
+      const { verifyIdToken } = await import('../utils/firebaseAdmin');
+      const decoded = await verifyIdToken(idToken);
+      if (!decoded) return res.status(401).json({ error: 'Token inválido' });
+      const uid = decoded.uid;
+
+      const law = await db.commentLaw(id, texto, uid);
+      const response: LawUpdatedResponse = { law };
+      res.json(response);
+    } catch (err: any) {
+      if (err && err.message === "NOT_FOUND")
+        return res.status(404).json({ error: "Ley no encontrada" });
+      res.status(500).json({ error: "Error al guardar perspectiva" });
     }
-
-    const decoded = await admin.auth().verifyIdToken(idToken).catch(() => null);
-    if (!decoded) return res.status(401).json({ error: 'Token inválido' });
-    const uid = decoded.uid;
-
-    const law = await db.commentLaw(id, texto, uid);
-    const response: LawUpdatedResponse = { law };
-    res.json(response);
-  } catch (err: any) {
-    if (err && err.message === "NOT_FOUND")
-      return res.status(404).json({ error: "Ley no encontrada" });
-    res.status(500).json({ error: "Error al guardar perspectiva" });
-  }
 };
 
 export const ranking: RequestHandler = async (req, res) => {
