@@ -123,24 +123,37 @@ export const db = {
       // rate limit: count creations in last 24h
       const dayMs = 24 * 60 * 60 * 1000;
       const since = new Date(Date.now() - dayMs).toISOString();
-      const q = firestore.collection('laws').where('authorVisitor', '==', visitorKey).where('createdAt', '>=', since);
-      const snap = await q.get();
-      if (snap.size >= 5) throw new Error('RATE_LIMIT_EXCEEDED');
+      try {
+        const q = firestore.collection('laws').where('authorVisitor', '==', visitorKey).where('createdAt', '>=', since);
+        const snap = await q.get();
+        if (snap.size >= 5) throw new Error('RATE_LIMIT_EXCEEDED');
 
-      const docRef = firestore.collection('laws').doc();
-      const law: Law = {
-        id: docRef.id,
-        titulo: String(input.titulo).slice(0, 500),
-        objetivo: String(input.objetivo).slice(0, 200),
-        detalles: input.detalles ? String(input.detalles).slice(0, 2000) : undefined,
-        apodo: input.apodo ? String(input.apodo).slice(0, 60) : undefined,
-        createdAt: now,
-        upvotes: 0,
-        saves: 0,
-        comentarios: [],
-      };
-      await docRef.set({ ...law, authorVisitor: visitorKey });
-      return law;
+        const docRef = firestore.collection('laws').doc();
+        const law: Law = {
+          id: docRef.id,
+          titulo: String(input.titulo).slice(0, 500),
+          objetivo: String(input.objetivo).slice(0, 200),
+          detalles: input.detalles ? String(input.detalles).slice(0, 2000) : undefined,
+          apodo: input.apodo ? String(input.apodo).slice(0, 60) : undefined,
+          createdAt: now,
+          upvotes: 0,
+          saves: 0,
+          comentarios: [],
+        };
+        await docRef.set({ ...law, authorVisitor: visitorKey });
+        return law;
+      } catch (e: any) {
+        // If Firestore query fails due to missing composite index or other precondition, log and fallback to local file DB
+        const msg = String(e && (e.message || e));
+        if (msg.includes('FAILED_PRECONDITION') || msg.includes('requires an index') || msg.includes('Index')) {
+          // eslint-disable-next-line no-console
+          console.warn('Firestore query failed (possible missing index), falling back to local DB:', msg);
+        } else {
+          // For other errors, still fallback but log them
+          // eslint-disable-next-line no-console
+          console.warn('Firestore operation failed, falling back to local DB:', msg);
+        }
+      }
     }
 
     // fallback to local file
