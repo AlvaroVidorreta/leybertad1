@@ -89,6 +89,15 @@ export default function Index() {
     mutationFn: ({ id, texto }: { id: string; texto: string }) =>
       comentarLey(id, { texto }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
+    onError: (err: any) => {
+      try {
+        const msg = String(err?.message || '').toLowerCase();
+        if (msg.includes('autentic') || msg.includes('token')) {
+          // request login
+          window.dispatchEvent(new CustomEvent('open-auth'));
+        }
+      } catch (e) {}
+    },
   });
 
   // add vote/save mutations at page level so modal can call them safely
