@@ -1091,59 +1091,52 @@ function Ranking({
                     )}
 
                     <div className="mt-3 flex items-center gap-2">
-                      {/** If user not logged, show message and trigger auth modal on focus/click */}
-                      {(() => {
-                        try {
-                          // using hook inside component scope is ok since defined above
-                        } catch (e) {}
-                        return null;
-                      })()}
-
-                      { (typeof window !== 'undefined') && null }
-
-                      { /* Render depending on auth state */ }
-                      {(() => {
-                        // Note: we imported useFirebaseAuth at top; call it here
-                        // but React hooks cannot be called conditionally — instead call once above
-                        return null;
-                      })()}
-
-                      {/* Actual implementation: will render based on user from hook */}
-                      { (function renderCommentInput() {
-                        // placeholder: will be replaced after we access the hook
-                        return (
-                          <>
-                            <input
-                              ref={commentRef}
-                              placeholder="Escribe tu perspectiva..."
-                              className="flex-1 rounded-md border px-3 py-2 text-sm"
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  const v = (
-                                    e.target as HTMLInputElement
-                                  ).value.trim();
-                                  if (v) {
-                                    onComment(selectedLaw!.id, v);
-                                    (e.target as HTMLInputElement).value = "";
-                                  }
+                      {currentUser ? (
+                        <>
+                          <input
+                            ref={commentRef}
+                            placeholder="Escribe tu perspectiva..."
+                            className="flex-1 rounded-md border px-3 py-2 text-sm"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                const v = (e.target as HTMLInputElement).value.trim();
+                                if (v) {
+                                  onComment(selectedLaw!.id, v);
+                                  (e.target as HTMLInputElement).value = "";
                                 }
-                              }}
-                            />
-                            <button
-                              className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
-                              onClick={() => {
-                                if (!commentRef.current) return;
-                                const v = commentRef.current.value.trim();
-                                if (!v) return;
-                                onComment(selectedLaw!.id, v);
-                                commentRef.current.value = "";
-                              }}
-                            >
-                              Enviar
-                            </button>
-                          </>
-                        );
-                      })() }
+                              }
+                            }}
+                          />
+                          <button
+                            className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
+                            onClick={() => {
+                              if (!commentRef.current) return;
+                              const v = commentRef.current.value.trim();
+                              if (!v) return;
+                              onComment(selectedLaw!.id, v);
+                              commentRef.current.value = "";
+                            }}
+                          >
+                            Enviar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            readOnly
+                            placeholder="Necesario Iniciar Sesión"
+                            className="flex-1 rounded-md border px-3 py-2 text-sm text-muted-foreground cursor-pointer"
+                            onFocus={() => window.dispatchEvent(new CustomEvent('open-auth'))}
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-auth'))}
+                          />
+                          <button
+                            className="px-4 py-2 rounded-md border bg-white"
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-auth'))}
+                          >
+                            Iniciar sesión
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </section>
