@@ -26,6 +26,7 @@ import LawSummary from "@/components/LawSummary";
 import BibliotecaSub from "./BibliotecaSub";
 import AnalizadorPropuestas from "@/components/AnalizadorPropuestas";
 import HorizontalCarousel from "@/components/HorizontalCarousel";
+import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 
 const ITEM_HEIGHT_RANKING = 64;
 const MAX_RANKING_ITEMS = 5;
