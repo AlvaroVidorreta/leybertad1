@@ -97,6 +97,7 @@ export default function Index() {
         const msg = String(err?.message || '').toLowerCase();
         if (msg.includes('autentic') || msg.includes('token')) {
           // request login
+          toast({ title: 'Necesario Iniciar Sesión' });
           window.dispatchEvent(new CustomEvent('open-auth'));
         }
       } catch (e) {}
