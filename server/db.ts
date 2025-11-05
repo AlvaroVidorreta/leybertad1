@@ -237,10 +237,20 @@ export const db = {
     return law;
   },
 
-  async saveLaw(id: string) {
+  async saveLaw(id: string, userId?: string) {
     if (firestore) {
       const lawRef = firestore.collection('laws').doc(id);
       await lawRef.update({ saves: admin.firestore.FieldValue.increment(1) });
+
+      // If userId provided, add this law id to the user's profile saved list
+      if (userId) {
+        try {
+          await firestore.collection('profiles').doc(userId).set({ saved: admin.firestore.FieldValue.arrayUnion(id) }, { merge: true });
+        } catch (e) {
+          // non-fatal
+        }
+      }
+
       const d = (await lawRef.get()).data();
       return {
         id: id,
@@ -259,6 +269,16 @@ export const db = {
     const law = data.laws.find((l) => l.id === id);
     if (!law) throw new Error('NOT_FOUND');
     law.saves = (law.saves || 0) + 1;
+
+    if (userId) {
+      data.profiles = data.profiles || {};
+      const profile = data.profiles[userId] || {} as any;
+      const saved = new Set<string>(Array.isArray(profile.saved) ? profile.saved : []);
+      saved.add(id);
+      profile.saved = Array.from(saved);
+      data.profiles[userId] = profile;
+    }
+
     await writeData(data);
     return law;
   },
