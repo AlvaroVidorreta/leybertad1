@@ -1,6 +1,16 @@
 {
   "laws": [
     {
+      "id": "56beaf82-4fb5-49e0-b42a-9b45b3575cb3",
+      "titulo": "Prueba integracion",
+      "objetivo": "Test automático",
+      "apodo": "auto",
+      "createdAt": "2025-11-05T14:20:33.240Z",
+      "upvotes": 0,
+      "saves": 0,
+      "comentarios": []
+    },
+    {
       "id": "a1ec6a87-f2fe-4ee5-84a6-a09bfdc6cd95",
       "titulo": "Prueba integracion",
       "objetivo": "Test automático",
@@ -84,6 +94,9 @@
     ],
     "integration-demo-1762352366797": [
       "2025-11-05T14:19:26.862Z"
+    ],
+    "integration-demo-1762352433200": [
+      "2025-11-05T14:20:33.240Z"
     ]
   },
   "votesByVisitor": {
