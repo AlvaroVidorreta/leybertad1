@@ -668,7 +668,7 @@ function FeedRecientes({
   const handleUpvote = useCallback((id: string) => votar.mutate(id), [votar]);
   const handleSave = useCallback((id: string) => guardar.mutate(id), [guardar]);
 
-  const ITEM_SIZE_RECENT = 108; // estimated height per law card (reduced spacing)
+  const ITEM_SIZE_RECENT = 104; // estimated height per law card (slightly reduced spacing by ~1/4 of the inter-item gap)
 
   const Row = ({
     index,
