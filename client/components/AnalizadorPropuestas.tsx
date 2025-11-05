@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import React, { useState, useRef, useEffect } from "react";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 
 export default function AnalizadorPropuestas({ externalQuery, externalTrigger }: { externalQuery?: string; externalTrigger?: number }) {
@@ -22,11 +23,12 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const cacheRef = useRef<Map<string, AnalyzerMatch[]>>(new Map());
   const abortRef = useRef<AbortController | null>(null);
 
-  async function analyzeQuery(q: string) {
+  async function analyzeQuery(q: string, tf?: 'any'|'week'|'month'|'year') {
     const query = String(q || "").trim();
     if (!query) return;
 
-    const key = `${query}|${timeframe}`;
+    const timeframeToUse = tf || timeframe;
+    const key = `${query}|${timeframeToUse}`;
 
     // if we already have cached results for this query+timeframe, reuse them
     const cached = cacheRef.current.get(key);
@@ -53,7 +55,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
       // small debounce to avoid rapid repeated calls
       await new Promise((r) => setTimeout(r, 180));
 
-      const sinceParam = timeframe === 'week' ? '&since_days=7' : timeframe === 'month' ? '&since_days=30' : timeframe === 'year' ? '&since_days=365' : '';
+      const sinceParam = timeframeToUse === 'week' ? '&since_days=7' : timeframeToUse === 'month' ? '&since_days=30' : timeframeToUse === 'year' ? '&since_days=365' : '';
       const url = `/api/boe/search?q=${encodeURIComponent(query)}&limit=8${sinceParam}`;
       const res = await fetch(url, { signal: controller.signal });
 
@@ -181,10 +183,10 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                       }}
                       className="rounded-md shadow-lg bg-gray-800 border border-white/10 text-white z-50"
                     >
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'any' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('any'); if (text) analyzeQuery(text); setShowFilter(false); }}>Cualquiera</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'week' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('week'); if (text) analyzeQuery(text); setShowFilter(false); }}>Última semana</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'month' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('month'); if (text) analyzeQuery(text); setShowFilter(false); }}>Último mes</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'year' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('year'); if (text) analyzeQuery(text); setShowFilter(false); }}>Último año</button>
+                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'any' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('any'); if (text) analyzeQuery(text, 'any'); setShowFilter(false); }}>Cualquiera</button>
+                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'week' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('week'); if (text) analyzeQuery(text, 'week'); setShowFilter(false); }}>Última semana</button>
+                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'month' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('month'); if (text) analyzeQuery(text, 'month'); setShowFilter(false); }}>Último mes</button>
+                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'year' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('year'); if (text) analyzeQuery(text, 'year'); setShowFilter(false); }}>Último año</button>
                     </div>,
                     document.body
                   )}
