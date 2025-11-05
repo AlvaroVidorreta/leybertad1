@@ -5,6 +5,27 @@ import type { Comment, Law, LawInput, TimeRange } from "@shared/api";
 
 const DATA_FILE = path.resolve(process.cwd(), "server", "data", "db.json");
 
+// Optional: initialize Firebase client SDK on the server side when a Realtime Database URL is provided.
+// This lets us mirror perspectives (comments) to Firebase if the environment is configured.
+let firebaseDb: any = null;
+(async function initFirebase() {
+  try {
+    const databaseURL = process.env.VITE_FIREBASE_DATABASE_URL || process.env.FIREBASE_DATABASE_URL || process.env.FIREBASE_REALTIME_DATABASE_URL;
+    const apiKey = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
+    if (!databaseURL) return;
+    const { initializeApp, getApps } = await import('firebase/app');
+    const { getDatabase } = await import('firebase/database');
+    const config = { apiKey: apiKey || '', databaseURL };
+    if (!getApps().length) initializeApp(config as any);
+    firebaseDb = getDatabase();
+  } catch (e) {
+    // If initialization fails, continue without Firebase mirroring.
+    // eslint-disable-next-line no-console
+    console.warn('Firebase init skipped or failed on server:', e && (e.message || e));
+    firebaseDb = null;
+  }
+})();
+
 type DataShape = {
   laws: Law[];
   creationsByVisitor: Record<string, string[]>;
@@ -121,8 +142,25 @@ export const db = {
     if (!law) throw new Error("NOT_FOUND");
     const trimmed = String(texto).slice(0, 200);
     const comment: Comment = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+
+    // Append locally
     law.comentarios.push(comment);
     await writeData(data);
+
+    // Mirror to Firebase Realtime Database if available (non-fatal)
+    if (firebaseDb) {
+      try {
+        const { ref, push } = await import('firebase/database');
+        // push under /perspectives/{lawId}/
+        const nodeRef = ref(firebaseDb, `perspectives/${id}`);
+        await push(nodeRef, comment as any);
+      } catch (err) {
+        // ignore firebase errors — keep local persistence as primary
+        // eslint-disable-next-line no-console
+        console.warn('Failed to mirror comment to Firebase:', err && (err.message || err));
+      }
+    }
+
     return law;
   },
 
