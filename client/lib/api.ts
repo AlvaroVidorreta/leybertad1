@@ -1,6 +1,7 @@
 import { CommentInput, CreateLawResponse, Law, LawInput, LawsResponse, LawUpdatedResponse, RankingResponse, TimeRange } from "@shared/api";
 
 import logger from "./logger";
+import { auth, FIREBASE_ENABLED } from "@/lib/firebase";
 
 function getVisitorId() {
   try {
