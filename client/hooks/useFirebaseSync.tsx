@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useEffect } from "react";
 import { ref as dbRef, onValue } from "firebase/database";
 import { db, FIREBASE_ENABLED } from "@/lib/firebase";
 import { useQueryClient } from "@tanstack/react-query";
