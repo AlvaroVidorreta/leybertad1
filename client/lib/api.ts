@@ -106,9 +106,19 @@ export async function guardarLey(id: string): Promise<Law> {
 }
 
 export async function comentarLey(id: string, input: CommentInput): Promise<Law> {
+  const headers: Record<string, string> = { "Content-Type": "application/json", "x-visitor-id": getVisitorId() };
+  try {
+    if (FIREBASE_ENABLED && auth && auth.currentUser) {
+      const token = await auth.currentUser.getIdToken();
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+    }
+  } catch (e) {
+    // ignore token fetch errors — server will require auth and respond accordingly
+  }
+
   const res = await safeFetch(`/api/laws/${id}/comment`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-visitor-id": getVisitorId() },
+    headers,
     body: JSON.stringify(input),
   });
   if (!res.ok) {
