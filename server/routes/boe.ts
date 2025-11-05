@@ -211,11 +211,18 @@ export const boeHandler: RequestHandler = async (req, res) => {
     }
   }
 
-  // compute cutoff date for filtering items by their own dates (inclusive)
-  const nowDate = new Date();
-  const cutoffDate = explicitDate
-    ? new Date(Number(explicitDate.slice(0, 4)), Number(explicitDate.slice(4, 6)) - 1, Number(explicitDate.slice(6, 8)))
-    : new Date(nowDate.getTime() - daysToTryCount * 24 * 60 * 60 * 1000);
+  // compute cutoff number (YYYYMMDD) for filtering items by their own dates (inclusive)
+  const today = new Date();
+  function yyyymmddFromDate(d: Date) {
+    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  }
+  const cutoffNum = explicitDate
+    ? Number(explicitDate)
+    : ((): number => {
+        // datesToTry includes today and the previous (daysToTryCount - 1) days.
+        const earliest = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (Math.max(1, daysToTryCount) - 1));
+        return Number(yyyymmddFromDate(earliest));
+      })();
 
   const startTime = Date.now();
 
@@ -277,21 +284,24 @@ export const boeHandler: RequestHandler = async (req, res) => {
         const ref = m.referencia || m.id || JSON.stringify(m);
         if (seenRefs.has(ref)) continue;
         // determine an item-level date (prefer the item's own date fields)
-        let itemDate: Date | null = findDateInObject(m);
-        if (!itemDate && br.dt && /^[0-9]{8}$/.test(String(br.dt))) {
-          itemDate = new Date(Number(String(br.dt).slice(0, 4)), Number(String(br.dt).slice(4, 6)) - 1, Number(String(br.dt).slice(6, 8)));
+        const foundDate = findDateInObject(m);
+        let itemDateNum = 0;
+        if (foundDate) {
+          itemDateNum = Number(yyyymmddFromDate(foundDate));
+        } else if (br.dt && /^[0-9]{8}$/.test(String(br.dt))) {
+          itemDateNum = Number(String(br.dt));
         }
+
         // if we have a cutoff, ensure itemDate is within range
-        if (cutoffDate && itemDate) {
-          // include if itemDate >= cutoffDate (same or newer)
-          if (itemDate.getTime() < cutoffDate.getTime()) continue;
-        } else if (cutoffDate && !itemDate && explicitDate) {
+        if (cutoffNum && itemDateNum) {
+          if (itemDateNum < cutoffNum) continue; // older than requested window
+        } else if (cutoffNum && !itemDateNum && explicitDate) {
           // if explicit date was requested but no item date and br.dt exists, allow only if br.dt matches explicitDate
           if (String(br.dt) !== explicitDate) continue;
         }
 
         seenRefs.add(ref);
-        allMatches.push({ _date: br.dt, item: m, itemDate: itemDate ? `${itemDate.getFullYear()}${String(itemDate.getMonth() + 1).padStart(2, '0')}${String(itemDate.getDate()).padStart(2, '0')}` : null });
+        allMatches.push({ _date: br.dt, item: m, itemDate: itemDateNum ? String(itemDateNum) : null });
         if (allMatches.length >= limit) break;
       }
       if (allMatches.length >= limit) break;
