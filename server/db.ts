@@ -79,15 +79,78 @@ function withinRange(dateISO: string, range: TimeRange) {
   return true;
 }
 
+// Try to initialize Firebase Admin SDK (Firestore) using service account from env
+let firestore: any = null;
+let admin: any = null;
+(async function initAdmin() {
+  try {
+    const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!svc) return;
+    let svcObj: any = null;
+    try {
+      svcObj = JSON.parse(svc);
+    } catch (e) {
+      // maybe base64
+      try {
+        const decoded = Buffer.from(svc, 'base64').toString('utf-8');
+        svcObj = JSON.parse(decoded);
+      } catch (err) {
+        svcObj = null;
+      }
+    }
+    if (!svcObj) return;
+    admin = await import('firebase-admin');
+    if (!admin.apps || !admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert(svcObj),
+        projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID,
+      });
+    }
+    firestore = admin.firestore();
+    // ensure timestampsInSnapshots behavior not needed in modern SDK
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('Firebase Admin init failed, continuing with local DB:', e && (e.message || e));
+    firestore = null;
+  }
+})();
+
 export const db = {
   async createLaw(input: LawInput, visitorKey: string) {
+    // If Firestore available, use it as primary
+    if (firestore) {
+      const now = nowISO();
+      // rate limit: count creations in last 24h
+      const dayMs = 24 * 60 * 60 * 1000;
+      const since = new Date(Date.now() - dayMs).toISOString();
+      const q = firestore.collection('laws').where('authorVisitor', '==', visitorKey).where('createdAt', '>=', since);
+      const snap = await q.get();
+      if (snap.size >= 5) throw new Error('RATE_LIMIT_EXCEEDED');
+
+      const docRef = firestore.collection('laws').doc();
+      const law: Law = {
+        id: docRef.id,
+        titulo: String(input.titulo).slice(0, 500),
+        objetivo: String(input.objetivo).slice(0, 200),
+        detalles: input.detalles ? String(input.detalles).slice(0, 2000) : undefined,
+        apodo: input.apodo ? String(input.apodo).slice(0, 60) : undefined,
+        createdAt: now,
+        upvotes: 0,
+        saves: 0,
+        comentarios: [],
+      };
+      await docRef.set({ ...law, authorVisitor: visitorKey });
+      return law;
+    }
+
+    // fallback to local file
     const data = await readData();
     const now = Date.now();
     const dayMs = 24 * 60 * 60 * 1000;
     const existing = data.creationsByVisitor[visitorKey] ?? [];
     const recent = existing.filter((ts) => now - Date.parse(ts) <= dayMs);
     if (recent.length >= 5) {
-      throw new Error("RATE_LIMIT_EXCEEDED");
+      throw new Error('RATE_LIMIT_EXCEEDED');
     }
 
     const law: Law = {
@@ -110,16 +173,63 @@ export const db = {
   },
 
   async listRecent() {
+    if (firestore) {
+      const snap = await firestore.collection('laws').orderBy('createdAt', 'desc').get();
+      const items: Law[] = [];
+      snap.forEach((doc: any) => {
+        const d = doc.data();
+        items.push({
+          id: doc.id,
+          titulo: d.titulo,
+          objetivo: d.objetivo,
+          detalles: d.detalles,
+          apodo: d.apodo,
+          createdAt: d.createdAt,
+          upvotes: d.upvotes || 0,
+          saves: d.saves || 0,
+          comentarios: d.comentarios || [],
+        });
+      });
+      return items;
+    }
+
     const data = await readData();
     return [...data.laws].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   },
 
   async upvoteLaw(id: string, visitorKey: string) {
+    if (firestore) {
+      const lawRef = firestore.collection('laws').doc(id);
+      const voteRef = lawRef.collection('votes').doc(visitorKey);
+      return await firestore.runTransaction(async (tx: any) => {
+        const voteDoc = await tx.get(voteRef);
+        if (voteDoc.exists) throw new Error('ALREADY_VOTED');
+        const lawDoc = await tx.get(lawRef);
+        if (!lawDoc.exists) throw new Error('NOT_FOUND');
+        tx.set(voteRef, { createdAt: nowISO() });
+        const current = lawDoc.data().upvotes || 0;
+        tx.update(lawRef, { upvotes: current + 1 });
+        const updated = await tx.get(lawRef);
+        const d = updated.data();
+        return {
+          id: updated.id,
+          titulo: d.titulo,
+          objetivo: d.objetivo,
+          detalles: d.detalles,
+          apodo: d.apodo,
+          createdAt: d.createdAt,
+          upvotes: d.upvotes || 0,
+          saves: d.saves || 0,
+          comentarios: d.comentarios || [],
+        } as Law;
+      });
+    }
+
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error("NOT_FOUND");
+    if (!law) throw new Error('NOT_FOUND');
     const visited = new Set(data.votesByVisitor[visitorKey] ?? []);
-    if (visited.has(id)) throw new Error("ALREADY_VOTED");
+    if (visited.has(id)) throw new Error('ALREADY_VOTED');
     visited.add(id);
     data.votesByVisitor[visitorKey] = Array.from(visited);
     law.upvotes = (law.upvotes || 0) + 1;
@@ -128,18 +238,56 @@ export const db = {
   },
 
   async saveLaw(id: string) {
+    if (firestore) {
+      const lawRef = firestore.collection('laws').doc(id);
+      await lawRef.update({ saves: admin.firestore.FieldValue.increment(1) });
+      const d = (await lawRef.get()).data();
+      return {
+        id: id,
+        titulo: d.titulo,
+        objetivo: d.objetivo,
+        detalles: d.detalles,
+        apodo: d.apodo,
+        createdAt: d.createdAt,
+        upvotes: d.upvotes || 0,
+        saves: d.saves || 0,
+        comentarios: d.comentarios || [],
+      } as Law;
+    }
+
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error("NOT_FOUND");
+    if (!law) throw new Error('NOT_FOUND');
     law.saves = (law.saves || 0) + 1;
     await writeData(data);
     return law;
   },
 
   async commentLaw(id: string, texto: string) {
+    if (firestore) {
+      const trimmed = String(texto).slice(0, 200);
+      const comment: Comment = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+      const lawRef = firestore.collection('laws').doc(id);
+      const lawDoc = await lawRef.get();
+      if (!lawDoc.exists) throw new Error('NOT_FOUND');
+      await lawRef.update({ comentarios: admin.firestore.FieldValue.arrayUnion(comment) });
+      const d = (await lawRef.get()).data();
+      return {
+        id: id,
+        titulo: d.titulo,
+        objetivo: d.objetivo,
+        detalles: d.detalles,
+        apodo: d.apodo,
+        createdAt: d.createdAt,
+        upvotes: d.upvotes || 0,
+        saves: d.saves || 0,
+        comentarios: d.comentarios || [],
+      } as Law;
+    }
+
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error("NOT_FOUND");
+    if (!law) throw new Error('NOT_FOUND');
     const trimmed = String(texto).slice(0, 200);
     const comment: Comment = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
 
@@ -165,6 +313,17 @@ export const db = {
   },
 
   async ranking(range: TimeRange) {
+    if (firestore) {
+      const items: Law[] = [];
+      const snap = await firestore.collection('laws').get();
+      snap.forEach((doc: any) => {
+        const d = doc.data();
+        if (withinRange(d.createdAt, range)) items.push({ id: doc.id, titulo: d.titulo, objetivo: d.objetivo, detalles: d.detalles, apodo: d.apodo, createdAt: d.createdAt, upvotes: d.upvotes || 0, saves: d.saves || 0, comentarios: d.comentarios || [] });
+      });
+      items.sort((a, b) => b.upvotes - a.upvotes || (a.createdAt < b.createdAt ? 1 : -1));
+      return items;
+    }
+
     const data = await readData();
     const items = data.laws
       .filter((l) => withinRange(l.createdAt, range))
@@ -173,15 +332,38 @@ export const db = {
   },
 
   async rawData() {
+    if (firestore) {
+      const all: any = { laws: [], creationsByVisitor: {}, votesByVisitor: {}, profiles: {} };
+      const snap = await firestore.collection('laws').get();
+      snap.forEach((doc: any) => {
+        const d = doc.data();
+        all.laws.push({ id: doc.id, titulo: d.titulo, objetivo: d.objetivo, detalles: d.detalles, apodo: d.apodo, createdAt: d.createdAt, upvotes: d.upvotes || 0, saves: d.saves || 0, comentarios: d.comentarios || [] });
+      });
+      const profilesSnap = await firestore.collection('profiles').get();
+      profilesSnap.forEach((p: any) => {
+        all.profiles[p.id] = p.data();
+      });
+      return all;
+    }
+
     return await readData();
   },
 
   async getProfile(visitorKey: string) {
+    if (firestore) {
+      const doc = await firestore.collection('profiles').doc(visitorKey).get();
+      return doc.exists ? doc.data() : null;
+    }
     const data = await readData();
     return (data.profiles || {})[visitorKey] || null;
   },
 
   async setProfile(visitorKey: string, payload: { displayName?: string; username?: string }) {
+    if (firestore) {
+      await firestore.collection('profiles').doc(visitorKey).set(payload, { merge: true });
+      const doc = await firestore.collection('profiles').doc(visitorKey).get();
+      return doc.data();
+    }
     const data = await readData();
     data.profiles = data.profiles || {};
     data.profiles[visitorKey] = { ...(data.profiles[visitorKey] || {}), ...(payload || {}) };
