@@ -31,19 +31,11 @@ export default class ErrorBoundary extends React.Component<Props, { hasError: bo
           <div className="max-w-lg text-center">
             <h1 className="text-2xl font-semibold mb-2">Algo ha ido mal</h1>
             <p className="text-sm text-muted-foreground mb-4">Ha ocurrido un error en la aplicación. Intenta recargar la página.</p>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center">
               <button
-                className="px-4 py-2 rounded bg-primary text-white"
+                className="px-6 py-3 rounded bg-primary text-white"
                 onClick={() => location.reload()}
               >Recargar</button>
-              <button
-                className="px-4 py-2 rounded border"
-                onClick={() => {
-                  // copy error to clipboard for easy reporting
-                  const text = String(this.state.error?.stack || this.state.error?.message || "");
-                  try { navigator.clipboard.writeText(text); toast({ title: "Copiado", description: "Traza copiada al portapapeles" }); } catch (e) { /* ignore */ }
-                }}
-              >Copiar traza</button>
             </div>
           </div>
         </div>
