@@ -314,9 +314,22 @@ export const db = {
       const comment: any = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
       if (author) comment.author = author;
       const lawRef = firestore.collection('laws').doc(id);
-      const lawDoc = await lawRef.get();
-      if (!lawDoc.exists) throw new Error('NOT_FOUND');
-      await lawRef.update({ comentarios: admin.firestore.FieldValue.arrayUnion(comment) });
+      try {
+        await firestore.runTransaction(async (tx: any) => {
+          const doc = await tx.get(lawRef);
+          if (!doc.exists) {
+            // If law missing, create a minimal doc to host the comment
+            tx.set(lawRef, { id, comentarios: [comment], upvotes: 0, saves: 0, createdAt: nowISO() }, { merge: true });
+          } else {
+            tx.update(lawRef, { comentarios: admin.firestore.FieldValue.arrayUnion(comment) });
+          }
+        });
+      } catch (e: any) {
+        // eslint-disable-next-line no-console
+        console.warn('Firestore comment transaction failed:', String(e && (e.message || e)));
+        throw e;
+      }
+
       const d = (await lawRef.get()).data();
       return {
         id: id,
