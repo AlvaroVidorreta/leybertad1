@@ -253,15 +253,27 @@ export const db = {
   async saveLaw(id: string, userId?: string) {
     if (firestore) {
       const lawRef = firestore.collection('laws').doc(id);
-      await lawRef.update({ saves: admin.firestore.FieldValue.increment(1) });
+      try {
+        // Use transaction for safe increment and profile update
+        await firestore.runTransaction(async (tx: any) => {
+          const doc = await tx.get(lawRef);
+          if (!doc.exists) {
+            // create minimal placeholder if missing
+            tx.set(lawRef, { id, saves: 1, upvotes: 0, comentarios: [] }, { merge: true });
+          } else {
+            tx.update(lawRef, { saves: admin.firestore.FieldValue.increment(1) });
+          }
 
-      // If userId provided, add this law id to the user's profile saved list
-      if (userId) {
-        try {
-          await firestore.collection('profiles').doc(userId).set({ saved: admin.firestore.FieldValue.arrayUnion(id) }, { merge: true });
-        } catch (e) {
-          // non-fatal
-        }
+          if (userId) {
+            const profileRef = firestore.collection('profiles').doc(userId);
+            tx.set(profileRef, { saved: admin.firestore.FieldValue.arrayUnion(id) }, { merge: true });
+          }
+        });
+      } catch (e: any) {
+        // If transaction fails, log and rethrow so fallback or error handling can proceed
+        // eslint-disable-next-line no-console
+        console.warn('Firestore save transaction failed, falling back or returning error:', String(e && (e.message || e)));
+        throw e;
       }
 
       const d = (await lawRef.get()).data();
