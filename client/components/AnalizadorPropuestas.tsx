@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { analyzeProposal, AnalyzerMatch } from "@/lib/spanishLaws";
 
-export default function AnalizadorPropuestas({ externalQuery, externalTrigger }: { externalQuery?: string; externalTrigger?: number }) {
+export default function AnalizadorPropuestas({
+  externalQuery,
+  externalTrigger,
+}: {
+  externalQuery?: string;
+  externalTrigger?: number;
+}) {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalyzerMatch[] | null>(null);
@@ -16,7 +22,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   }, []);
 
   const [showFilter, setShowFilter] = useState(false);
-  const [timeframe, setTimeframe] = useState<'any' | 'week' | 'month' | 'year'>('any');
+  const [timeframe, setTimeframe] = useState<"any" | "week" | "month" | "year">(
+    "any",
+  );
   const anchorRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
@@ -24,7 +32,10 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const cacheRef = useRef<Map<string, AnalyzerMatch[]>>(new Map());
   const abortRef = useRef<AbortController | null>(null);
 
-  async function analyzeQuery(q: string, tf?: 'any' | 'week' | 'month' | 'year') {
+  async function analyzeQuery(
+    q: string,
+    tf?: "any" | "week" | "month" | "year",
+  ) {
     const query = String(q || "").trim();
     if (!query) return;
 
@@ -52,7 +63,14 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     try {
       await new Promise((r) => setTimeout(r, 180));
 
-      const sinceParam = timeframeToUse === 'week' ? '&since_days=7' : timeframeToUse === 'month' ? '&since_days=30' : timeframeToUse === 'year' ? '&since_days=365' : '';
+      const sinceParam =
+        timeframeToUse === "week"
+          ? "&since_days=7"
+          : timeframeToUse === "month"
+            ? "&since_days=30"
+            : timeframeToUse === "year"
+              ? "&since_days=365"
+              : "";
       const url = `/api/boe/search?q=${encodeURIComponent(query)}&limit=8${sinceParam}`;
       const res = await fetch(url, { signal: controller.signal });
 
@@ -81,7 +99,7 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
 
       throw new Error("no_results");
     } catch (err: any) {
-      if (err && err.name === 'AbortError') return;
+      if (err && err.name === "AbortError") return;
 
       const fallback = analyzeProposal(query, 8);
       if (!mounted.current) return;
@@ -101,8 +119,9 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
         analyzeQuery(q);
       }
     }
-    window.addEventListener('analyzer:trigger', handler as EventListener);
-    return () => window.removeEventListener('analyzer:trigger', handler as EventListener);
+    window.addEventListener("analyzer:trigger", handler as EventListener);
+    return () =>
+      window.removeEventListener("analyzer:trigger", handler as EventListener);
   }, []);
 
   useEffect(() => {
@@ -116,12 +135,20 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
     function onDocDown(e: MouseEvent) {
       const target = e.target as Node | null;
       if (!showFilter) return;
-      if (menuRef.current && (menuRef.current === target || menuRef.current.contains(target))) return;
-      if (anchorRef.current && (anchorRef.current === target || anchorRef.current.contains(target))) return;
+      if (
+        menuRef.current &&
+        (menuRef.current === target || menuRef.current.contains(target))
+      )
+        return;
+      if (
+        anchorRef.current &&
+        (anchorRef.current === target || anchorRef.current.contains(target))
+      )
+        return;
       setShowFilter(false);
     }
-    document.addEventListener('mousedown', onDocDown);
-    return () => document.removeEventListener('mousedown', onDocDown);
+    document.addEventListener("mousedown", onDocDown);
+    return () => document.removeEventListener("mousedown", onDocDown);
   }, [showFilter]);
 
   useEffect(() => {
@@ -134,22 +161,36 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
   const hasResults = results && results.length > 0;
 
   return (
-    <div className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? 'max-h-[24vh]' : 'max-h-[36vh]'}`}>
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+    <div
+      className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? "max-h-[24vh]" : "max-h-[36vh]"}`}
+    >
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
+      >
         <div className="flex items-center justify-center h-24">
           <div className="text-center">
-            <h4 className="font-playfair text-xl md:text-2xl leading-tight">Analizador de Propuestas</h4>
-            <p className="text-sm text-gray-300 mt-2">Usa la barra superior derecha para analizar la concordancia; los resultados aparecerán aquí.</p>
+            <h4 className="font-playfair text-xl md:text-2xl leading-tight">
+              Analizador de Propuestas
+            </h4>
+            <p className="text-sm text-gray-300 mt-2">
+              Usa la barra superior derecha para analizar la concordancia; los
+              resultados aparecerán aquí.
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="mt-0 transition-opacity duration-200 flex flex-col min-h-0" style={{ opacity: results === null ? 0 : 1 }}>
+      <div
+        className="mt-0 transition-opacity duration-200 flex flex-col min-h-0"
+        style={{ opacity: results === null ? 0 : 1 }}
+      >
         {results !== null && (
           <div className="flex-1 min-h-0 flex flex-col">
             <div className="flex-1 min-h-0 overflow-auto">
               <div className="flex items-center justify-between mb-2">
-                <h5 className="text-lg font-semibold">Leyes Relacionadas Sugeridas</h5>
+                <h5 className="text-lg font-semibold">
+                  Leyes Relacionadas Sugeridas
+                </h5>
                 <div className="flex items-center gap-2">
                   <button
                     ref={anchorRef}
@@ -161,43 +202,98 @@ export default function AnalizadorPropuestas({ externalQuery, externalTrigger }:
                     Filtrar por tiempo
                   </button>
 
-                  {showFilter && menuRect && ReactDOM.createPortal(
-                    <div
-                      ref={menuRef}
-                      style={{
-                        position: 'fixed',
-                        top: Math.min(menuRect.top + menuRect.height + 8, window.innerHeight - 48),
-                        left: Math.max(8, Math.min(menuRect.right - 176, window.innerWidth - 184)),
-                        width: 176,
-                      }}
-                      className="rounded-md shadow-lg bg-gray-800 border border-white/10 text-white z-50"
-                    >
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'any' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('any'); if (text) analyzeQuery(text, 'any'); setShowFilter(false); }}>Cualquiera</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'week' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('week'); if (text) analyzeQuery(text, 'week'); setShowFilter(false); }}>Última semana</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'month' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('month'); if (text) analyzeQuery(text, 'month'); setShowFilter(false); }}>Último mes</button>
-                      <button className={`w-full text-left px-3 py-2 ${timeframe === 'year' ? 'bg-gray-700' : ''}`} onClick={() => { setTimeframe('year'); if (text) analyzeQuery(text, 'year'); setShowFilter(false); }}>Último año</button>
-                    </div>,
-                    document.body
-                  )}
+                  {showFilter &&
+                    menuRect &&
+                    ReactDOM.createPortal(
+                      <div
+                        ref={menuRef}
+                        style={{
+                          position: "fixed",
+                          top: Math.min(
+                            menuRect.top + menuRect.height + 8,
+                            window.innerHeight - 48,
+                          ),
+                          left: Math.max(
+                            8,
+                            Math.min(
+                              menuRect.right - 176,
+                              window.innerWidth - 184,
+                            ),
+                          ),
+                          width: 176,
+                        }}
+                        className="rounded-md shadow-lg bg-gray-800 border border-white/10 text-white z-50"
+                      >
+                        <button
+                          className={`w-full text-left px-3 py-2 ${timeframe === "any" ? "bg-gray-700" : ""}`}
+                          onClick={() => {
+                            setTimeframe("any");
+                            if (text) analyzeQuery(text, "any");
+                            setShowFilter(false);
+                          }}
+                        >
+                          Cualquiera
+                        </button>
+                        <button
+                          className={`w-full text-left px-3 py-2 ${timeframe === "week" ? "bg-gray-700" : ""}`}
+                          onClick={() => {
+                            setTimeframe("week");
+                            if (text) analyzeQuery(text, "week");
+                            setShowFilter(false);
+                          }}
+                        >
+                          Última semana
+                        </button>
+                        <button
+                          className={`w-full text-left px-3 py-2 ${timeframe === "month" ? "bg-gray-700" : ""}`}
+                          onClick={() => {
+                            setTimeframe("month");
+                            if (text) analyzeQuery(text, "month");
+                            setShowFilter(false);
+                          }}
+                        >
+                          Último mes
+                        </button>
+                        <button
+                          className={`w-full text-left px-3 py-2 ${timeframe === "year" ? "bg-gray-700" : ""}`}
+                          onClick={() => {
+                            setTimeframe("year");
+                            if (text) analyzeQuery(text, "year");
+                            setShowFilter(false);
+                          }}
+                        >
+                          Último año
+                        </button>
+                      </div>,
+                      document.body,
+                    )}
                 </div>
               </div>
 
               {!hasResults && (
                 <div className="text-center text-sm text-gray-300 py-6">
-                  No se han encontrado leyes directamente relacionadas. Tu propuesta podría ser verdaderamente novedosa.
+                  No se han encontrado leyes directamente relacionadas. Tu
+                  propuesta podría ser verdaderamente novedosa.
                 </div>
               )}
 
               {hasResults && (
                 <ul className="space-y-2 p-1">
                   {results!.map((r) => (
-                    <li key={r.law.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
+                    <li
+                      key={r.law.id}
+                      className="rounded-lg border border-white/10 bg-white/[0.02] p-2"
+                    >
                       <div className="flex items-center">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0 flex flex-col justify-center space-y-1 translate-y-px">
-                              <h6 className="font-medium text-sm text-white truncate">{r.law.title}</h6>
-                              <p className="italic text-xs text-gray-300 line-clamp-2">{r.law.summary}</p>
+                              <h6 className="font-medium text-sm text-white truncate">
+                                {r.law.title}
+                              </h6>
+                              <p className="italic text-xs text-gray-300 line-clamp-2">
+                                {r.law.summary}
+                              </p>
                             </div>
                             <a
                               href={r.law.url}

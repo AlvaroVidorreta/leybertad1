@@ -20,11 +20,23 @@ export default function useFirebaseSync() {
           return;
         }
         // val expected to be { id: { ...law } }
-        const items = Object.entries(val).map(([id, data]) => ({ id, ...(data as any) }));
+        const items = Object.entries(val).map(([id, data]) => ({
+          id,
+          ...(data as any),
+        }));
         // sort by createdAt desc if present
-        items.sort((a: any, b: any) => (Date.parse(b.createdAt || "") || 0) - (Date.parse(a.createdAt || "") || 0));
+        items.sort(
+          (a: any, b: any) =>
+            (Date.parse(b.createdAt || "") || 0) -
+            (Date.parse(a.createdAt || "") || 0),
+        );
         qc.setQueryData(["recientes"], items);
-        qc.setQueryData(["ranking"], items.slice().sort((a: any, b: any) => (b.upvotes || 0) - (a.upvotes || 0)));
+        qc.setQueryData(
+          ["ranking"],
+          items
+            .slice()
+            .sort((a: any, b: any) => (b.upvotes || 0) - (a.upvotes || 0)),
+        );
       });
       return () => unsub();
     } catch (err) {

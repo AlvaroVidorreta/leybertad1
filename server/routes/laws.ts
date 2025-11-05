@@ -31,12 +31,10 @@ export const createLaw: RequestHandler = async (req, res) => {
     res.json(response);
   } catch (err: any) {
     if (err && err.message === "RATE_LIMIT_EXCEEDED") {
-      return res
-        .status(429)
-        .json({
-          error:
-            "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados",
-        });
+      return res.status(429).json({
+        error:
+          "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados",
+      });
     }
     res.status(500).json({ error: "Error al crear la ley" });
   }
@@ -72,14 +70,19 @@ export const saveLaw: RequestHandler = async (req, res) => {
   const { id } = req.params;
 
   // If Authorization header present, validate Firebase token and associate save with profile
-  const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
-  if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-    const idToken = authHeader.replace(/^Bearer\s+/, '');
+  const authHeader =
+    req.headers && (req.headers.authorization || req.headers.Authorization);
+  if (
+    authHeader &&
+    typeof authHeader === "string" &&
+    authHeader.startsWith("Bearer ")
+  ) {
+    const idToken = authHeader.replace(/^Bearer\s+/, "");
     // Use centralized admin helper to avoid repeated dynamic imports and parsing
     try {
-      const { verifyIdToken } = await import('../utils/firebaseAdmin');
+      const { verifyIdToken } = await import("../utils/firebaseAdmin");
       const decoded = await verifyIdToken(idToken);
-      if (!decoded) return res.status(401).json({ error: 'Token inválido' });
+      if (!decoded) return res.status(401).json({ error: "Token inválido" });
       const uid = decoded.uid;
 
       try {
@@ -92,7 +95,7 @@ export const saveLaw: RequestHandler = async (req, res) => {
         return res.status(500).json({ error: "Error al guardar ley" });
       }
     } catch (err) {
-      return res.status(500).json({ error: 'Error validating token' });
+      return res.status(500).json({ error: "Error validating token" });
     }
   }
 
@@ -115,26 +118,31 @@ export const commentLaw: RequestHandler = async (req, res) => {
     return res.status(400).json({ error: "Perspectiva requerida" });
 
   // Require Firebase ID token in Authorization header
-  const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
-  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Autenticación requerida' });
+  const authHeader =
+    req.headers && (req.headers.authorization || req.headers.Authorization);
+  if (
+    !authHeader ||
+    typeof authHeader !== "string" ||
+    !authHeader.startsWith("Bearer ")
+  ) {
+    return res.status(401).json({ error: "Autenticación requerida" });
   }
-  const idToken = authHeader.replace(/^Bearer\s+/, '');
+  const idToken = authHeader.replace(/^Bearer\s+/, "");
 
-    try {
-      const { verifyIdToken } = await import('../utils/firebaseAdmin');
-      const decoded = await verifyIdToken(idToken);
-      if (!decoded) return res.status(401).json({ error: 'Token inválido' });
-      const uid = decoded.uid;
+  try {
+    const { verifyIdToken } = await import("../utils/firebaseAdmin");
+    const decoded = await verifyIdToken(idToken);
+    if (!decoded) return res.status(401).json({ error: "Token inválido" });
+    const uid = decoded.uid;
 
-      const law = await db.commentLaw(id, texto, uid);
-      const response: LawUpdatedResponse = { law };
-      res.json(response);
-    } catch (err: any) {
-      if (err && err.message === "NOT_FOUND")
-        return res.status(404).json({ error: "Ley no encontrada" });
-      res.status(500).json({ error: "Error al guardar perspectiva" });
-    }
+    const law = await db.commentLaw(id, texto, uid);
+    const response: LawUpdatedResponse = { law };
+    res.json(response);
+  } catch (err: any) {
+    if (err && err.message === "NOT_FOUND")
+      return res.status(404).json({ error: "Ley no encontrada" });
+    res.status(500).json({ error: "Error al guardar perspectiva" });
+  }
 };
 
 export const ranking: RequestHandler = async (req, res) => {

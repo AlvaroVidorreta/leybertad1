@@ -94,11 +94,11 @@ export default function Index() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["recientes"] }),
     onError: (err: any) => {
       try {
-        const msg = String(err?.message || '').toLowerCase();
-        if (msg.includes('autentic') || msg.includes('token')) {
+        const msg = String(err?.message || "").toLowerCase();
+        if (msg.includes("autentic") || msg.includes("token")) {
           // request login
-          toast({ title: 'Necesario Iniciar Sesión' });
-          window.dispatchEvent(new CustomEvent('open-auth'));
+          toast({ title: "Necesario Iniciar Sesión" });
+          window.dispatchEvent(new CustomEvent("open-auth"));
         }
       } catch (e) {}
     },
@@ -340,7 +340,14 @@ function UltimasLeyes({
                 <div className="md:w-96 w-full">
                   <div className="relative">
                     <input
-                      value={isFlipped ? (typeof (window as any).__ANALYZER_TMP_Q__ !== 'undefined' ? (window as any).__ANALYZER_TMP_Q__ : qApproved) : qApproved}
+                      value={
+                        isFlipped
+                          ? typeof (window as any).__ANALYZER_TMP_Q__ !==
+                            "undefined"
+                            ? (window as any).__ANALYZER_TMP_Q__
+                            : qApproved
+                          : qApproved
+                      }
                       onChange={(e) => {
                         if (isFlipped) {
                           // when flipped, keep local analyzerQ in window var to avoid changing existing qApproved logic
@@ -351,15 +358,28 @@ function UltimasLeyes({
                           setQAll(e.target.value);
                         }
                       }}
-                      aria-label={isFlipped ? "Analizar propuesta" : "Buscar en últimas aprobadas"}
-                      placeholder={isFlipped ? "Analizar propuesta..." : "Buscar en Últimas aprobadas..."}
+                      aria-label={
+                        isFlipped
+                          ? "Analizar propuesta"
+                          : "Buscar en últimas aprobadas"
+                      }
+                      placeholder={
+                        isFlipped
+                          ? "Analizar propuesta..."
+                          : "Buscar en Últimas aprobadas..."
+                      }
                       className="w-full rounded-full border bg-white/5 px-5 pr-28 py-3 text-base md:text-lg text-white placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     />
                     <button
                       onClick={() => {
                         if (isFlipped) {
                           // trigger global analyzer event by incrementing a custom event on window
-                          const ev = new CustomEvent('analyzer:trigger', { detail: { q: (window as any).__ANALYZER_TMP_Q__ || qApproved } });
+                          const ev = new CustomEvent("analyzer:trigger", {
+                            detail: {
+                              q:
+                                (window as any).__ANALYZER_TMP_Q__ || qApproved,
+                            },
+                          });
                           window.dispatchEvent(ev);
                         } else {
                           // placeholder for search in front face
@@ -368,7 +388,9 @@ function UltimasLeyes({
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm group overflow-hidden transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30"
                     >
                       <span className="pointer-events-none absolute inset-y-0 left-[-80%] w-[180%] -skew-x-12 bg-gradient-to-r from-white/40 via-white/20 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
-                      <span className="relative z-10">{isFlipped ? 'Analizar' : 'Buscar'}</span>
+                      <span className="relative z-10">
+                        {isFlipped ? "Analizar" : "Buscar"}
+                      </span>
                     </button>
                   </div>
 
@@ -870,7 +892,10 @@ function Ranking({
     const same = others.filter((l) => {
       const lcat = (l as any).category;
       const lsub = (l as any).subcategory;
-      return (selCat && lcat && lcat === selCat) || (selSub && lsub && lsub === selSub);
+      return (
+        (selCat && lcat && lcat === selCat) ||
+        (selSub && lsub && lsub === selSub)
+      );
     });
 
     // return up to 5 related laws when matching by category or subcategory
@@ -1103,7 +1128,9 @@ function Ranking({
                             className="flex-1 rounded-md border px-3 py-2 text-sm"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                const v = (e.target as HTMLInputElement).value.trim();
+                                const v = (
+                                  e.target as HTMLInputElement
+                                ).value.trim();
                                 if (v) {
                                   onComment(selectedLaw!.id, v);
                                   (e.target as HTMLInputElement).value = "";
@@ -1130,12 +1157,18 @@ function Ranking({
                             readOnly
                             placeholder="Necesario Iniciar Sesión"
                             className="flex-1 rounded-md border px-3 py-2 text-sm text-muted-foreground cursor-pointer"
-                            onFocus={() => window.dispatchEvent(new CustomEvent('open-auth'))}
-                            onClick={() => window.dispatchEvent(new CustomEvent('open-auth'))}
+                            onFocus={() =>
+                              window.dispatchEvent(new CustomEvent("open-auth"))
+                            }
+                            onClick={() =>
+                              window.dispatchEvent(new CustomEvent("open-auth"))
+                            }
                           />
                           <button
                             className="px-4 py-2 rounded-md border bg-white"
-                            onClick={() => window.dispatchEvent(new CustomEvent('open-auth'))}
+                            onClick={() =>
+                              window.dispatchEvent(new CustomEvent("open-auth"))
+                            }
                           >
                             Iniciar sesión
                           </button>
@@ -1188,7 +1221,6 @@ function Ranking({
                     </ol>
                   )}
                 </div>
-
               </aside>
             </div>
           </div>

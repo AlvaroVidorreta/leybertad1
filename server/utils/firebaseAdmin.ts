@@ -11,13 +11,14 @@ export async function getAdmin() {
       svcObj = JSON.parse(svc);
     } catch (e) {
       try {
-        svcObj = JSON.parse(Buffer.from(svc || '', 'base64').toString('utf-8'));
+        svcObj = JSON.parse(Buffer.from(svc || "", "base64").toString("utf-8"));
       } catch (err) {
         svcObj = null;
       }
     }
     if (!svcObj) return null;
-    const _mod = await import('firebase-admin'); const admin = (_mod && (_mod.default || _mod)) || _mod;
+    const _mod = await import("firebase-admin");
+    const admin = (_mod && (_mod.default || _mod)) || _mod;
     if (!admin.apps || !admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(svcObj),
@@ -26,11 +27,14 @@ export async function getAdmin() {
     }
     cachedAdmin = admin;
     // eslint-disable-next-line no-console
-    console.info('Firebase Admin initialized successfully');
+    console.info("Firebase Admin initialized successfully");
     return cachedAdmin;
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn('Firebase Admin init failed in helper:', e && (e.message || e));
+    console.warn(
+      "Firebase Admin init failed in helper:",
+      e && (e.message || e),
+    );
     return null;
   }
 }
@@ -39,7 +43,10 @@ export async function verifyIdToken(idToken: string) {
   try {
     const admin = await getAdmin();
     if (!admin) return null;
-    const decoded = await admin.auth().verifyIdToken(idToken).catch(() => null);
+    const decoded = await admin
+      .auth()
+      .verifyIdToken(idToken)
+      .catch(() => null);
     return decoded || null;
   } catch (e) {
     return null;

@@ -42,11 +42,11 @@ function CollapsibleHeader() {
     document.addEventListener("click", onDocClick);
 
     const onOpenAuth = () => setAuthOpen(true);
-    window.addEventListener('open-auth', onOpenAuth as EventListener);
+    window.addEventListener("open-auth", onOpenAuth as EventListener);
 
     return () => {
       document.removeEventListener("click", onDocClick);
-      window.removeEventListener('open-auth', onOpenAuth as EventListener);
+      window.removeEventListener("open-auth", onOpenAuth as EventListener);
       if (closeTimerRef.current) {
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
@@ -158,7 +158,10 @@ function CollapsibleHeader() {
                   >
                     Iniciar sesión
                   </button>
-                  <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+                  <AuthModal
+                    open={authOpen}
+                    onClose={() => setAuthOpen(false)}
+                  />
                 </>
               )}
 

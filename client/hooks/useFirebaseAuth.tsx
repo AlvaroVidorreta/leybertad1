@@ -3,7 +3,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
-  signInWithRedirect, getRedirectResult,
+  signInWithRedirect,
+  getRedirectResult,
   signInAnonymously as fbSignInAnonymously,
   signOut as fbSignOut,
   onAuthStateChanged,
@@ -43,18 +44,21 @@ export default function useFirebaseAuth() {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    if (!FIREBASE_ENABLED || !auth) return Promise.reject(new Error("Firebase not configured"));
+    if (!FIREBASE_ENABLED || !auth)
+      return Promise.reject(new Error("Firebase not configured"));
     return signInWithEmailAndPassword(auth, email, password);
   }, []);
 
   const register = useCallback(async (email: string, password: string) => {
-    if (!FIREBASE_ENABLED || !auth) return Promise.reject(new Error("Firebase not configured"));
+    if (!FIREBASE_ENABLED || !auth)
+      return Promise.reject(new Error("Firebase not configured"));
     return createUserWithEmailAndPassword(auth, email, password);
   }, []);
 
   // Try popup first, fallback to redirect when popups are blocked or not supported.
   const signInWithGoogle = useCallback(async () => {
-    if (!FIREBASE_ENABLED || !auth || !googleProvider) return Promise.reject(new Error("Firebase not configured"));
+    if (!FIREBASE_ENABLED || !auth || !googleProvider)
+      return Promise.reject(new Error("Firebase not configured"));
     try {
       return await signInWithPopup(auth, googleProvider);
     } catch (err: any) {
@@ -73,12 +77,14 @@ export default function useFirebaseAuth() {
   }, []);
 
   const signInAnonymous = useCallback(async () => {
-    if (!FIREBASE_ENABLED || !auth) return Promise.reject(new Error("Firebase not configured"));
+    if (!FIREBASE_ENABLED || !auth)
+      return Promise.reject(new Error("Firebase not configured"));
     return fbSignInAnonymously(auth);
   }, []);
 
   const signOut = useCallback(async () => {
-    if (!FIREBASE_ENABLED || !auth) return Promise.reject(new Error("Firebase not configured"));
+    if (!FIREBASE_ENABLED || !auth)
+      return Promise.reject(new Error("Firebase not configured"));
     return fbSignOut(auth);
   }, []);
 

@@ -4,7 +4,10 @@ import logger from "@/lib/logger";
 
 type Props = { children: React.ReactNode };
 
-export default class ErrorBoundary extends React.Component<Props, { hasError: boolean; error?: Error }>{
+export default class ErrorBoundary extends React.Component<
+  Props,
+  { hasError: boolean; error?: Error }
+> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -18,7 +21,10 @@ export default class ErrorBoundary extends React.Component<Props, { hasError: bo
     // log to sink
     logger.error("Unhandled UI error", error, info);
     try {
-      toast({ title: "Ha ocurrido un error", description: String(error.message || "Error inesperado" ) });
+      toast({
+        title: "Ha ocurrido un error",
+        description: String(error.message || "Error inesperado"),
+      });
     } catch (e) {
       // swallow
     }
@@ -30,12 +36,16 @@ export default class ErrorBoundary extends React.Component<Props, { hasError: bo
         <div className="min-h-screen flex items-center justify-center p-6">
           <div className="max-w-lg text-center">
             <h1 className="text-2xl font-semibold mb-2">Algo ha ido mal</h1>
-            <p className="text-sm text-muted-foreground mb-4">Ha ocurrido un error en la aplicación. Intenta recargar la página.</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Ha ocurrido un error en la aplicación. Intenta recargar la página.
+            </p>
             <div className="flex items-center justify-center">
               <button
                 className="px-6 py-3 rounded bg-primary text-white"
                 onClick={() => location.reload()}
-              >Recargar</button>
+              >
+                Recargar
+              </button>
             </div>
           </div>
         </div>

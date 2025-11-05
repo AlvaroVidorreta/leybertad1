@@ -10,18 +10,25 @@ const DATA_FILE = path.resolve(process.cwd(), "server", "data", "db.json");
 let firebaseDb: any = null;
 (async function initFirebase() {
   try {
-    const databaseURL = process.env.VITE_FIREBASE_DATABASE_URL || process.env.FIREBASE_DATABASE_URL || process.env.FIREBASE_REALTIME_DATABASE_URL;
-    const apiKey = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
+    const databaseURL =
+      process.env.VITE_FIREBASE_DATABASE_URL ||
+      process.env.FIREBASE_DATABASE_URL ||
+      process.env.FIREBASE_REALTIME_DATABASE_URL;
+    const apiKey =
+      process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
     if (!databaseURL) return;
-    const { initializeApp, getApps } = await import('firebase/app');
-    const { getDatabase } = await import('firebase/database');
-    const config = { apiKey: apiKey || '', databaseURL };
+    const { initializeApp, getApps } = await import("firebase/app");
+    const { getDatabase } = await import("firebase/database");
+    const config = { apiKey: apiKey || "", databaseURL };
     if (!getApps().length) initializeApp(config as any);
     firebaseDb = getDatabase();
   } catch (e) {
     // If initialization fails, continue without Firebase mirroring.
     // eslint-disable-next-line no-console
-    console.warn('Firebase init skipped or failed on server:', e && (e.message || e));
+    console.warn(
+      "Firebase init skipped or failed on server:",
+      e && (e.message || e),
+    );
     firebaseDb = null;
   }
 })();
@@ -38,7 +45,12 @@ async function ensureDataFile() {
     await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
     await fs.access(DATA_FILE);
   } catch (err) {
-    const initial: DataShape = { laws: [], creationsByVisitor: {}, votesByVisitor: {}, profiles: {} };
+    const initial: DataShape = {
+      laws: [],
+      creationsByVisitor: {},
+      votesByVisitor: {},
+      profiles: {},
+    };
     await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2), "utf-8");
   }
 }
@@ -54,7 +66,11 @@ async function readData(): Promise<DataShape> {
     parsed.profiles = parsed.profiles || {};
     return parsed;
   } catch (err) {
-    const initial: DataShape = { laws: [], creationsByVisitor: {}, votesByVisitor: {} };
+    const initial: DataShape = {
+      laws: [],
+      creationsByVisitor: {},
+      votesByVisitor: {},
+    };
     return initial;
   }
 }
@@ -92,14 +108,17 @@ let admin: any = null;
     } catch (e) {
       // maybe base64
       try {
-        const decoded = Buffer.from(svc, 'base64').toString('utf-8');
+        const decoded = Buffer.from(svc, "base64").toString("utf-8");
         svcObj = JSON.parse(decoded);
       } catch (err) {
         svcObj = null;
       }
     }
     if (!svcObj) return;
-    { const _mod = await import('firebase-admin'); admin = (_mod && (_mod.default || _mod)) || _mod; }
+    {
+      const _mod = await import("firebase-admin");
+      admin = (_mod && (_mod.default || _mod)) || _mod;
+    }
     if (!admin.apps || !admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(svcObj),
@@ -110,7 +129,10 @@ let admin: any = null;
     // ensure timestampsInSnapshots behavior not needed in modern SDK
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn('Firebase Admin init failed, continuing with local DB:', e && (e.message || e));
+    console.warn(
+      "Firebase Admin init failed, continuing with local DB:",
+      e && (e.message || e),
+    );
     firestore = null;
   }
 })();
@@ -124,16 +146,21 @@ export const db = {
       const dayMs = 24 * 60 * 60 * 1000;
       const since = new Date(Date.now() - dayMs).toISOString();
       try {
-        const q = firestore.collection('laws').where('authorVisitor', '==', visitorKey).where('createdAt', '>=', since);
+        const q = firestore
+          .collection("laws")
+          .where("authorVisitor", "==", visitorKey)
+          .where("createdAt", ">=", since);
         const snap = await q.get();
-        if (snap.size >= 5) throw new Error('RATE_LIMIT_EXCEEDED');
+        if (snap.size >= 5) throw new Error("RATE_LIMIT_EXCEEDED");
 
-        const docRef = firestore.collection('laws').doc();
+        const docRef = firestore.collection("laws").doc();
         const law: Law = {
           id: docRef.id,
           titulo: String(input.titulo).slice(0, 500),
           objetivo: String(input.objetivo).slice(0, 200),
-          detalles: input.detalles ? String(input.detalles).slice(0, 2000) : undefined,
+          detalles: input.detalles
+            ? String(input.detalles).slice(0, 2000)
+            : undefined,
           apodo: input.apodo ? String(input.apodo).slice(0, 60) : undefined,
           createdAt: now,
           upvotes: 0,
@@ -145,13 +172,23 @@ export const db = {
       } catch (e: any) {
         // If Firestore query fails due to missing composite index or other precondition, log and fallback to local file DB
         const msg = String(e && (e.message || e));
-        if (msg.includes('FAILED_PRECONDITION') || msg.includes('requires an index') || msg.includes('Index')) {
+        if (
+          msg.includes("FAILED_PRECONDITION") ||
+          msg.includes("requires an index") ||
+          msg.includes("Index")
+        ) {
           // eslint-disable-next-line no-console
-          console.warn('Firestore query failed (possible missing index), falling back to local DB:', msg);
+          console.warn(
+            "Firestore query failed (possible missing index), falling back to local DB:",
+            msg,
+          );
         } else {
           // For other errors, still fallback but log them
           // eslint-disable-next-line no-console
-          console.warn('Firestore operation failed, falling back to local DB:', msg);
+          console.warn(
+            "Firestore operation failed, falling back to local DB:",
+            msg,
+          );
         }
       }
     }
@@ -163,14 +200,16 @@ export const db = {
     const existing = data.creationsByVisitor[visitorKey] ?? [];
     const recent = existing.filter((ts) => now - Date.parse(ts) <= dayMs);
     if (recent.length >= 5) {
-      throw new Error('RATE_LIMIT_EXCEEDED');
+      throw new Error("RATE_LIMIT_EXCEEDED");
     }
 
     const law: Law = {
       id: randomUUID(),
       titulo: String(input.titulo).slice(0, 500),
       objetivo: String(input.objetivo).slice(0, 200),
-      detalles: input.detalles ? String(input.detalles).slice(0, 2000) : undefined,
+      detalles: input.detalles
+        ? String(input.detalles).slice(0, 2000)
+        : undefined,
       apodo: input.apodo ? String(input.apodo).slice(0, 60) : undefined,
       createdAt: nowISO(),
       upvotes: 0,
@@ -187,7 +226,10 @@ export const db = {
 
   async listRecent() {
     if (firestore) {
-      const snap = await firestore.collection('laws').orderBy('createdAt', 'desc').get();
+      const snap = await firestore
+        .collection("laws")
+        .orderBy("createdAt", "desc")
+        .get();
       const items: Law[] = [];
       snap.forEach((doc: any) => {
         const d = doc.data();
@@ -212,13 +254,13 @@ export const db = {
 
   async upvoteLaw(id: string, visitorKey: string) {
     if (firestore) {
-      const lawRef = firestore.collection('laws').doc(id);
-      const voteRef = lawRef.collection('votes').doc(visitorKey);
+      const lawRef = firestore.collection("laws").doc(id);
+      const voteRef = lawRef.collection("votes").doc(visitorKey);
       return await firestore.runTransaction(async (tx: any) => {
         const voteDoc = await tx.get(voteRef);
-        if (voteDoc.exists) throw new Error('ALREADY_VOTED');
+        if (voteDoc.exists) throw new Error("ALREADY_VOTED");
         const lawDoc = await tx.get(lawRef);
-        if (!lawDoc.exists) throw new Error('NOT_FOUND');
+        if (!lawDoc.exists) throw new Error("NOT_FOUND");
         tx.set(voteRef, { createdAt: nowISO() });
         const current = lawDoc.data().upvotes || 0;
         tx.update(lawRef, { upvotes: current + 1 });
@@ -240,9 +282,9 @@ export const db = {
 
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error('NOT_FOUND');
+    if (!law) throw new Error("NOT_FOUND");
     const visited = new Set(data.votesByVisitor[visitorKey] ?? []);
-    if (visited.has(id)) throw new Error('ALREADY_VOTED');
+    if (visited.has(id)) throw new Error("ALREADY_VOTED");
     visited.add(id);
     data.votesByVisitor[visitorKey] = Array.from(visited);
     law.upvotes = (law.upvotes || 0) + 1;
@@ -252,27 +294,40 @@ export const db = {
 
   async saveLaw(id: string, userId?: string) {
     if (firestore) {
-      const lawRef = firestore.collection('laws').doc(id);
+      const lawRef = firestore.collection("laws").doc(id);
       try {
         // Use transaction for safe increment and profile update
         await firestore.runTransaction(async (tx: any) => {
           const doc = await tx.get(lawRef);
           if (!doc.exists) {
             // create minimal placeholder if missing
-            tx.set(lawRef, { id, saves: 1, upvotes: 0, comentarios: [] }, { merge: true });
+            tx.set(
+              lawRef,
+              { id, saves: 1, upvotes: 0, comentarios: [] },
+              { merge: true },
+            );
           } else {
-            tx.update(lawRef, { saves: admin.firestore.FieldValue.increment(1) });
+            tx.update(lawRef, {
+              saves: admin.firestore.FieldValue.increment(1),
+            });
           }
 
           if (userId) {
-            const profileRef = firestore.collection('profiles').doc(userId);
-            tx.set(profileRef, { saved: admin.firestore.FieldValue.arrayUnion(id) }, { merge: true });
+            const profileRef = firestore.collection("profiles").doc(userId);
+            tx.set(
+              profileRef,
+              { saved: admin.firestore.FieldValue.arrayUnion(id) },
+              { merge: true },
+            );
           }
         });
       } catch (e: any) {
         // If transaction fails, log and rethrow so fallback or error handling can proceed
         // eslint-disable-next-line no-console
-        console.warn('Firestore save transaction failed, falling back or returning error:', String(e && (e.message || e)));
+        console.warn(
+          "Firestore save transaction failed, falling back or returning error:",
+          String(e && (e.message || e)),
+        );
         throw e;
       }
 
@@ -292,13 +347,15 @@ export const db = {
 
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error('NOT_FOUND');
+    if (!law) throw new Error("NOT_FOUND");
     law.saves = (law.saves || 0) + 1;
 
     if (userId) {
       data.profiles = data.profiles || {};
-      const profile = data.profiles[userId] || {} as any;
-      const saved = new Set<string>(Array.isArray(profile.saved) ? profile.saved : []);
+      const profile = data.profiles[userId] || ({} as any);
+      const saved = new Set<string>(
+        Array.isArray(profile.saved) ? profile.saved : [],
+      );
       saved.add(id);
       profile.saved = Array.from(saved);
       data.profiles[userId] = profile;
@@ -311,22 +368,41 @@ export const db = {
   async commentLaw(id: string, texto: string, author?: string) {
     if (firestore) {
       const trimmed = String(texto).slice(0, 200);
-      const comment: any = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+      const comment: any = {
+        id: randomUUID(),
+        texto: trimmed,
+        createdAt: nowISO(),
+      };
       if (author) comment.author = author;
-      const lawRef = firestore.collection('laws').doc(id);
+      const lawRef = firestore.collection("laws").doc(id);
       try {
         await firestore.runTransaction(async (tx: any) => {
           const doc = await tx.get(lawRef);
           if (!doc.exists) {
             // If law missing, create a minimal doc to host the comment
-            tx.set(lawRef, { id, comentarios: [comment], upvotes: 0, saves: 0, createdAt: nowISO() }, { merge: true });
+            tx.set(
+              lawRef,
+              {
+                id,
+                comentarios: [comment],
+                upvotes: 0,
+                saves: 0,
+                createdAt: nowISO(),
+              },
+              { merge: true },
+            );
           } else {
-            tx.update(lawRef, { comentarios: admin.firestore.FieldValue.arrayUnion(comment) });
+            tx.update(lawRef, {
+              comentarios: admin.firestore.FieldValue.arrayUnion(comment),
+            });
           }
         });
       } catch (e: any) {
         // eslint-disable-next-line no-console
-        console.warn('Firestore comment transaction failed:', String(e && (e.message || e)));
+        console.warn(
+          "Firestore comment transaction failed:",
+          String(e && (e.message || e)),
+        );
         throw e;
       }
 
@@ -346,9 +422,13 @@ export const db = {
 
     const data = await readData();
     const law = data.laws.find((l) => l.id === id);
-    if (!law) throw new Error('NOT_FOUND');
+    if (!law) throw new Error("NOT_FOUND");
     const trimmed = String(texto).slice(0, 200);
-    const comment: any = { id: randomUUID(), texto: trimmed, createdAt: nowISO() };
+    const comment: any = {
+      id: randomUUID(),
+      texto: trimmed,
+      createdAt: nowISO(),
+    };
     if (author) comment.author = author;
 
     // Append locally
@@ -358,14 +438,17 @@ export const db = {
     // Mirror to Firebase Realtime Database if available (non-fatal)
     if (firebaseDb) {
       try {
-        const { ref, push } = await import('firebase/database');
+        const { ref, push } = await import("firebase/database");
         // push under /perspectives/{lawId}/
         const nodeRef = ref(firebaseDb, `perspectives/${id}`);
         await push(nodeRef, comment as any);
       } catch (err) {
         // ignore firebase errors — keep local persistence as primary
         // eslint-disable-next-line no-console
-        console.warn('Failed to mirror comment to Firebase:', err && (err.message || err));
+        console.warn(
+          "Failed to mirror comment to Firebase:",
+          err && (err.message || err),
+        );
       }
     }
 
@@ -375,31 +458,61 @@ export const db = {
   async ranking(range: TimeRange) {
     if (firestore) {
       const items: Law[] = [];
-      const snap = await firestore.collection('laws').get();
+      const snap = await firestore.collection("laws").get();
       snap.forEach((doc: any) => {
         const d = doc.data();
-        if (withinRange(d.createdAt, range)) items.push({ id: doc.id, titulo: d.titulo, objetivo: d.objetivo, detalles: d.detalles, apodo: d.apodo, createdAt: d.createdAt, upvotes: d.upvotes || 0, saves: d.saves || 0, comentarios: d.comentarios || [] });
+        if (withinRange(d.createdAt, range))
+          items.push({
+            id: doc.id,
+            titulo: d.titulo,
+            objetivo: d.objetivo,
+            detalles: d.detalles,
+            apodo: d.apodo,
+            createdAt: d.createdAt,
+            upvotes: d.upvotes || 0,
+            saves: d.saves || 0,
+            comentarios: d.comentarios || [],
+          });
       });
-      items.sort((a, b) => b.upvotes - a.upvotes || (a.createdAt < b.createdAt ? 1 : -1));
+      items.sort(
+        (a, b) => b.upvotes - a.upvotes || (a.createdAt < b.createdAt ? 1 : -1),
+      );
       return items;
     }
 
     const data = await readData();
     const items = data.laws
       .filter((l) => withinRange(l.createdAt, range))
-      .sort((a, b) => b.upvotes - a.upvotes || (a.createdAt < b.createdAt ? 1 : -1));
+      .sort(
+        (a, b) => b.upvotes - a.upvotes || (a.createdAt < b.createdAt ? 1 : -1),
+      );
     return items;
   },
 
   async rawData() {
     if (firestore) {
-      const all: any = { laws: [], creationsByVisitor: {}, votesByVisitor: {}, profiles: {} };
-      const snap = await firestore.collection('laws').get();
+      const all: any = {
+        laws: [],
+        creationsByVisitor: {},
+        votesByVisitor: {},
+        profiles: {},
+      };
+      const snap = await firestore.collection("laws").get();
       snap.forEach((doc: any) => {
         const d = doc.data();
-        all.laws.push({ id: doc.id, titulo: d.titulo, objetivo: d.objetivo, detalles: d.detalles, apodo: d.apodo, createdAt: d.createdAt, upvotes: d.upvotes || 0, saves: d.saves || 0, comentarios: d.comentarios || [] });
+        all.laws.push({
+          id: doc.id,
+          titulo: d.titulo,
+          objetivo: d.objetivo,
+          detalles: d.detalles,
+          apodo: d.apodo,
+          createdAt: d.createdAt,
+          upvotes: d.upvotes || 0,
+          saves: d.saves || 0,
+          comentarios: d.comentarios || [],
+        });
       });
-      const profilesSnap = await firestore.collection('profiles').get();
+      const profilesSnap = await firestore.collection("profiles").get();
       profilesSnap.forEach((p: any) => {
         all.profiles[p.id] = p.data();
       });
@@ -411,22 +524,31 @@ export const db = {
 
   async getProfile(visitorKey: string) {
     if (firestore) {
-      const doc = await firestore.collection('profiles').doc(visitorKey).get();
+      const doc = await firestore.collection("profiles").doc(visitorKey).get();
       return doc.exists ? doc.data() : null;
     }
     const data = await readData();
     return (data.profiles || {})[visitorKey] || null;
   },
 
-  async setProfile(visitorKey: string, payload: { displayName?: string; username?: string }) {
+  async setProfile(
+    visitorKey: string,
+    payload: { displayName?: string; username?: string },
+  ) {
     if (firestore) {
-      await firestore.collection('profiles').doc(visitorKey).set(payload, { merge: true });
-      const doc = await firestore.collection('profiles').doc(visitorKey).get();
+      await firestore
+        .collection("profiles")
+        .doc(visitorKey)
+        .set(payload, { merge: true });
+      const doc = await firestore.collection("profiles").doc(visitorKey).get();
       return doc.data();
     }
     const data = await readData();
     data.profiles = data.profiles || {};
-    data.profiles[visitorKey] = { ...(data.profiles[visitorKey] || {}), ...(payload || {}) };
+    data.profiles[visitorKey] = {
+      ...(data.profiles[visitorKey] || {}),
+      ...(payload || {}),
+    };
     await writeData(data);
     return data.profiles[visitorKey];
   },

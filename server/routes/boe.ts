@@ -9,7 +9,12 @@ import type { RequestHandler } from "express";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours
 const cache = new Map<string, { ts: number; items: any[] }>();
 
-const CACHE_FILE = path.resolve(process.cwd(), "server", "data", "boe_cache.json");
+const CACHE_FILE = path.resolve(
+  process.cwd(),
+  "server",
+  "data",
+  "boe_cache.json",
+);
 let cacheDirty = false;
 const MAX_CACHE_ENTRIES = Number(process.env.MAX_CACHE_ENTRIES || 500);
 function evictIfNeeded() {
@@ -31,7 +36,10 @@ async function loadPersistedCache() {
   try {
     await fs.mkdir(path.dirname(CACHE_FILE), { recursive: true });
     const raw = await fs.readFile(CACHE_FILE, "utf-8");
-    const parsed = JSON.parse(raw || "{}") as Record<string, { ts: number; items: any[] }>;
+    const parsed = JSON.parse(raw || "{}") as Record<
+      string,
+      { ts: number; items: any[] }
+    >;
     for (const k of Object.keys(parsed || {})) {
       cache.set(k, parsed[k]);
     }
@@ -73,7 +81,7 @@ async function fetchSummary(date: string) {
       return null;
     }
     const data = await res.json();
-    if (data && (data.status && String(data.status.code) === "200")) {
+    if (data && data.status && String(data.status.code) === "200") {
       const items = extractItems(data.data || {});
       cache.set(cacheKey, { ts: Date.now(), items });
       evictIfNeeded();
@@ -114,17 +122,17 @@ function extractItems(data: unknown, itemsList: any[] = []) {
 function findPdfInObject(obj: unknown): string | null {
   try {
     if (!obj) return null;
-    if (typeof obj === 'string') return obj.includes('.pdf') ? obj : null;
+    if (typeof obj === "string") return obj.includes(".pdf") ? obj : null;
     if (Array.isArray(obj)) {
       for (const it of obj) {
         const f = findPdfInObject(it);
         if (f) return f;
       }
     }
-    if (typeof obj === 'object') {
+    if (typeof obj === "object") {
       for (const k of Object.keys(obj as Record<string, unknown>)) {
         const v = (obj as any)[k];
-        if (typeof v === 'string' && v.includes('.pdf')) return v;
+        if (typeof v === "string" && v.includes(".pdf")) return v;
         const f = findPdfInObject(v);
         if (f) return f;
       }
@@ -136,7 +144,9 @@ function findPdfInObject(obj: unknown): string | null {
 }
 
 function normalizeTerm(term: string) {
-  return String(term || "").trim().toLowerCase();
+  return String(term || "")
+    .trim()
+    .toLowerCase();
 }
 
 function filterItemsByTerm(items: any[], term: string) {
@@ -152,7 +162,7 @@ function filterItemsByTerm(items: any[], term: string) {
     if (it.extracto) fields.push(String(it.extracto));
     if (it.texto) fields.push(String(it.texto));
     if (it.referencia) fields.push(String(it.referencia));
-    const haystack = fields.join(' ').toLowerCase();
+    const haystack = fields.join(" ").toLowerCase();
     return parts.every((p) => haystack.includes(p));
   });
 }
@@ -168,7 +178,9 @@ function isValidYYYYMMDD(s: string) {
   const m = Number(s.slice(4, 6));
   const d = Number(s.slice(6, 8));
   const dt = new Date(y, m - 1, d);
-  return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+  return (
+    dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d
+  );
 }
 
 export const boeHandler: RequestHandler = async (req, res) => {
@@ -177,7 +189,12 @@ export const boeHandler: RequestHandler = async (req, res) => {
   const limit = Math.max(1, Math.min(50, Number(req.query.limit || 8)));
 
   // rate limit check
-  const visitor = (req.headers && (req.headers['x-visitor-id'] || req.headers['x-visitorid'])) || req.ip || (req.connection && (req.connection as any).remoteAddress) || 'unknown';
+  const visitor =
+    (req.headers &&
+      (req.headers["x-visitor-id"] || req.headers["x-visitorid"])) ||
+    req.ip ||
+    (req.connection && (req.connection as any).remoteAddress) ||
+    "unknown";
   const now = Date.now();
   const state = rateMap.get(String(visitor));
   if (!state || now - state.ts > RATE_LIMIT_WINDOW_MS) {
@@ -185,7 +202,8 @@ export const boeHandler: RequestHandler = async (req, res) => {
   } else {
     state.count++;
     rateMap.set(String(visitor), state);
-    if (state.count > RATE_LIMIT_MAX) return res.status(429).json({ error: 'rate_limit_exceeded' });
+    if (state.count > RATE_LIMIT_MAX)
+      return res.status(429).json({ error: "rate_limit_exceeded" });
   }
 
   if (!q) return res.status(400).json({ error: "q query param required" });
@@ -194,7 +212,7 @@ export const boeHandler: RequestHandler = async (req, res) => {
   const datesToTry: string[] = [];
   const explicitDate = date && isValidYYYYMMDD(date) ? date : null;
   // determine days window (defaults to 7)
-  const daysParam = explicitDate ? 1 : (Number(req.query.since_days || 7) || 7);
+  const daysParam = explicitDate ? 1 : Number(req.query.since_days || 7) || 7;
   const daysToTryCount = Math.min(365, Math.max(1, Math.floor(daysParam)));
 
   if (explicitDate) {
@@ -213,13 +231,17 @@ export const boeHandler: RequestHandler = async (req, res) => {
   // compute cutoff number (YYYYMMDD) for filtering items by their own dates (inclusive)
   const today = new Date();
   function yyyymmddFromDate(d: Date) {
-    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
   }
   const cutoffNum = explicitDate
     ? Number(explicitDate)
     : ((): number => {
         // datesToTry includes today and the previous (daysToTryCount - 1) days.
-        const earliest = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (Math.max(1, daysToTryCount) - 1));
+        const earliest = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() - (Math.max(1, daysToTryCount) - 1),
+        );
         return Number(yyyymmddFromDate(earliest));
       })();
 
@@ -229,17 +251,24 @@ export const boeHandler: RequestHandler = async (req, res) => {
   function findDateInObject(obj: unknown): Date | null {
     try {
       if (!obj) return null;
-      if (typeof obj === 'string') {
+      if (typeof obj === "string") {
         const s = obj.trim();
         // ISO date
         const isoMatch = s.match(/(\d{4})-(\d{2})-(\d{2})/);
-        if (isoMatch) return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+        if (isoMatch)
+          return new Date(
+            Number(isoMatch[1]),
+            Number(isoMatch[2]) - 1,
+            Number(isoMatch[3]),
+          );
         // YYYYMMDD
         const ymd = s.match(/^(\d{4})(\d{2})(\d{2})$/);
-        if (ymd) return new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]));
+        if (ymd)
+          return new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]));
         // DD/MM/YYYY or DD-MM-YYYY
         const dmy = s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
-        if (dmy) return new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
+        if (dmy)
+          return new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
         return null;
       }
       if (Array.isArray(obj)) {
@@ -248,11 +277,15 @@ export const boeHandler: RequestHandler = async (req, res) => {
           if (f) return f;
         }
       }
-      if (typeof obj === 'object') {
+      if (typeof obj === "object") {
         for (const k of Object.keys(obj as Record<string, unknown>)) {
           const v = (obj as any)[k];
           // common spanish date-like keys
-          if (/fecha|fecha_publicacion|fecha_publica|fecha_doc|fecha_disposicion|fecha_firma/i.test(k)) {
+          if (
+            /fecha|fecha_publicacion|fecha_publica|fecha_doc|fecha_disposicion|fecha_firma/i.test(
+              k,
+            )
+          ) {
             const parsed = findDateInObject(v);
             if (parsed) return parsed;
           }
@@ -273,7 +306,11 @@ export const boeHandler: RequestHandler = async (req, res) => {
 
   for (let i = 0; i < datesToTry.length; i += concurrency) {
     const batch = datesToTry.slice(i, i + concurrency);
-    const batchPromises = batch.map((dt) => fetchSummary(dt).then((items) => ({ dt, items })).catch(() => ({ dt, items: null })));
+    const batchPromises = batch.map((dt) =>
+      fetchSummary(dt)
+        .then((items) => ({ dt, items }))
+        .catch(() => ({ dt, items: null })),
+    );
     const batchResults = await Promise.all(batchPromises);
     for (const br of batchResults) {
       const items = br.items;
@@ -300,7 +337,11 @@ export const boeHandler: RequestHandler = async (req, res) => {
         }
 
         seenRefs.add(ref);
-        allMatches.push({ _date: br.dt, item: m, itemDate: itemDateNum ? String(itemDateNum) : null });
+        allMatches.push({
+          _date: br.dt,
+          item: m,
+          itemDate: itemDateNum ? String(itemDateNum) : null,
+        });
         if (allMatches.length >= limit) break;
       }
       if (allMatches.length >= limit) break;
@@ -316,23 +357,43 @@ export const boeHandler: RequestHandler = async (req, res) => {
     let pdf = null;
     try {
       if (item.url_pdf) {
-        if (typeof item.url_pdf === 'string') pdf = item.url_pdf;
-        else if (item.url_pdf && typeof item.url_pdf === 'object' && (item.url_pdf as any).texto) pdf = (item.url_pdf as any).texto;
+        if (typeof item.url_pdf === "string") pdf = item.url_pdf;
+        else if (
+          item.url_pdf &&
+          typeof item.url_pdf === "object" &&
+          (item.url_pdf as any).texto
+        )
+          pdf = (item.url_pdf as any).texto;
         else pdf = findPdfInObject(item.url_pdf);
       }
       if (!pdf) pdf = findPdfInObject(item);
-      if (!pdf && item.url && typeof item.url === "string" && item.url.includes('.pdf')) pdf = item.url;
+      if (
+        !pdf &&
+        item.url &&
+        typeof item.url === "string" &&
+        item.url.includes(".pdf")
+      )
+        pdf = item.url;
     } catch (e) {
       pdf = null;
     }
 
     let boe = item.url || null;
-    if (!boe && item.referencia) boe = `https://www.boe.es/eli/${item.referencia}`;
+    if (!boe && item.referencia)
+      boe = `https://www.boe.es/eli/${item.referencia}`;
 
     return {
-      id: item.referencia || item.id || `${entry._date}-${Math.random().toString(36).slice(2, 8)}`,
+      id:
+        item.referencia ||
+        item.id ||
+        `${entry._date}-${Math.random().toString(36).slice(2, 8)}`,
       title: String(title),
-      summary: String((item as any).subtitulo || (item as any).extracto || (item as any).texto || ""),
+      summary: String(
+        (item as any).subtitulo ||
+          (item as any).extracto ||
+          (item as any).texto ||
+          "",
+      ),
       pdf_url: pdf || null,
       boe_url: boe || null,
       date: entry.itemDate || entry._date || null,
@@ -345,24 +406,28 @@ export const boeHandler: RequestHandler = async (req, res) => {
   try {
     results = results.map((r: any) => ({ ...r, score: computeScore(r, q) }));
   } catch (e) {
-    logger.warn('Scoring failed', e);
+    logger.warn("Scoring failed", e);
   }
 
   // Ensure results prioritize those from the last year, sorted newest->oldest and by score
   try {
     const today = new Date();
     const cutoff = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
-    const cutoffNum = Number(`${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, '0')}${String(cutoff.getDate()).padStart(2, '0')}`);
+    const cutoffNum = Number(
+      `${cutoff.getFullYear()}${String(cutoff.getMonth() + 1).padStart(2, "0")}${String(cutoff.getDate()).padStart(2, "0")}`,
+    );
 
     const toNum = (s: any) => {
       if (!s) return 0;
-      if (typeof s === 'number') return s;
+      if (typeof s === "number") return s;
       const ss = String(s).trim();
       if (/^[0-9]{8}$/.test(ss)) return Number(ss);
       // try ISO parse
       const d = new Date(ss);
       if (isNaN(d.getTime())) return 0;
-      return Number(`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`);
+      return Number(
+        `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`,
+      );
     };
 
     results.sort((a: any, b: any) => {
@@ -386,13 +451,26 @@ export const boeHandler: RequestHandler = async (req, res) => {
   // limit
   results = results.slice(0, limit);
 
-  const body = { results, meta: { query: q, tried: datesToTry.length, took_ms: Date.now() - startTime } };
+  const body = {
+    results,
+    meta: {
+      query: q,
+      tried: datesToTry.length,
+      took_ms: Date.now() - startTime,
+    },
+  };
   try {
-    const etag = crypto.createHash('sha1').update(JSON.stringify(body)).digest('hex');
-    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-    res.setHeader('ETag', etag);
+    const etag = crypto
+      .createHash("sha1")
+      .update(JSON.stringify(body))
+      .digest("hex");
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=60, stale-while-revalidate=300",
+    );
+    res.setHeader("ETag", etag);
   } catch (e) {
-    logger.warn('Failed to compute ETag', e);
+    logger.warn("Failed to compute ETag", e);
   }
   res.json(body);
 };

@@ -4,7 +4,7 @@ Copy and paste these rules into the Firestore Console -> Rules. Adapt as needed.
 
 rules_version = '2';
 service cloud.firestore {
-  match /databases/{database}/documents {
+match /databases/{database}/documents {
 
     // Public read access to laws and profiles
     match /laws/{lawId} {
@@ -34,5 +34,6 @@ service cloud.firestore {
       allow read: if false;
       allow write: if false;
     }
-  }
+
+}
 }
