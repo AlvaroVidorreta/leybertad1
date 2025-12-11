@@ -541,7 +541,7 @@ function HeroPublicar() {
           </div>
           <div
             ref={detailsRef}
-            className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}
+            className={`transition-all duration-500 ${expand ? "max-h-[400px] opacity-100 mt-4" : "max-h-0 opacity-0 pointer-events-none"}`}
           >
             <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-start">
               <input
