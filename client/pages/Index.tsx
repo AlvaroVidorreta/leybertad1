@@ -242,7 +242,7 @@ function UltimasLeyes({
             <div className="flip-face front rounded-2xl border p-6 md:p-6 mt-4 bg-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">
+                  <h3 className="text-2xl md:text-3xl font-brand mb-1">
                     Biblioteca{" "}
                     <span className="italic font-normal text-lg md:text-xl">
                       Leybertad
@@ -326,7 +326,7 @@ function UltimasLeyes({
             <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-1">
+                  <h3 className="text-2xl md:text-3xl font-brand mb-1">
                     Biblioteca{" "}
                     <span className="italic font-normal text-lg md:text-xl">
                       España
@@ -732,7 +732,7 @@ function FeedRecientes({
 
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
-      <h3 className="text-xl font-bold mb-4">Más recientes</h3>
+      <h3 className="text-xl font-brand mb-4">Más recientes</h3>
       {isLoading && <p className="text-sm text-muted-foreground">Cargando…</p>}
       <div className="pr-1 recent-scroll">
         <List
@@ -915,7 +915,7 @@ function Ranking({
   return (
     <div className="rounded-2xl border bg-card p-4 md:p-6">
       <div className="flex items-center">
-        <h3 className="text-xl font-bold">Ranking</h3>
+        <h3 className="text-xl font-brand">Ranking</h3>
         <div className="ml-auto relative" ref={ddRef}>
           <button
             onClick={() => setOpen((s) => !s)}
