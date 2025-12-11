@@ -10,8 +10,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <CollapsibleHeader />
       <main className="container pt-8 md:pt-12 lg:pt-20 pb-16">{children}</main>
       <footer className="container py-10 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} Leybertad — plataforma social para
-        expresar y mejorar leyes.
+        © Leybertad ~ plataforma social para expresar y mejorar las leyes que
+        nos gobiernan.
       </footer>
     </div>
   );
