@@ -323,7 +323,7 @@ function UltimasLeyes({
             </div>
 
             {/* BACK FACE - dark themed for "Últimas aprobadas" */}
-            <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-slate-900 to-slate-800 text-white">
+            <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-brown-900 to-brown-800 text-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-brand mb-1">
@@ -332,7 +332,7 @@ function UltimasLeyes({
                       España
                     </span>
                   </h3>
-                  <p className="text-sm text-slate-200">
+                  <p className="text-sm text-brown-100">
                     Busca y explora las últimas leyes aprobadas en España.
                   </p>
                 </div>
@@ -368,7 +368,7 @@ function UltimasLeyes({
                           ? "Analizar propuesta..."
                           : "Buscar en Últimas aprobadas..."
                       }
-                      className="w-full rounded-full border border-slate-700 bg-slate-800/50 px-5 pr-28 py-3 text-base md:text-lg text-slate-50 placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full rounded-full border border-brown-700 bg-brown-800/50 px-5 pr-28 py-3 text-base md:text-lg text-brown-50 placeholder:text-brown-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
                     <button
                       onClick={() => {
@@ -397,13 +397,13 @@ function UltimasLeyes({
                   <div className="mt-3 flex gap-2 justify-end">
                     <button
                       onClick={() => setMode("all")}
-                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-slate-200 border-slate-700"}`}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-brown-100 border-brown-700"}`}
                     >
                       Leybertad
                     </button>
                     <button
                       onClick={() => setMode("approved")}
-                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-slate-200 border-slate-700"}`}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-brown-100 border-brown-700"}`}
                     >
                       Aprobadas (España)
                     </button>
