@@ -52,6 +52,19 @@
     --sidebar-accent-foreground: 24 30% 18%;
     --sidebar-border: 40 25% 85%;
     --sidebar-ring: 24 30% 18%;
+
+    /* Brown palette based on primary color (hue 24, sat 30%) */
+    --brown-50: 24 100% 97%;
+    --brown-100: 24 100% 94%;
+    --brown-200: 24 100% 88%;
+    --brown-300: 24 100% 80%;
+    --brown-400: 24 100% 70%;
+    --brown-500: 24 70% 50%;
+    --brown-600: 24 50% 35%;
+    --brown-700: 24 40% 25%;
+    --brown-800: 24 35% 15%;
+    --brown-900: 24 32% 10%;
+    --brown-950: 24 30% 6%;
   }
 
   .dark {
