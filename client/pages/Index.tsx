@@ -323,7 +323,7 @@ function UltimasLeyes({
             </div>
 
             {/* BACK FACE - dark themed for "Últimas aprobadas" */}
-            <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-gray-900 to-gray-800 text-white">
+            <div className="flip-face back rounded-2xl border p-6 md:p-6 mt-4 bg-gradient-to-tr from-amber-950 to-amber-900 text-white">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-3xl font-brand mb-1">
@@ -332,7 +332,7 @@ function UltimasLeyes({
                       España
                     </span>
                   </h3>
-                  <p className="text-sm text-gray-200">
+                  <p className="text-sm text-amber-100">
                     Busca y explora las últimas leyes aprobadas en España.
                   </p>
                 </div>
@@ -368,7 +368,7 @@ function UltimasLeyes({
                           ? "Analizar propuesta..."
                           : "Buscar en Últimas aprobadas..."
                       }
-                      className="w-full rounded-full border bg-white/5 px-5 pr-28 py-3 text-base md:text-lg text-white placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full rounded-full border border-amber-700 bg-amber-950/40 px-5 pr-28 py-3 text-base md:text-lg text-amber-50 placeholder:text-amber-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600"
                     />
                     <button
                       onClick={() => {
@@ -385,7 +385,7 @@ function UltimasLeyes({
                           // placeholder for search in front face
                         }
                       }}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm group overflow-hidden transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-amber-700 text-amber-50 px-4 py-2 text-sm group overflow-hidden transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-amber-500/30 hover:bg-amber-600"
                     >
                       <span className="pointer-events-none absolute inset-y-0 left-[-80%] w-[180%] -skew-x-12 bg-gradient-to-r from-white/40 via-white/20 to-white/0 opacity-0 transition-all duration-300 ease-out group-hover:left-[120%] group-hover:opacity-40" />
                       <span className="relative z-10">
@@ -397,13 +397,13 @@ function UltimasLeyes({
                   <div className="mt-3 flex gap-2 justify-end">
                     <button
                       onClick={() => setMode("all")}
-                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "all" ? "bg-amber-700 text-amber-50" : "bg-transparent text-amber-100 border-amber-700"}`}
                     >
                       Leybertad
                     </button>
                     <button
                       onClick={() => setMode("approved")}
-                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-primary text-primary-foreground" : "bg-transparent text-white"}`}
+                      className={`px-3 py-1 rounded-full border text-sm ${mode === "approved" ? "bg-amber-700 text-amber-50" : "bg-transparent text-amber-100 border-amber-700"}`}
                     >
                       Aprobadas (España)
                     </button>
