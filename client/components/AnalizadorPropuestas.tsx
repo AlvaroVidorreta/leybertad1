@@ -162,7 +162,7 @@ export default function AnalizadorPropuestas({
 
   return (
     <div
-      className={`rounded-2xl border bg-[#0b1220]/80 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? "max-h-[24vh]" : "max-h-[36vh]"}`}
+      className={`rounded-2xl border border-amber-700 bg-amber-950/60 backdrop-blur p-4 md:p-5 text-white flex flex-col min-h-0 overflow-hidden ${results === null ? "max-h-[24vh]" : "max-h-[36vh]"}`}
     >
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${results === null ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
@@ -172,7 +172,7 @@ export default function AnalizadorPropuestas({
             <h4 className="font-playfair text-xl md:text-2xl leading-tight">
               Analizador de Propuestas
             </h4>
-            <p className="text-sm text-gray-300 mt-2">
+            <p className="text-sm text-amber-200 mt-2">
               Usa la barra superior derecha para analizar la concordancia; los
               resultados aparecerán aquí.
             </p>
@@ -195,7 +195,7 @@ export default function AnalizadorPropuestas({
                   <button
                     ref={anchorRef}
                     onClick={() => setShowFilter((s) => !s)}
-                    className="text-sm px-3 py-1 rounded-md border bg-white/5 hover:bg-white/10 flex items-center gap-2"
+                    className="text-sm px-3 py-1 rounded-md border border-amber-700 bg-amber-950/50 hover:bg-amber-900/50 flex items-center gap-2 text-amber-100"
                     aria-expanded={showFilter}
                     aria-label="Filtrar por tiempo"
                   >
@@ -222,10 +222,10 @@ export default function AnalizadorPropuestas({
                           ),
                           width: 176,
                         }}
-                        className="rounded-md shadow-lg bg-gray-800 border border-white/10 text-white z-50"
+                        className="rounded-md shadow-lg bg-amber-900 border border-amber-700 text-white z-50"
                       >
                         <button
-                          className={`w-full text-left px-3 py-2 ${timeframe === "any" ? "bg-gray-700" : ""}`}
+                          className={`w-full text-left px-3 py-2 ${timeframe === "any" ? "bg-amber-800" : ""}`}
                           onClick={() => {
                             setTimeframe("any");
                             if (text) analyzeQuery(text, "any");
@@ -235,7 +235,7 @@ export default function AnalizadorPropuestas({
                           Cualquiera
                         </button>
                         <button
-                          className={`w-full text-left px-3 py-2 ${timeframe === "week" ? "bg-gray-700" : ""}`}
+                          className={`w-full text-left px-3 py-2 ${timeframe === "week" ? "bg-amber-800" : ""}`}
                           onClick={() => {
                             setTimeframe("week");
                             if (text) analyzeQuery(text, "week");
@@ -245,7 +245,7 @@ export default function AnalizadorPropuestas({
                           Última semana
                         </button>
                         <button
-                          className={`w-full text-left px-3 py-2 ${timeframe === "month" ? "bg-gray-700" : ""}`}
+                          className={`w-full text-left px-3 py-2 ${timeframe === "month" ? "bg-amber-800" : ""}`}
                           onClick={() => {
                             setTimeframe("month");
                             if (text) analyzeQuery(text, "month");
@@ -255,7 +255,7 @@ export default function AnalizadorPropuestas({
                           Último mes
                         </button>
                         <button
-                          className={`w-full text-left px-3 py-2 ${timeframe === "year" ? "bg-gray-700" : ""}`}
+                          className={`w-full text-left px-3 py-2 ${timeframe === "year" ? "bg-amber-800" : ""}`}
                           onClick={() => {
                             setTimeframe("year");
                             if (text) analyzeQuery(text, "year");
@@ -271,7 +271,7 @@ export default function AnalizadorPropuestas({
               </div>
 
               {!hasResults && (
-                <div className="text-center text-sm text-gray-300 py-6">
+                <div className="text-center text-sm text-amber-200 py-6">
                   No se han encontrado leyes directamente relacionadas. Tu
                   propuesta podría ser verdaderamente novedosa.
                 </div>
@@ -282,16 +282,16 @@ export default function AnalizadorPropuestas({
                   {results!.map((r) => (
                     <li
                       key={r.law.id}
-                      className="rounded-lg border border-white/10 bg-white/[0.02] p-2"
+                      className="rounded-lg border border-amber-700 bg-amber-950/30 p-2"
                     >
                       <div className="flex items-center">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0 flex flex-col justify-center space-y-1 translate-y-px">
-                              <h6 className="font-medium text-sm text-white truncate">
+                              <h6 className="font-medium text-sm text-amber-50 truncate">
                                 {r.law.title}
                               </h6>
-                              <p className="italic text-xs text-gray-300 line-clamp-2">
+                              <p className="italic text-xs text-amber-200 line-clamp-2">
                                 {r.law.summary}
                               </p>
                             </div>
@@ -299,7 +299,7 @@ export default function AnalizadorPropuestas({
                               href={r.law.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="ml-2 whitespace-nowrap text-sm text-cream-200 hover:text-cream-100 underline-offset-4 hover:underline flex items-center py-2 self-center"
+                              className="ml-2 whitespace-nowrap text-sm text-amber-300 hover:text-amber-200 underline-offset-4 hover:underline flex items-center py-2 self-center"
                             >
                               Consultar →
                             </a>
