@@ -130,11 +130,17 @@ export async function guardarLey(id: string): Promise<Law> {
   const headers: Record<string, string> = { "x-visitor-id": getVisitorId() };
   try {
     if (FIREBASE_ENABLED && auth && auth.currentUser) {
-      const token = await auth.currentUser.getIdToken();
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+      try {
+        const token = await auth.currentUser.getIdToken();
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      } catch (tokenErr: any) {
+        // Token acquisition failed — log but continue with anonymous save
+        logger.warn("Failed to acquire ID token for save operation", tokenErr);
+        // Server will handle both authenticated and anonymous saves
+      }
     }
   } catch (e) {
-    // ignore token fetch errors — server will require auth and respond accordingly
+    // Ignore Firebase initialization errors
   }
 
   const res = await safeFetch(`/api/laws/${id}/save`, {
