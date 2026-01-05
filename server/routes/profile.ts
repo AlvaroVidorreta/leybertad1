@@ -1,14 +1,7 @@
 import { RequestHandler } from "express";
+import { ProfileSchema } from "@shared/schemas";
 import { db } from "../db";
-
-function getVisitorKey(req: any) {
-  const header =
-    req.headers && (req.headers["x-visitor-id"] || req.headers["x-visitorid"]);
-  if (header && typeof header === "string" && header.trim()) return header;
-  return (
-    req.ip || (req.connection && req.connection.remoteAddress) || "unknown"
-  );
-}
+import { getVisitorKey } from "../utils/visitor";
 
 export const profileHandler: RequestHandler = async (req, res) => {
   const visitor = getVisitorKey(req);
