@@ -46,5 +46,8 @@ export function createServer() {
   app.get("/api/profile", profileHandler);
   app.post("/api/profile", profileUpdateHandler);
 
+  // Error handling middleware (must be last)
+  app.use(errorHandler);
+
   return app;
 }
