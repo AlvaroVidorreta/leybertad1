@@ -94,28 +94,69 @@ export default function AuthModal({
     }
   };
 
+  const modalTitle = mode === "login" ? "Iniciar sesión" : "Registrarse";
+
   const node = (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md p-6 bg-white rounded-xl border">
-        <h3 className="text-lg font-semibold mb-3">
-          {mode === "login" ? "Iniciar sesión" : "Registrarse"}
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        className="relative z-10 w-full max-w-md p-6 bg-white rounded-xl border"
+      >
+        <h3 id="auth-modal-title" className="text-lg font-semibold mb-3">
+          {modalTitle}
         </h3>
         <form onSubmit={submit} className="flex flex-col gap-3">
-          <input
-            className="px-3 py-2 border rounded"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            className="px-3 py-2 border rounded"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          <div className="form-group">
+            <label htmlFor="email-input" className="block text-sm font-medium mb-1">
+              Correo electrónico
+            </label>
+            <input
+              ref={emailInputRef}
+              id="email-input"
+              type="email"
+              name="email"
+              required
+              className="px-3 py-2 border rounded w-full"
+              placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={busy}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password-input" className="block text-sm font-medium mb-1">
+              Contraseña
+            </label>
+            <input
+              ref={passwordInputRef}
+              id="password-input"
+              type="password"
+              name="password"
+              required
+              className="px-3 py-2 border rounded w-full"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={busy}
+            />
+          </div>
+          {error && (
+            <div
+              className="text-sm text-red-600 p-2 bg-red-50 rounded"
+              role="alert"
+              aria-live="assertive"
+            >
+              {error}
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <button
               type="submit"
