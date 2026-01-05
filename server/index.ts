@@ -26,8 +26,10 @@ export function createServer() {
 
   // Middleware
   app.use(cors());
+  app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(sessionMiddleware); // Session must be before routes
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
