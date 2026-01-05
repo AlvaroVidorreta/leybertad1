@@ -8,16 +8,9 @@ import {
   RankingResponse,
   TimeRange,
 } from "@shared/api";
+import { CreateLawSchema, CommentSchema } from "@shared/schemas";
 import { db } from "../db";
-
-function getVisitorKey(req: any) {
-  const header =
-    req.headers && (req.headers["x-visitor-id"] || req.headers["x-visitorid"]);
-  if (header && typeof header === "string" && header.trim()) return header;
-  return (
-    req.ip || (req.connection && req.connection.remoteAddress) || "unknown"
-  );
-}
+import { getVisitorKey } from "../utils/visitor";
 
 export const createLaw: RequestHandler = async (req, res) => {
   const body = req.body as LawInput;
