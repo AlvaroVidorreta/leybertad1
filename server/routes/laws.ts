@@ -13,22 +13,34 @@ import { db } from "../db";
 import { getVisitorKey } from "../utils/visitor";
 
 export const createLaw: RequestHandler = async (req, res) => {
-  const body = req.body as LawInput;
-  if (!body || !body.titulo || !body.objetivo) {
-    return res.status(400).json({ error: "titulo y objetivo son requeridos" });
-  }
-  const visitor = getVisitorKey(req);
   try {
-    const law = await db.createLaw(body, visitor);
+    // Validate input against schema
+    const validated = CreateLawSchema.parse(req.body);
+    const visitor = getVisitorKey(req);
+
+    const law = await db.createLaw(validated, visitor);
     const response: CreateLawResponse = { law };
     res.json(response);
   } catch (err: any) {
+    // Handle validation errors
+    if (err.name === "ZodError") {
+      const messages = err.errors
+        .map((e: any) => `${e.path.join(".")}: ${e.message}`)
+        .join("; ");
+      return res.status(400).json({ error: `Validación fallida: ${messages}` });
+    }
+
+    // Handle rate limit
     if (err && err.message === "RATE_LIMIT_EXCEEDED") {
       return res.status(429).json({
         error:
           "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados",
       });
     }
+
+    // Log unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("Error creating law:", err);
     res.status(500).json({ error: "Error al crear la ley" });
   }
 };
