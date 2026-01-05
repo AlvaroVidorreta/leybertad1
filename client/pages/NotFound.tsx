@@ -17,7 +17,9 @@ const NotFound = () => {
     <AppLayout>
       <div className="py-24 text-center">
         <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-muted-foreground mb-4">Página no encontrada</p>
+        <p className="text-xl text-muted-foreground mb-4">
+          Página no encontrada
+        </p>
         <a href="/" className="underline">
           Volver al inicio
         </a>

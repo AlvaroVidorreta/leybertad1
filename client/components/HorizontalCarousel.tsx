@@ -2,13 +2,26 @@ import React, { useEffect, useRef, useState } from "react";
 
 type Category = { title: string; subs: string[] };
 
+const DEFAULT_PALETTES = [
+  "bg-amber-100/50 border-amber-200 text-amber-900",
+  "bg-orange-100/50 border-orange-200 text-orange-900",
+  "bg-rose-100/50 border-rose-200 text-rose-900",
+  "bg-stone-100/50 border-stone-200 text-stone-900",
+  "bg-lime-100/50 border-lime-200 text-lime-900",
+];
+
+export interface CarouselItem {
+  title: string;
+  subs: string[];
+}
+
 export default function HorizontalCarousel({
-  categories,
-  warmPalettes,
+  items,
+  warmPalettes = DEFAULT_PALETTES,
   onSelectSub,
 }: {
-  categories: Category[];
-  warmPalettes: string[];
+  items: CarouselItem[];
+  warmPalettes?: string[];
   onSelectSub: (category: string, sub: string) => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -30,16 +43,16 @@ export default function HorizontalCarousel({
 
     function step(now: number) {
       if (!lastTimeRef.current) lastTimeRef.current = now;
-      const dt = (now - lastTimeRef.current) / 1000;
+      const dt = (now - (lastTimeRef.current ?? now)) / 1000;
       lastTimeRef.current = now;
 
       if (!isPaused) {
-        const halfWidth = track.scrollWidth / 2;
+        const halfWidth = track!.scrollWidth / 2;
         posRef.current -= SPEED * dt;
         if (Math.abs(posRef.current) >= halfWidth) {
           posRef.current += halfWidth;
         }
-        track.style.transform = `translateX(${posRef.current}px)`;
+        track!.style.transform = `translateX(${posRef.current}px)`;
       }
 
       rafRef.current = requestAnimationFrame(step);
@@ -77,12 +90,20 @@ export default function HorizontalCarousel({
 
   return (
     // make the carousel full-bleed relative to the parent panel (parent has p-6)
-    <div className="relative -mx-6" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div
+      className="relative -mx-6"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="overflow-hidden">
         <div ref={containerRef} className="w-full px-6">
-          <div ref={trackRef} className="flex" style={{ transform: "translateX(0px)" }}>
-            {categories.concat(categories).map((c, idx) => {
-              const i = idx % categories.length;
+          <div
+            ref={trackRef}
+            className="flex"
+            style={{ transform: "translateX(0px)" }}
+          >
+            {items.concat(items).map((c, idx) => {
+              const i = idx % items.length;
               const bg = warmPalettes[i % warmPalettes.length];
               return (
                 <div key={idx} className="flex-shrink-0 w-[25%] p-3">
@@ -92,7 +113,9 @@ export default function HorizontalCarousel({
                     className={`relative rounded-md border overflow-hidden aspect-square flex items-center justify-center text-center p-3 cursor-pointer group ${bg}`}
                   >
                     <div className="z-10 transition-opacity duration-300 ease-in-out group-hover:opacity-0">
-                      <span className="text-sm md:text-base font-semibold tracking-widest text-foreground">{c.title}</span>
+                      <span className="text-sm md:text-base font-semibold tracking-widest text-foreground">
+                        {c.title}
+                      </span>
                     </div>
 
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 ease-in-out flex items-center justify-center">
@@ -130,8 +153,19 @@ export default function HorizontalCarousel({
         }}
         className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          className="w-5 h-5 text-foreground"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
 
@@ -144,8 +178,19 @@ export default function HorizontalCarousel({
         }}
         className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 rounded-full bg-card/80 p-2 ${isHovered ? "opacity-100" : "opacity-0"} transition-opacity shadow-md`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-foreground">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          className="w-5 h-5 text-foreground"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
     </div>

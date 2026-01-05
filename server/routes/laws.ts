@@ -1,179 +1,29 @@
-import { RequestHandler } from "express";
-import {
-  LawInput,
-  CommentInput,
-  CreateLawResponse,
-  LawsResponse,
-  LawUpdatedResponse,
-  RankingResponse,
-  TimeRange,
-} from "@shared/api";
-import { CreateLawSchema, CommentSchema } from "@shared/schemas";
-import { db } from "../db";
-import { getVisitorKey } from "../utils/visitor";
+import { Router } from "express";
+import { LawController } from "../controllers/lawController";
+import { rateLimitCreateLaw } from "../middleware/rateLimit";
 
-export const createLaw: RequestHandler = async (req, res) => {
-  try {
-    // Validate input against schema
-    const validated = CreateLawSchema.parse(req.body);
-    const visitor = getVisitorKey(req);
+const router = Router();
 
-    const law = await db.createLaw(validated, visitor);
-    const response: CreateLawResponse = { law };
-    res.json(response);
-  } catch (err: any) {
-    // Handle validation errors
-    if (err.name === "ZodError") {
-      const messages = err.errors
-        .map((e: any) => `${e.path.join(".")}: ${e.message}`)
-        .join("; ");
-      return res.status(400).json({ error: `Validación fallida: ${messages}` });
-    }
+// GET /api/laws (formerly /recent)
+router.get("/", LawController.getRecientes);
 
-    // Handle rate limit
-    if (err && err.message === "RATE_LIMIT_EXCEEDED") {
-      return res.status(429).json({
-        error:
-          "Límite alcanzado: solo 5 publicaciones por día para usuarios no registrados",
-      });
-    }
+// POST /api/laws (formerly /create)
+router.post("/", rateLimitCreateLaw, LawController.create);
 
-    // Log unexpected errors
-    // eslint-disable-next-line no-console
-    console.error("Error creating law:", err);
-    res.status(500).json({ error: "Error al crear la ley" });
-  }
-};
+// POST /api/laws/:id/vote
+router.post("/:id/vote", LawController.vote);
 
-export const listRecent: RequestHandler = async (_req, res) => {
-  try {
-    const items = await db.listRecent();
-    const response: LawsResponse = { items };
-    res.json(response);
-  } catch (err) {
-    res.status(500).json({ error: "Error al listar leyes" });
-  }
-};
+// POST /api/laws/:id/save
+router.post("/:id/save", LawController.save);
 
-export const upvoteLaw: RequestHandler = async (req, res) => {
-  const { id } = req.params;
-  const visitor = getVisitorKey(req);
-  try {
-    const law = await db.upvoteLaw(id, visitor);
-    const response: LawUpdatedResponse = { law };
-    res.json(response);
-  } catch (err: any) {
-    if (err && err.message === "NOT_FOUND")
-      return res.status(404).json({ error: "Ley no encontrada" });
-    if (err && err.message === "ALREADY_VOTED")
-      return res.status(400).json({ error: "Ya votaste esta ley" });
-    res.status(500).json({ error: "Error al procesar voto" });
-  }
-};
+// POST /api/laws/:id/comment
+router.post("/:id/comment", LawController.comment);
 
-export const saveLaw: RequestHandler = async (req, res) => {
-  const { id } = req.params;
+// GET /api/laws/ranking
+// Note: Frontend calls /api/ranking, not /api/laws/ranking.
+// We should check index.ts mount point.
+// If index.ts mounts this router at /api/laws, then this becomes /api/laws/ranking.
+// If frontend calls /api/ranking, we might need a separate router or mount specific path in index.ts.
+router.get("/ranking", LawController.getRanking);
 
-  // If Authorization header present, validate Firebase token and associate save with profile
-  const authHeader =
-    req.headers && (req.headers.authorization || req.headers.Authorization);
-  if (
-    authHeader &&
-    typeof authHeader === "string" &&
-    authHeader.startsWith("Bearer ")
-  ) {
-    const idToken = authHeader.replace(/^Bearer\s+/, "");
-    // Use centralized admin helper to avoid repeated dynamic imports and parsing
-    try {
-      const { verifyIdToken } = await import("../utils/firebaseAdmin");
-      const decoded = await verifyIdToken(idToken);
-      if (!decoded) return res.status(401).json({ error: "Token inválido" });
-      const uid = decoded.uid;
-
-      try {
-        const law = await db.saveLaw(id, uid);
-        const response: LawUpdatedResponse = { law };
-        return res.json(response);
-      } catch (err: any) {
-        if (err && err.message === "NOT_FOUND")
-          return res.status(404).json({ error: "Ley no encontrada" });
-        // eslint-disable-next-line no-console
-        console.error("Error saving law:", err);
-        return res.status(500).json({ error: "Error al guardar ley" });
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Error validating token:", err);
-      return res.status(500).json({ error: "Error validando token" });
-    }
-  }
-
-  // No auth header — still increment saves counter but do not associate with profile
-  try {
-    const law = await db.saveLaw(id);
-    const response: LawUpdatedResponse = { law };
-    res.json(response);
-  } catch (err: any) {
-    if (err && err.message === "NOT_FOUND")
-      return res.status(404).json({ error: "Ley no encontrada" });
-    // eslint-disable-next-line no-console
-    console.error("Error saving law:", err);
-    res.status(500).json({ error: "Error al guardar ley" });
-  }
-};
-
-export const commentLaw: RequestHandler = async (req, res) => {
-  const { id } = req.params;
-
-  // Require Firebase ID token in Authorization header
-  const authHeader =
-    req.headers && (req.headers.authorization || req.headers.Authorization);
-  if (
-    !authHeader ||
-    typeof authHeader !== "string" ||
-    !authHeader.startsWith("Bearer ")
-  ) {
-    return res.status(401).json({ error: "Autenticación requerida" });
-  }
-
-  // Validate input
-  try {
-    const validated = CommentSchema.parse(req.body);
-    const idToken = authHeader.replace(/^Bearer\s+/, "");
-
-    const { verifyIdToken } = await import("../utils/firebaseAdmin");
-    const decoded = await verifyIdToken(idToken);
-    if (!decoded) return res.status(401).json({ error: "Token inválido" });
-    const uid = decoded.uid;
-
-    const law = await db.commentLaw(id, validated.texto, uid);
-    const response: LawUpdatedResponse = { law };
-    res.json(response);
-  } catch (err: any) {
-    // Handle validation errors
-    if (err.name === "ZodError") {
-      const messages = err.errors
-        .map((e: any) => `${e.path.join(".")}: ${e.message}`)
-        .join("; ");
-      return res.status(400).json({ error: `Validación fallida: ${messages}` });
-    }
-
-    if (err && err.message === "NOT_FOUND")
-      return res.status(404).json({ error: "Ley no encontrada" });
-
-    // eslint-disable-next-line no-console
-    console.error("Error commenting on law:", err);
-    res.status(500).json({ error: "Error al guardar perspectiva" });
-  }
-};
-
-export const ranking: RequestHandler = async (req, res) => {
-  const range = (req.query.range as TimeRange) || "all";
-  try {
-    const items = await db.ranking(range);
-    const response: RankingResponse = { items };
-    res.json(response);
-  } catch (err) {
-    res.status(500).json({ error: "Error al obtener ranking" });
-  }
-};
+export { router as lawsRouter };

@@ -7,10 +7,20 @@ type Props = {
   titleClassName?: string;
 };
 
-export default function LawSummary({ title, objetivo, className = "", titleClassName = "" }: Props) {
+export default function LawSummary({
+  title,
+  objetivo,
+  className = "",
+  titleClassName = "",
+}: Props) {
   return (
     <div className={"flex flex-col justify-center " + className}>
-      <div className={(titleClassName ? titleClassName + " " : "") + "font-medium text-base leading-6"}>
+      <div
+        className={
+          (titleClassName ? titleClassName + " " : "") +
+          "font-medium text-base leading-6"
+        }
+      >
         {title}
       </div>
       {objetivo ? (

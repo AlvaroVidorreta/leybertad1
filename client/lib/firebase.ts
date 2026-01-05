@@ -65,7 +65,6 @@ export const FIREBASE_ENABLED = Boolean(firebaseConfig.apiKey);
 
 // Basic validation to surface clearer errors in development
 if (!FIREBASE_ENABLED) {
-  // eslint-disable-next-line no-console
   console.error(
     "Missing Firebase API key (VITE_FIREBASE_API_KEY). Authentication will fail.",
   );
@@ -100,7 +99,7 @@ if (FIREBASE_ENABLED) {
         db = databaseURL ? getDatabase(app, databaseURL) : getDatabase(app);
       } catch (e) {
         // don't treat as fatal; log and continue without db
-        // eslint-disable-next-line no-console
+
         console.warn(
           "Firebase Realtime Database not available or misconfigured, continuing without db.",
           e,
@@ -108,7 +107,6 @@ if (FIREBASE_ENABLED) {
         db = null;
       }
     } else {
-      // eslint-disable-next-line no-console
       console.warn(
         "Skipping Realtime Database initialization: missing VITE_FIREBASE_DATABASE_URL or projectId",
       );
@@ -119,7 +117,6 @@ if (FIREBASE_ENABLED) {
       try {
         storage = getStorage(app);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn(
           "Firebase Storage not available or misconfigured, continuing without storage.",
           e,
@@ -131,7 +128,7 @@ if (FIREBASE_ENABLED) {
     }
   } catch (e) {
     // If something goes wrong initializing critical parts, ensure we don't crash the whole app. Log and continue with disabled mode.
-    // eslint-disable-next-line no-console
+
     console.error("Firebase initialization failed", e);
     auth = null;
     googleProvider = null;

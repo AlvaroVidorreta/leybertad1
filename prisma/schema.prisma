@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id
+  email     String?    @unique
+  username  String?
+  avatarUrl String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  billNotes BillNote[]
+  comments  Comment[]
+  laws      Law[]
+  savedLaws SavedLaw[]
+  votes     Vote[]
+}
+
+model Law {
+  id           String     @id @default(cuid())
+  title        String
+  objective    String
+  details      String?
+  nickname     String?
+  authorId     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  upvotesCount Int        @default(0)
+  savesCount   Int        @default(0)
+  comments     Comment[]
+  author       User       @relation(fields: [authorId], references: [id])
+  saves        SavedLaw[]
+  votes        Vote[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  lawId     String
+  userId    String
+  type      String   @default("UPVOTE")
+  createdAt DateTime @default(now())
+  law       Law      @relation(fields: [lawId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([lawId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  lawId     String
+  userId    String
+  createdAt DateTime @default(now())
+  law       Law      @relation(fields: [lawId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model SavedLaw {
+  id        String   @id @default(cuid())
+  lawId     String
+  userId    String
+  createdAt DateTime @default(now())
+  law       Law      @relation(fields: [lawId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([lawId, userId])
+}
+
+model Bill {
+  id        String     @id
+  title     String
+  date      DateTime
+  summary   String?
+  pdfUrl    String?
+  boeUrl    String?
+  createdAt DateTime   @default(now())
+  notes     BillNote[]
+}
+
+model BillNote {
+  id        String   @id @default(cuid())
+  content   String
+  billId    String
+  userId    String
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  bill      Bill     @relation(fields: [billId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}

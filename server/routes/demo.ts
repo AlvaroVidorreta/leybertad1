@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { DemoResponse } from "@shared/api";
+import { getAuth } from "firebase-admin/auth";
 
 export const handleDemo: RequestHandler = async (req, res) => {
   // Basic demo response when no special action requested
@@ -12,14 +13,14 @@ export const handleDemo: RequestHandler = async (req, res) => {
 
   try {
     const { getAdmin, verifyIdToken } = await import("../utils/firebaseAdmin");
-    const admin = await getAdmin();
-    if (!admin)
+    const app = await getAdmin();
+    if (!app)
       return res
         .status(500)
         .json({ ok: false, error: "Firebase Admin not initialized" });
 
     const uid = `integration-test-${Date.now()}`;
-    const customToken = await admin.auth().createCustomToken(uid);
+    const customToken = await getAuth(app).createCustomToken(uid);
 
     const apiKey =
       process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
@@ -39,13 +40,11 @@ export const handleDemo: RequestHandler = async (req, res) => {
 
     const body = await resp.json();
     if (!resp.ok)
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error: "Failed exchanging custom token",
-          details: body,
-        });
+      return res.status(500).json({
+        ok: false,
+        error: "Failed exchanging custom token",
+        details: body,
+      });
 
     const idToken = body.idToken;
     if (!idToken)
@@ -113,13 +112,11 @@ export const handleDemo: RequestHandler = async (req, res) => {
         comment: commentResult,
       });
     } catch (e: any) {
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          error: "Failed to create law",
-          details: String(e && (e.message || e)),
-        });
+      return res.status(500).json({
+        ok: false,
+        error: "Failed to create law",
+        details: String(e && (e.message || e)),
+      });
     }
   } catch (err: any) {
     return res

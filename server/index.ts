@@ -3,22 +3,14 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { handleDemo } from "./routes/demo";
-import {
-  commentLaw,
-  createLaw,
-  listRecent,
-  ranking,
-  saveLaw,
-  upvoteLaw,
-} from "./routes/laws";
+import { lawsRouter } from "./routes/laws";
+import { LawController } from "./controllers/lawController";
 import { profileHandler, profileUpdateHandler } from "./routes/profile";
-import { boeHandler } from "./routes/boe";
-import { rateLimitCreateLaw } from "./middleware/rateLimit";
+import boeRouter from "./routes/boe";
 import { errorHandler } from "./middleware/errorHandler";
 import {
   sessionMiddleware,
   initializeSessionMiddleware,
-  getVisitorKeyFromSession,
 } from "./middleware/session";
 
 // Initialize session cleanup on module load
@@ -43,15 +35,13 @@ export function createServer() {
   app.get("/api/demo", handleDemo);
 
   // Leybertad API
-  app.post("/api/laws", rateLimitCreateLaw, createLaw); // crear propuesta con rate limiting
-  app.get("/api/laws", listRecent); // más recientes
-  app.post("/api/laws/:id/upvote", upvoteLaw);
-  app.post("/api/laws/:id/save", saveLaw);
-  app.post("/api/laws/:id/comment", commentLaw);
-  app.get("/api/ranking", ranking);
+  app.use("/api/laws", lawsRouter);
 
-  // BOE search endpoint
-  app.get("/api/boe/search", boeHandler);
+  // Ranking endpoint at root for frontend compatibility
+  app.get("/api/ranking", LawController.getRanking);
+
+  // BOE endpoints
+  app.use("/api/boe", boeRouter);
 
   // Profile endpoint for current visitor
   app.get("/api/profile", profileHandler);

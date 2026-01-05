@@ -2,7 +2,9 @@
 // embeddings/semantic search later without touching route handlers.
 
 export function computeScore(item: any, query: string) {
-  const q = String(query || "").trim().toLowerCase();
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   if (!q) return 0;
   let score = 0;
 

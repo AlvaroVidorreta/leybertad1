@@ -5,6 +5,9 @@ import type { Comment, Law, LawInput, TimeRange } from "@shared/api";
 
 const DATA_FILE = path.resolve(process.cwd(), "server", "data", "db.json");
 
+// Shared Prisma Client instance (placeholder - blocked by Vite/ESM issues)
+// export const prisma = new PrismaClient...
+
 // Optional: initialize Firebase client SDK on the server side when a Realtime Database URL is provided.
 // This lets us mirror perspectives (comments) to Firebase if the environment is configured.
 let firebaseDb: any = null;
@@ -24,20 +27,28 @@ let firebaseDb: any = null;
     firebaseDb = getDatabase();
   } catch (e) {
     // If initialization fails, continue without Firebase mirroring.
-    // eslint-disable-next-line no-console
+
     console.warn(
       "Firebase init skipped or failed on server:",
-      e && (e.message || e),
+      (e as any) && ((e as any).message || e),
     );
     firebaseDb = null;
   }
 })();
 
-type DataShape = {
+export type DataShape = {
   laws: Law[];
   creationsByVisitor: Record<string, string[]>;
   votesByVisitor: Record<string, string[]>;
-  profiles?: Record<string, { displayName?: string; username?: string }>;
+  profiles?: Record<
+    string,
+    {
+      displayName?: string;
+      username?: string;
+      saved?: string[];
+      voted?: string[];
+    }
+  >;
 };
 
 async function ensureDataFile() {
@@ -145,10 +156,9 @@ let admin: any = null;
     firestore = admin.firestore();
     // ensure timestampsInSnapshots behavior not needed in modern SDK
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.warn(
       "Firebase Admin init failed, continuing with local DB:",
-      e && (e.message || e),
+      e && ((e as any).message || e),
     );
     firestore = null;
   }
@@ -194,14 +204,13 @@ export const db = {
           msg.includes("requires an index") ||
           msg.includes("Index")
         ) {
-          // eslint-disable-next-line no-console
           console.warn(
             "Firestore query failed (possible missing index), falling back to local DB:",
             msg,
           );
         } else {
           // For other errors, still fallback but log them
-          // eslint-disable-next-line no-console
+
           console.warn(
             "Firestore operation failed, falling back to local DB:",
             msg,
@@ -340,7 +349,7 @@ export const db = {
         });
       } catch (e: any) {
         // If transaction fails, log and rethrow so fallback or error handling can proceed
-        // eslint-disable-next-line no-console
+
         console.warn(
           "Firestore save transaction failed, falling back or returning error:",
           String(e && (e.message || e)),
@@ -415,7 +424,6 @@ export const db = {
           }
         });
       } catch (e: any) {
-        // eslint-disable-next-line no-console
         console.warn(
           "Firestore comment transaction failed:",
           String(e && (e.message || e)),
@@ -460,11 +468,12 @@ export const db = {
         const nodeRef = ref(firebaseDb, `perspectives/${id}`);
         await push(nodeRef, comment as any);
       } catch (err) {
+        const errAny = err as any;
         // ignore firebase errors — keep local persistence as primary
-        // eslint-disable-next-line no-console
+
         console.warn(
           "Failed to mirror comment to Firebase:",
-          err && (err.message || err),
+          errAny && (errAny.message || errAny),
         );
       }
     }
@@ -506,7 +515,7 @@ export const db = {
     return items;
   },
 
-  async rawData() {
+  async rawData(): Promise<DataShape> {
     if (firestore) {
       const all: any = {
         laws: [],

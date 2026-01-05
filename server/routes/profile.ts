@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
-import { ProfileSchema } from "@shared/schemas";
-import { db } from "../db";
+import { ProfileSchema } from "../../shared/schemas";
+import { db, DataShape } from "../db";
 import { getVisitorKey } from "../utils/visitor";
 
 export const profileHandler: RequestHandler = async (req, res) => {
   const visitor = getVisitorKey(req);
   try {
-    const data = await db.rawData();
+    const data: DataShape = await db.rawData();
     const createdTimestamps = data.creationsByVisitor[visitor] || [];
 
     const created = data.laws.filter((l) =>
@@ -46,7 +46,6 @@ export const profileUpdateHandler: RequestHandler = async (req, res) => {
       return res.status(400).json({ error: `Validación fallida: ${messages}` });
     }
 
-    // eslint-disable-next-line no-console
     console.error("Error updating profile:", err);
     res.status(500).json({ error: "Error al guardar perfil" });
   }

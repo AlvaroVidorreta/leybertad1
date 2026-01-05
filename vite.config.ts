@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     fs: {
-      allow: ["./client", "./shared"],
+      allow: [".", "./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
   },
@@ -18,10 +18,12 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            const parts = id.split('node_modules/')[1].split('/');
+          if (id.includes("node_modules")) {
+            const parts = id.split("node_modules/")[1].split("/");
             // put package into its own chunk (for scoped packages, include scope)
-            return parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0];
+            return parts[0].startsWith("@")
+              ? `${parts[0]}/${parts[1]}`
+              : parts[0];
           }
         },
       },

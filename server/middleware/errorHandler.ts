@@ -24,7 +24,6 @@ export function errorHandler(
 
   // Log error for debugging
   if (statusCode >= 500) {
-    // eslint-disable-next-line no-console
     console.error(`[${code}]`, message, err);
   }
 

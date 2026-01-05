@@ -33,11 +33,13 @@ app.listen(port, () => {
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  if (process.env.NODE_ENV !== "production") logger.info("🛑 Received SIGTERM, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production")
+    logger.info("🛑 Received SIGTERM, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  if (process.env.NODE_ENV !== "production") logger.info("🛑 Received SIGINT, shutting down gracefully");
+  if (process.env.NODE_ENV !== "production")
+    logger.info("🛑 Received SIGINT, shutting down gracefully");
   process.exit(0);
 });

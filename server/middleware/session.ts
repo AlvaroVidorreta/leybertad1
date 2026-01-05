@@ -29,7 +29,6 @@ export function initializeSessionMiddleware() {
     toDelete.forEach((id) => sessionStore.delete(id));
 
     if (toDelete.length > 0) {
-      // eslint-disable-next-line no-console
       console.debug(`Cleaned up ${toDelete.length} expired sessions`);
     }
   }, CLEANUP_INTERVAL_MS);

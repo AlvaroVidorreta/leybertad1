@@ -48,24 +48,43 @@ export default function PerfilEditar() {
   }, []);
 
   const save = async () => {
-    const payload = { displayName: displayName.trim(), username: username.trim() };
+    const payload = {
+      displayName: displayName.trim(),
+      username: username.trim(),
+    };
     try {
       const visitor = localStorage.getItem("visitorId");
       const headers: any = { "Content-Type": "application/json" };
       if (visitor) headers["x-visitor-id"] = visitor;
-      const res = await fetch("/api/profile", { method: "POST", headers, body: JSON.stringify(payload) });
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
       if (!res.ok) throw new Error("Error saving profile");
       const data = await res.json();
       // also persist locally as fallback
       const localVisitor = localStorage.getItem("visitorId") || "unknown";
-      localStorage.setItem(`profile_override:${localVisitor}`, JSON.stringify(payload));
-      toast({ title: "Perfil guardado", description: "Tus cambios se han guardado." });
+      localStorage.setItem(
+        `profile_override:${localVisitor}`,
+        JSON.stringify(payload),
+      );
+      toast({
+        title: "Perfil guardado",
+        description: "Tus cambios se han guardado.",
+      });
       navigate("/perfil");
     } catch (e) {
       // fallback to local only
       const visitor = localStorage.getItem("visitorId") || "unknown";
-      localStorage.setItem(`profile_override:${visitor}`, JSON.stringify(payload));
-      toast({ title: "Perfil guardado (local)", description: "No se pudo guardar en el servidor; se guardó localmente." });
+      localStorage.setItem(
+        `profile_override:${visitor}`,
+        JSON.stringify(payload),
+      );
+      toast({
+        title: "Perfil guardado (local)",
+        description: "No se pudo guardar en el servidor; se guardó localmente.",
+      });
       navigate("/perfil");
     }
   };
@@ -73,36 +92,59 @@ export default function PerfilEditar() {
   const clear = () => {
     const visitor = localStorage.getItem("visitorId") || "unknown";
     localStorage.removeItem(`profile_override:${visitor}`);
-    toast({ title: "Restaurado", description: "Nombre de usuario restaurado al valor por defecto." });
+    toast({
+      title: "Restaurado",
+      description: "Nombre de usuario restaurado al valor por defecto.",
+    });
     navigate("/perfil");
   };
 
   return (
     <div className="max-w-3xl mx-auto py-10">
       <h2 className="text-2xl font-semibold mb-4">Editar perfil</h2>
-      {loading && <div className="text-sm text-muted-foreground">Cargando…</div>}
+      {loading && (
+        <div className="text-sm text-muted-foreground">Cargando…</div>
+      )}
       {!loading && profile && (
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Nombre</label>
-            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full border rounded px-3 py-2" />
+            <input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Nombre de usuario (visible público)</label>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full border rounded px-3 py-2" />
+            <label className="block text-sm font-medium mb-1">
+              Nombre de usuario (visible público)
+            </label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+            />
           </div>
 
           <div className="pt-4 border-t">
             <h3 className="text-sm font-medium mb-2">Datos públicos</h3>
-            <div className="text-sm text-muted-foreground">Propuestas creadas: {profile.created.length}</div>
-            <div className="text-sm text-muted-foreground">Votos emitidos: {profile.voted.length}</div>
+            <div className="text-sm text-muted-foreground">
+              Propuestas creadas: {profile.created.length}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Votos emitidos: {profile.voted.length}
+            </div>
           </div>
 
           <div className="flex gap-3">
             <Button onClick={save}>Guardar</Button>
-            <Button variant="outline" onClick={clear}>Restaurar valores</Button>
-            <Button variant="link" onClick={() => navigate(-1)}>Cancelar</Button>
+            <Button variant="outline" onClick={clear}>
+              Restaurar valores
+            </Button>
+            <Button variant="link" onClick={() => navigate(-1)}>
+              Cancelar
+            </Button>
           </div>
         </div>
       )}

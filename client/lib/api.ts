@@ -18,12 +18,12 @@ function getVisitorId() {
     if (!v) {
       v =
         typeof crypto !== "undefined" &&
-        typeof (crypto as any).randomUUID === "function"
+          typeof (crypto as any).randomUUID === "function"
           ? (crypto as any).randomUUID()
           : Math.random().toString(36).slice(2);
-      localStorage.setItem("visitorId", v);
+      localStorage.setItem("visitorId", v as string);
     }
-    return v;
+    return v as string;
   } catch (e) {
     return "unknown";
   }
@@ -207,4 +207,13 @@ export async function obtenerRanking(range: TimeRange): Promise<Law[]> {
   if (!res.ok) throw new Error("Error al cargar ranking");
   const data = (await res.json()) as RankingResponse;
   return data.items;
+}
+
+export async function obtenerStats() {
+  // TODO: Implement real stats endpoint
+  return {
+    totalLaws: 0,
+    totalVotes: 0,
+    totalComments: 0,
+  };
 }

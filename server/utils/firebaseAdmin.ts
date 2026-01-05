@@ -34,11 +34,10 @@ export async function getAdmin(): Promise<App | null> {
     }
 
     cachedAdmin = admin.app();
-    // eslint-disable-next-line no-console
+
     console.info("Firebase Admin initialized successfully");
     return cachedAdmin;
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.warn(
       "Firebase Admin init failed in helper:",
       e && (e as Error).message,
@@ -56,15 +55,18 @@ export interface FirebaseDecodedToken {
   [key: string]: unknown;
 }
 
+import { getAuth } from "firebase-admin/auth";
+
+// ... existing code ...
+
 export async function verifyIdToken(
   idToken: string,
 ): Promise<FirebaseDecodedToken | null> {
   try {
-    const admin = await getAdmin();
-    if (!admin) return null;
+    const app = await getAdmin();
+    if (!app) return null;
 
-    const decoded = await admin
-      .auth()
+    const decoded = await getAuth(app)
       .verifyIdToken(idToken)
       .catch(() => null);
 

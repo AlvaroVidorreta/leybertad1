@@ -12,6 +12,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const BibliotecaSub = lazy(() => import("./pages/BibliotecaSub"));
 const Perfil = lazy(() => import("./pages/Perfil"));
 const PerfilEditar = lazy(() => import("./pages/PerfilEditar"));
+const VigilanciaPage = lazy(() => import("./features/vigilancia/pages/VigilanciaPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +42,7 @@ const App = () => (
               />
               <Route path="/perfil" element={<Perfil />} />
               <Route path="/perfil/editar" element={<PerfilEditar />} />
+              <Route path="/vigilancia" element={<VigilanciaPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
