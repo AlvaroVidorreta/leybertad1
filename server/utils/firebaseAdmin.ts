@@ -3,12 +3,13 @@ import type { App } from "firebase-admin/app";
 
 let cachedAdmin: App | null = null;
 
-export async function getAdmin() {
+export async function getAdmin(): Promise<App | null> {
   if (cachedAdmin) return cachedAdmin;
   try {
     const svc = process.env.FIREBASE_SERVICE_ACCOUNT as string | undefined;
     if (!svc) return null;
-    let svcObj: any = null;
+
+    let svcObj: Record<string, unknown> | null = null;
     try {
       svcObj = JSON.parse(svc);
     } catch (e) {
@@ -18,16 +19,20 @@ export async function getAdmin() {
         svcObj = null;
       }
     }
+
     if (!svcObj) return null;
+
     const _mod = await import("firebase-admin");
     const admin = (_mod && (_mod.default || _mod)) || _mod;
+
     if (!admin.apps || !admin.apps.length) {
       admin.initializeApp({
-        credential: admin.credential.cert(svcObj),
-        projectId: svcObj.project_id || process.env.FIREBASE_PROJECT_ID,
+        credential: admin.credential.cert(svcObj as Record<string, unknown>),
+        projectId: (svcObj as any).project_id || process.env.FIREBASE_PROJECT_ID,
       });
     }
-    cachedAdmin = admin;
+
+    cachedAdmin = admin.app();
     // eslint-disable-next-line no-console
     console.info("Firebase Admin initialized successfully");
     return cachedAdmin;
@@ -35,7 +40,7 @@ export async function getAdmin() {
     // eslint-disable-next-line no-console
     console.warn(
       "Firebase Admin init failed in helper:",
-      e && (e.message || e),
+      e && (e as Error).message,
     );
     return null;
   }
