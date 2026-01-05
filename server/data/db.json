@@ -7,7 +7,7 @@
       "detalles": "Una ley que implemente una revisión de la tarifa del IRPF para establecer tramos más reducidos, por ejemplo, concentrando los tipos en un menor número de escalones o aplicando tipos marginales más bajos a la mayoría de las rentas.",
       "apodo": "ElFiscalEspañol",
       "createdAt": "2025-11-05T14:47:27.824Z",
-      "upvotes": 0,
+      "upvotes": 1,
       "saves": 0,
       "comentarios": []
     },
@@ -112,7 +112,8 @@
   },
   "votesByVisitor": {
     "20dac55b-c6ac-494e-8b6d-6a64fc7af7af": [
-      "6bbdd98a-1461-4aea-9dff-5148dab9c711"
+      "6bbdd98a-1461-4aea-9dff-5148dab9c711",
+      "942e4243-f332-44ff-a23c-ac4b8f22a669"
     ]
   },
   "profiles": {
