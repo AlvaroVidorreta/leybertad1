@@ -157,11 +157,13 @@ export default function AuthModal({
               {error}
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="form-actions flex items-center gap-2">
             <button
+              ref={submitButtonRef}
               type="submit"
               disabled={busy}
-              className="px-4 py-2 rounded bg-primary text-white"
+              className="px-4 py-2 rounded bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
+              aria-busy={busy}
             >
               {mode === "login" ? "Entrar" : "Crear cuenta"}
             </button>
@@ -169,7 +171,8 @@ export default function AuthModal({
               type="button"
               disabled={busy}
               onClick={() => setMode(mode === "login" ? "register" : "login")}
-              className="px-3 py-2 rounded border"
+              className="px-3 py-2 rounded border hover:bg-gray-50 disabled:opacity-50"
+              aria-busy={busy}
             >
               {mode === "login" ? "Crear cuenta" : "Ya tengo cuenta"}
             </button>
@@ -181,12 +184,13 @@ export default function AuthModal({
             type="button"
             disabled={busy}
             onClick={handleGoogle}
-            className="px-3 py-2 rounded border flex items-center gap-3 justify-center"
+            className="px-3 py-2 rounded border flex items-center gap-3 justify-center hover:bg-gray-50 disabled:opacity-50"
             aria-label="Continuar con Google"
+            aria-busy={busy}
           >
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Fc11605d2398a4e01a080aa84aba2263c%2F43f4b6f41852435ab6a0fd3ffcded29e?format=webp&width=800"
-              alt="G"
+              alt="Google logo"
               className="w-5 h-5"
             />
             <span>Continuar con Google</span>
@@ -196,7 +200,8 @@ export default function AuthModal({
             type="button"
             disabled={busy}
             onClick={handleAnonymous}
-            className="px-3 py-2 rounded border"
+            className="px-3 py-2 rounded border hover:bg-gray-50 disabled:opacity-50"
+            aria-busy={busy}
           >
             Continuar como anónimo
           </button>
