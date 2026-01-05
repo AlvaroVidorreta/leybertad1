@@ -21,6 +21,9 @@ import {
   getVisitorKeyFromSession,
 } from "./middleware/session";
 
+// Initialize session cleanup on module load
+initializeSessionMiddleware();
+
 export function createServer() {
   const app = express();
 
