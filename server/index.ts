@@ -15,6 +15,11 @@ import { profileHandler, profileUpdateHandler } from "./routes/profile";
 import { boeHandler } from "./routes/boe";
 import { rateLimitCreateLaw } from "./middleware/rateLimit";
 import { errorHandler } from "./middleware/errorHandler";
+import {
+  sessionMiddleware,
+  initializeSessionMiddleware,
+  getVisitorKeyFromSession,
+} from "./middleware/session";
 
 export function createServer() {
   const app = express();
