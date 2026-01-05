@@ -97,10 +97,14 @@ export const saveLaw: RequestHandler = async (req, res) => {
       } catch (err: any) {
         if (err && err.message === "NOT_FOUND")
           return res.status(404).json({ error: "Ley no encontrada" });
+        // eslint-disable-next-line no-console
+        console.error("Error saving law:", err);
         return res.status(500).json({ error: "Error al guardar ley" });
       }
     } catch (err) {
-      return res.status(500).json({ error: "Error validating token" });
+      // eslint-disable-next-line no-console
+      console.error("Error validating token:", err);
+      return res.status(500).json({ error: "Error validando token" });
     }
   }
 
@@ -112,6 +116,8 @@ export const saveLaw: RequestHandler = async (req, res) => {
   } catch (err: any) {
     if (err && err.message === "NOT_FOUND")
       return res.status(404).json({ error: "Ley no encontrada" });
+    // eslint-disable-next-line no-console
+    console.error("Error saving law:", err);
     res.status(500).json({ error: "Error al guardar ley" });
   }
 };
