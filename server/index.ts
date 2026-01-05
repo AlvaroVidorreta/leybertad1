@@ -12,6 +12,7 @@ import {
 } from "./routes/laws";
 import { profileHandler, profileUpdateHandler } from "./routes/profile";
 import { boeHandler } from "./routes/boe";
+import { rateLimitCreateLaw } from "./middleware/rateLimit";
 
 export function createServer() {
   const app = express();
