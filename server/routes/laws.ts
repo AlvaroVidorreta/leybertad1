@@ -118,9 +118,6 @@ export const saveLaw: RequestHandler = async (req, res) => {
 
 export const commentLaw: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { texto } = req.body as CommentInput;
-  if (!texto || typeof texto !== "string")
-    return res.status(400).json({ error: "Perspectiva requerida" });
 
   // Require Firebase ID token in Authorization header
   const authHeader =
@@ -132,20 +129,34 @@ export const commentLaw: RequestHandler = async (req, res) => {
   ) {
     return res.status(401).json({ error: "Autenticación requerida" });
   }
-  const idToken = authHeader.replace(/^Bearer\s+/, "");
 
+  // Validate input
   try {
+    const validated = CommentSchema.parse(req.body);
+    const idToken = authHeader.replace(/^Bearer\s+/, "");
+
     const { verifyIdToken } = await import("../utils/firebaseAdmin");
     const decoded = await verifyIdToken(idToken);
     if (!decoded) return res.status(401).json({ error: "Token inválido" });
     const uid = decoded.uid;
 
-    const law = await db.commentLaw(id, texto, uid);
+    const law = await db.commentLaw(id, validated.texto, uid);
     const response: LawUpdatedResponse = { law };
     res.json(response);
   } catch (err: any) {
+    // Handle validation errors
+    if (err.name === "ZodError") {
+      const messages = err.errors
+        .map((e: any) => `${e.path.join(".")}: ${e.message}`)
+        .join("; ");
+      return res.status(400).json({ error: `Validación fallida: ${messages}` });
+    }
+
     if (err && err.message === "NOT_FOUND")
       return res.status(404).json({ error: "Ley no encontrada" });
+
+    // eslint-disable-next-line no-console
+    console.error("Error commenting on law:", err);
     res.status(500).json({ error: "Error al guardar perspectiva" });
   }
 };
