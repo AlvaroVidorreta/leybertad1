@@ -46,15 +46,26 @@ export async function getAdmin(): Promise<App | null> {
   }
 }
 
-export async function verifyIdToken(idToken: string) {
+export interface FirebaseDecodedToken {
+  uid: string;
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+  picture?: string;
+  [key: string]: unknown;
+}
+
+export async function verifyIdToken(idToken: string): Promise<FirebaseDecodedToken | null> {
   try {
     const admin = await getAdmin();
     if (!admin) return null;
+
     const decoded = await admin
       .auth()
       .verifyIdToken(idToken)
       .catch(() => null);
-    return decoded || null;
+
+    return decoded as FirebaseDecodedToken | null;
   } catch (e) {
     return null;
   }
