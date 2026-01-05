@@ -165,11 +165,24 @@ export async function comentarLey(
   };
   try {
     if (FIREBASE_ENABLED && auth && auth.currentUser) {
-      const token = await auth.currentUser.getIdToken();
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+      try {
+        const token = await auth.currentUser.getIdToken();
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      } catch (tokenErr: any) {
+        // Token acquisition failed — log and inform user
+        logger.warn("Failed to acquire ID token for comment operation", tokenErr);
+        // Comments require authentication, so throw error to user
+        throw new Error(
+          "Sesión expirada. Por favor, inicia sesión nuevamente para comentar."
+        );
+      }
     }
   } catch (e) {
-    // ignore token fetch errors — server will require auth and respond accordingly
+    // Re-throw authentication errors
+    if (e instanceof Error && e.message.includes("Sesión expirada")) {
+      throw e;
+    }
+    // Ignore other Firebase initialization errors
   }
 
   const res = await safeFetch(`/api/laws/${id}/comment`, {
