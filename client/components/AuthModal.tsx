@@ -115,7 +115,10 @@ export default function AuthModal({
         </h3>
         <form onSubmit={submit} className="flex flex-col gap-3">
           <div className="form-group">
-            <label htmlFor="email-input" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="email-input"
+              className="block text-sm font-medium mb-1"
+            >
               Correo electrónico
             </label>
             <input
@@ -132,7 +135,10 @@ export default function AuthModal({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password-input" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="password-input"
+              className="block text-sm font-medium mb-1"
+            >
               Contraseña
             </label>
             <input

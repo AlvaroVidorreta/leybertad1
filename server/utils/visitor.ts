@@ -26,8 +26,6 @@ export function getVisitorKey(req: Request): string {
 
   // Priority 3: Fall back to request IP
   return (
-    req.ip ||
-    (req.connection && req.connection.remoteAddress) ||
-    "unknown"
+    req.ip || (req.connection && req.connection.remoteAddress) || "unknown"
   );
 }

@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 /**
  * In-memory rate limiting store
  * Maps visitor key -> array of request timestamps
- * 
+ *
  * In production, consider using Redis for distributed rate limiting.
  * For now, this simple in-memory approach prevents abuse within a single instance.
  */
@@ -16,10 +16,11 @@ const requestLog: Map<string, number[]> = new Map();
 export function rateLimitCreateLaw(
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
-  const visitorKey =
-    (req.headers["x-visitor-id"] || req.headers["x-visitorid"] || req.ip) as string;
+  const visitorKey = (req.headers["x-visitor-id"] ||
+    req.headers["x-visitorid"] ||
+    req.ip) as string;
 
   if (!visitorKey) {
     return next();

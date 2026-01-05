@@ -28,7 +28,8 @@ export async function getAdmin(): Promise<App | null> {
     if (!admin.apps || !admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(svcObj as Record<string, unknown>),
-        projectId: (svcObj as any).project_id || process.env.FIREBASE_PROJECT_ID,
+        projectId:
+          (svcObj as any).project_id || process.env.FIREBASE_PROJECT_ID,
       });
     }
 
@@ -55,7 +56,9 @@ export interface FirebaseDecodedToken {
   [key: string]: unknown;
 }
 
-export async function verifyIdToken(idToken: string): Promise<FirebaseDecodedToken | null> {
+export async function verifyIdToken(
+  idToken: string,
+): Promise<FirebaseDecodedToken | null> {
   try {
     const admin = await getAdmin();
     if (!admin) return null;

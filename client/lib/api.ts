@@ -170,10 +170,13 @@ export async function comentarLey(
         if (token) headers["Authorization"] = `Bearer ${token}`;
       } catch (tokenErr: any) {
         // Token acquisition failed — log and inform user
-        logger.warn("Failed to acquire ID token for comment operation", tokenErr);
+        logger.warn(
+          "Failed to acquire ID token for comment operation",
+          tokenErr,
+        );
         // Comments require authentication, so throw error to user
         throw new Error(
-          "Sesión expirada. Por favor, inicia sesión nuevamente para comentar."
+          "Sesión expirada. Por favor, inicia sesión nuevamente para comentar.",
         );
       }
     }

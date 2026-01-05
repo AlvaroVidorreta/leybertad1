@@ -16,7 +16,7 @@ export function errorHandler(
   err: any,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Error interno del servidor";
@@ -44,7 +44,7 @@ export function errorHandler(
  * Usage: app.post("/api/route", asyncHandler(async (req, res) => { ... }))
  */
 export function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>,
 ) {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);

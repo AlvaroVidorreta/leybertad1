@@ -57,7 +57,7 @@ export const ProfileSchema = z.object({
     .max(30, "El usuario no puede exceder 30 caracteres")
     .regex(
       /^[a-zA-Z0-9_-]+$/,
-      "El usuario solo puede contener letras, números, guiones y guiones bajos"
+      "El usuario solo puede contener letras, números, guiones y guiones bajos",
     )
     .trim()
     .optional(),

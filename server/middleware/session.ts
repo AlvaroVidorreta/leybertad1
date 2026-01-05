@@ -42,7 +42,7 @@ export function initializeSessionMiddleware() {
 export function sessionMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   let sessionId = req.cookies?.[SESSION_COOKIE_NAME];
   let isNewSession = false;
