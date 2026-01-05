@@ -1,5 +1,7 @@
 // Centralized Firebase Admin initialization and helpers
-let cachedAdmin: any = null;
+import type { App } from "firebase-admin/app";
+
+let cachedAdmin: App | null = null;
 
 export async function getAdmin() {
   if (cachedAdmin) return cachedAdmin;
