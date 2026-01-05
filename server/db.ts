@@ -76,7 +76,24 @@ async function readData(): Promise<DataShape> {
 }
 
 async function writeData(data: DataShape) {
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  // Atomic write: write to temp file first, then rename to ensure data integrity
+  // This prevents data corruption from concurrent writes or interrupted writes
+  const tmpFile = `${DATA_FILE}.tmp`;
+  try {
+    // Write to temporary file
+    await fs.writeFile(tmpFile, JSON.stringify(data, null, 2), "utf-8");
+    // Atomically rename temp file to actual file
+    // This is atomic on most filesystems and prevents partial writes
+    await fs.rename(tmpFile, DATA_FILE);
+  } catch (err) {
+    // Clean up temp file if rename fails
+    try {
+      await fs.unlink(tmpFile);
+    } catch (e) {
+      // ignore cleanup errors
+    }
+    throw err;
+  }
 }
 
 function nowISO() {
