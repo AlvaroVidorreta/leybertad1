@@ -31,7 +31,7 @@ export function createServer() {
   app.get("/api/demo", handleDemo);
 
   // Leybertad API
-  app.post("/api/laws", createLaw); // crear propuesta
+  app.post("/api/laws", rateLimitCreateLaw, createLaw); // crear propuesta con rate limiting
   app.get("/api/laws", listRecent); // más recientes
   app.post("/api/laws/:id/upvote", upvoteLaw);
   app.post("/api/laws/:id/save", saveLaw);
