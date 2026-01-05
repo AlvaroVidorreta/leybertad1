@@ -34,15 +34,20 @@ export const profileHandler: RequestHandler = async (req, res) => {
 export const profileUpdateHandler: RequestHandler = async (req, res) => {
   const visitor = getVisitorKey(req);
   try {
-    const body = req.body || {};
-    const patch: { displayName?: string; username?: string } = {};
-    if (typeof body.displayName === "string")
-      patch.displayName = String(body.displayName).slice(0, 100);
-    if (typeof body.username === "string")
-      patch.username = String(body.username).slice(0, 60);
-    const updated = await db.setProfile(visitor, patch);
+    const validated = ProfileSchema.parse(req.body || {});
+    const updated = await db.setProfile(visitor, validated);
     res.json({ ok: true, profile: updated });
-  } catch (err) {
+  } catch (err: any) {
+    // Handle validation errors
+    if (err.name === "ZodError") {
+      const messages = err.errors
+        .map((e: any) => `${e.path.join(".")}: ${e.message}`)
+        .join("; ");
+      return res.status(400).json({ error: `Validación fallida: ${messages}` });
+    }
+
+    // eslint-disable-next-line no-console
+    console.error("Error updating profile:", err);
     res.status(500).json({ error: "Error al guardar perfil" });
   }
 };
